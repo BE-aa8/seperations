@@ -36,7 +36,7 @@ Fill in as the project proceeds. This table feeds `model-comparison.html`.
 | Role | Model / person | Date | Notes |
 |---|---|---|---|
 | Plan author | Claude Opus 5 (Claude Code) | 2026-09-21 | Wrote `docs/PLAN.md` v1.0 |
-| Plan critic | *(to be filled — a different model)* | | |
+| Plan critic | Muse AI | 2026-09-21 | `docs/FEEDBACK.md`, findings C-01…C-14 |
 | Implementer A → `impl-a/` | *(to be filled)* | | |
 | Implementer B → `impl-b/` | *(to be filled)* | | |
 | Owner / director | *(your name)* | | UC Separation Processes |
@@ -75,14 +75,65 @@ Fill in as the project proceeds. This table feeds `model-comparison.html`.
 | D-24 | `physics.js` exported signatures are **frozen** in PLAN §2.4. | Both implementations must be drop-in compatible with the same unmodified test suite, or the comparison is not like-for-like. | Model:Opus5 |
 | D-25 | A single injected `yStar(x)` seam is designed in from the start (currently `x => m*x`), and `ntuNumeric` is built in the MVP even though `ntuAnalytic` is exact. | These are the seams that let curved equilibrium (F-4) be added rather than retrofitted. Identified as the most important architectural decision in the plan. | Model:Opus5 |
 
-### Critique round — *(to be filled)*
+### Critique-response round — 2026-09-21
 
-Record each critique point here as accepted or rejected, with a reason. Suggested
-shape:
+| ID | Decision | Rationale | Driver |
+|---|---|---|---|
+| D-26 | Diagrams are **SVG**, not `<canvas>`. | Retained DOM nodes per handle give hit-testing, focus, `tabindex` and ARIA for free — canvas would require rebuilding all of it for the keyboard accessibility D-02 requires. Cost: canvas would render 70 trays more cheaply, which is why the >40-tray compressed mode exists. | Critic:MuseAI (C-02) |
+| D-27 | **No build step.** Files are served exactly as authored. | The owner deploys on Netlify and will hand this to a second model; a toolchain is a second thing to get working and a second thing to explain. Cost: no bundling or minification, and ES modules mean it will not run from `file://`. | Critic:MuseAI (C-02) |
+| D-28 | Clamp functions return `{value, clamped, at:'lower'\|'upper', pinch:null\|'top'\|'bottom'}` — range-end and thermodynamic pinch reported **separately**. | The critic proposed unifying both on `'top'\|'bottom'`; that would label `clampXOut`'s lower bound (the `A_max = 20` cap) a pinch. It is a UI range limit, not thermodynamics, and telling a student otherwise teaches something false. | Critic:MuseAI (C-05) → modified |
+| D-29 | `impl-a` and `impl-b` **must** be built by different models; recorded in the definition of done. | The assignment's comparison requirement is unmeetable otherwise, and the omission was easy to miss because the intent was stated in prose but never in a checkable criterion. | Critic:MuseAI (C-07) |
+| D-30 | A four-step amendment protocol for the frozen §2.4 API: implementer logs → owner approves → version bump → **all** existing impls update and re-run the suite. | "Frozen" without an unfreeze procedure means the first real defect either strands an implementation or gets patched silently in one of them, which destroys the like-for-like comparison. | Critic:MuseAI (C-08) |
+| D-31 | A second demo button at `A = 1 − 5×10⁻⁷`, alongside the exact `A = 1` button. | The exact button tests the special case; only a near-value tests the branch *selection*. Value corrected from the critic's suggested `1 − 10⁻⁶`, which sits exactly on the `< 1e-6` threshold and so takes the other branch — verified numerically. | Critic:MuseAI (C-12) → corrected |
+| D-32 | The "defaults unverified" note carries the date the defaults were chosen. | Distinguishes a live caveat from an abandoned one, at the cost of one string. | Critic:MuseAI (C-14) |
+| D-33 | The SO₂ straight-line-model warning appears **on screen** when that preset is active, not as documentation. | SO₂ is in the list *because* the model strains on it (D-04). A footnote risks reading as an oversight rather than a deliberate choice; an on-screen label makes it the teaching point it was meant to be, and models the habit of stating a model's domain of validity. | Critic:MuseAI (C-13) |
 
-| ID | Critique point | From | Accepted? | Reason |
+### Critique round — 2026-09-21 — Muse AI
+
+`docs/PLAN.md` v1.0 was handed to an independent model for critique per the
+plan's own §0.1. It returned 14 findings plus a list of what it had verified and
+found correct. Full text in `docs/FEEDBACK.md`; dispositions applied in
+`docs/PLAN.md` §11.
+
+**All 14 accepted. Two implemented differently from the literal suggestion** —
+those are the interesting rows, because accepting a finding is not the same as
+accepting the proposed fix.
+
+The three claims that would have changed the physics or the acceptance criteria
+(C-03, C-04, and the C-01 cross-references) were **independently re-derived
+before being accepted**, not taken on trust.
+
+| ID | Critique point | Type | Accepted? | Reason |
 |---|---|---|---|---|
-| C-01 | | | | |
+| C-01 | 8 of 10 `DECISION-xx` markers point at the wrong `D-xx` | Error | **Yes** | Verified by grep. I numbered markers sequentially in PLAN.md, then wrote this log in a different order and never reconciled. Broken traceability between two graded artifacts. |
+| C-02 | `DECISION-03`/`-04` marked in the plan but never logged here | Error | **Yes** | The plan's own rule is that decisions live in this file. Logged as D-26, D-27. |
+| C-03 | "Three complete risers" self-contradictory; Phase 4 criterion would fail a *correct* implementation | Error | **Yes** | Re-stepped independently: Examples A and C give 2 complete + 1 truncated. My error. The acceptance-criterion consequence is the serious part — it would have sent an implementer hunting a non-existent bug. |
+| C-04 | §3.3 prose implies `A < 1` is infeasible | Error | **Yes — and the risk was larger than reported** | Checked all four presets: `A < 1` is reachable on every one (0.918–0.938 at the 98% clamp). A spurious `A >= 1` guard would break the exact regime the site exists to demonstrate. |
+| C-05 | Clamp functions return inconsistent `at` enums | Error | **Yes, different fix** | The finding is right; the proposed fix (unify on `top`/`bottom`) would mislabel the `A_max` liquid-rate cap as a thermodynamic pinch. Adopted a two-field shape instead — see D-28. |
+| C-06 | Test sweep misses reachable regimes | Omission | **Yes, corrected rationale** | Widened the ranges as proposed. But the critic placed `R = 1.02` "near the pinch"; it is at the opposite end (minimum separation). Near the pinch `R → 50`. Right fix, wrong reason — both now documented. |
+| C-07 | Nothing requires the two impls to come from different models | Omission | **Yes** | Without it, `model-comparison.html` has nothing to compare. Added to the definition of done as D-29. |
+| C-08 | No amendment process for the frozen API | Omission | **Yes** | A frozen contract with no unfreeze procedure strands the first implementation to hit a genuine defect. D-30. |
+| C-09 | `solve()` untested | Omission | **Yes** | It is the single function every renderer consumes — the exact seam where RISK-12 would enter. Clear gap. |
+| C-10 | Log-guard ↔ pinch equivalence asserted, not tested | Omission | **Yes** | It is the algebraic fact that makes "one place to enforce the pinch" true. It deserves a regression test. |
+| C-11 | Pin the naive-rule values exactly | Preference | **Yes** | Named constants document the trap better than an inequality, and catch a refactor that accidentally makes the naive path agree. |
+| C-12 | Add a near-`A = 1` demo affordance | Preference | **Yes, value corrected** | Good idea: the existing button tests the special case but never the branch *selection*. But the suggested `A = 1 − 1e-6` sits exactly **on** the threshold and takes the other branch. Used `1 − 5e-7`. D-31. |
+| C-13 | Put the SO₂ warning on screen | Preference | **Yes** | It was the plan's own §8.2 recommendation and the critic agreed. A footnote risks looking like the site is unaware of its weakest case. D-33. |
+| C-14 | Date-stamp the "defaults unverified" note | Preference | **Yes** | Zero cost; tells a viewer whether the caveat is a week or a year stale. D-32. |
+
+**Nothing was rejected.** For the presentation, the honest framing is that the
+critique found no physics errors — it verified every derivation and worked number
+independently and they held — but it did find one error (C-03) that would have
+actively misled an implementer, one (C-04) that could have caused a wrong guard
+in the site's headline interaction, and a systematic traceability failure (C-01)
+between the two documents. Those are exactly the classes of error an author is
+worst-placed to catch in their own work.
+
+**Where the critic was itself wrong**, and how I could tell: C-06's reasoning
+about which clamp produces `R = 1.02` was backwards, and C-12's suggested value
+lands on the wrong side of a strict inequality. Both were caught by recomputing
+rather than reading. The fixes were adopted; the reasoning was corrected. This is
+worth putting in the presentation — a critique is evidence, not an oracle, and
+checking it is part of the process.
 
 ### Implementation round A — *(to be filled)*
 

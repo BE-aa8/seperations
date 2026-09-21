@@ -3,7 +3,8 @@
 **Course:** Separation Processes, University of Cincinnati (Chemical Engineering)
 **Artifact type:** "AI Project" — an interactive educational website
 **Status:** PLAN ONLY. No implementation code exists yet.
-**Document version:** 1.0
+**Document version:** 1.1 — revised after independent critique. See §11 Changelog.
+**Critique applied:** `docs/FEEDBACK.md` (Muse AI, 2026-09-21), findings C-01…C-14.
 
 ---
 
@@ -20,7 +21,7 @@ Three conventions are used throughout:
 | Marker | Meaning |
 |---|---|
 | `VERIFY` | A numeric default that must be checked against Seader, *Separation Process Principles*, Ch. 6 before the site is considered finished. It is illustrative until then. |
-| `DECISION` | A choice with a defensible alternative. Recorded in `docs/DECISIONS.md`. A critic should feel free to argue with these. |
+| `D-xx` | A choice with a defensible alternative, cross-referenced by its exact id in `docs/DECISIONS.md`. Recorded in `docs/DECISIONS.md`. A critic should feel free to argue with these. |
 | `RISK` | A place where an implementation is likely to go wrong. Cross-referenced in §8. |
 
 ### 0.1 Instructions to a critiquing model
@@ -90,7 +91,7 @@ has explicitly asked for something different. Therefore:
   required for accessibility. It is not a slider: it moves the same handle the
   pointer moves, and there is no track widget.
 
-`DECISION-01`
+`D-01`
 
 ### 1.3 Technical constraints
 
@@ -108,7 +109,7 @@ has explicitly asked for something different. Therefore:
 | Theming | Light/dark via `prefers-color-scheme` + CSS custom properties |
 | Browser target | Evergreen Chrome/Firefox/Safari, including iOS Safari |
 
-`DECISION-02` (SI only), `DECISION-03` (SVG not canvas), `DECISION-04` (no build step)
+`D-05` (SI only), `D-26` (SVG not canvas), `D-27` (no build step)
 
 ### 1.4 Out of scope for this plan
 
@@ -231,11 +232,27 @@ npm test                                                   # grades impl-a
 PHYSICS_PATH=../../impl-b/js/physics.js npm test           # grades impl-b
 ```
 
-Both implementations must pass the **same** suite, unmodified. If implementing
-model B wants to change a test, that is a finding about the plan and belongs in
+Both implementations must pass the **same** suite, unmodified. If an implementing
+model wants to change a test, that is a finding about the plan and belongs in
 `docs/DECISIONS.md` — not a patch to the test.
 
-`DECISION-05`
+**Amendment protocol for the frozen §2.4 API.** A frozen contract still needs a
+way to change, or the first genuine defect strands one implementation:
+
+1. The implementer records the problem in `docs/DECISIONS.md` as a numbered
+   entry, stating what is wrong and what the signature should be instead.
+   They do **not** edit the test or the API unilaterally.
+2. The **owner approves or rejects.** Only the owner can unfreeze the API.
+3. On approval, `docs/PLAN.md` §2.4 is bumped (v1.1 → v1.2 …) and the changelog
+   records what changed and why.
+4. **Every** implementation already built is updated to the new signature and
+   re-runs the full suite before the amendment is considered landed. An API that
+   only one implementation follows is not a shared contract.
+
+The same protocol covers a test that is wrong rather than an API that is wrong.
+`D-30`
+
+`D-07`
 
 ### 2.4 Frozen public API of `physics.js`
 
@@ -287,11 +304,37 @@ export function trayColumnHeight(inp)   // -> number   [m]
 export function gasProfilePacked(inp, zFromTop)  // -> number y at height zFromTop [m]
 export function gasProfileTray(inp, j)           // -> number y leaving actual tray j (1 = top)
 
-export function clampYOut(inp, yOutRaw) // -> {value:number, clamped:boolean, at:null|'top'|'bottom'}
-export function clampXOut(inp, xOutRaw) // -> {value:number, clamped:boolean, at:null|'min'|'max'}
+export function clampYOut(inp, yOutRaw) // -> ClampResult
+export function clampXOut(inp, xOutRaw) // -> ClampResult
 
 export function solve(inp)              // -> full derived bundle (see below)
 ```
+
+**`ClampResult`** — returned by both clamp functions. Range-end and thermodynamic
+pinch are reported **separately**, because they are not the same thing:
+
+```js
+/**
+ * @typedef {Object} ClampResult
+ * @property {number}  value    the clamped value (always within range)
+ * @property {boolean} clamped  true if the raw input was outside the range
+ * @property {null|'lower'|'upper'} at     which end of the range was hit
+ * @property {null|'top'|'bottom'}  pinch  which THERMODYNAMIC pinch, if any
+ */
+```
+
+The distinction matters. Three of the four bounds are pinches; one is not:
+
+| Function | `at` | `pinch` | What the bound is |
+|---|---|---|---|
+| `clampYOut` | `'lower'` | `'top'` | Top pinch (31): purity limit, `y_out → m·x_in` |
+| `clampYOut` | `'upper'` | `null` | Degenerate-separation guard, **not** a pinch |
+| `clampXOut` | `'upper'` | `'bottom'` | Bottom pinch (32): minimum L/V |
+| `clampXOut` | `'lower'` | `null` | The `A_max = 20` liquid-rate cap, **not** a pinch |
+
+`state.pinch` is set from `pinch`, never from `at`. Labelling the `A_max` cap or
+the degenerate-separation guard as a pinch would tell the student that
+thermodynamics forbids something that is merely a UI range limit. `D-28`
 
 `solve(inp)` returns everything a renderer needs, computed once per state change:
 
@@ -367,7 +410,7 @@ This is the resolution of an apparent tension in the brief: the two columns are
 doing the job "at the same gas and liquid flow rates" — meaning the tray column
 and the packed column share whatever `L` and `V` the current operating line
 implies, not that `L` is frozen while the user drags. Dragging `x_out` *is* the
-act of choosing the liquid rate. `DECISION-06`
+act of choosing the liquid rate. `D-09`
 
 The operating line is therefore
 
@@ -390,9 +433,26 @@ R     = Δ_in / Δ_top                                                         (
 
 `A > 1` means the liquid has more than enough capacity; the column pinches at the
 **top** (purity-limited). `A < 1` means it does not; the column pinches at the
-**bottom** (solvent-limited) and no finite height reaches the spec once the
-operating line touches equilibrium. `A = 1` is the balanced case and is a genuine
-removable singularity in every formula below — see §3.7.
+**bottom** (solvent-limited): the bottom constraint (32) is the tighter of the
+two, and as the operating line is dragged *onto* equilibrium at the bottom, `N`
+grows without bound. `A = 1` is the balanced case and is a genuine removable
+singularity in every formula below — see §3.7.
+
+> ⚠️ **`A < 1` is not infeasible, and is routinely reachable in this UI.**
+> Feasibility is **exactly** `Δ_top > 0 ∧ Δ_bot > 0` (eq. 31–32), and nothing
+> else. It does **not** depend on whether `A` is above or below 1. For any
+> feasible input with `A < 1`, Kremser returns a finite positive `N` — e.g.
+> `A = 0.9, R = 1.5` gives `N = 0.54`.
+>
+> This matters because `A < 1` is reachable on **all four presets** at the
+> documented clamp positions: at the 98% bottom clamp, `A = 0.918` on the
+> generic, acetone and SO₂ presets and `A = 0.938` on NH₃ (the corresponding
+> `A_min` values are 0.900 and 0.920). Dragging toward minimum L/V is *the*
+> headline interaction of this site, and it passes through `A < 1`.
+>
+> **Do not add an `A >= 1` feasibility guard.** It would wrongly reject valid
+> near-balanced designs precisely in the regime the site exists to demonstrate.
+> The only guards are (31), (32), and the equivalent log-argument check in §3.8.
 
 ### 3.4 Tray column: Kremser
 
@@ -415,7 +475,7 @@ N_act = ceil( N / E_o )                                                     (10)
 Z_tray = N_act · S + h_top + h_bot                                          (11)
 ```
 
-`DECISION-07`: Equation (11) uses `N_act · S`, following the brief. The common
+`D-15`: Equation (11) uses `N_act · S`, following the brief. The common
 alternative is `(N_act − 1)·S + h_top + h_bot`, since *n* trays have *n−1* gaps
 between them. Both appear in practice depending on whether the allowances are
 measured from the trays or from the tangent lines. The difference is one tray
@@ -500,9 +560,26 @@ is 4.4e-16 (Example A), 0 (Example B), 8.9e-16 (Example C).
 
 `vertices` is the polyline the renderer draws, alternating operating-line and
 equilibrium-line points, beginning at `(x_in, y_out)`. The final partial step must
-be drawn truncated at `y = y_in`, not overshooting. `fullSteps` is the integer
-count of complete risers; `N` is from (16)/(17) and **must not** be recomputed from
-`fullSteps`.
+be drawn truncated at `y = y_in`, not overshooting.
+
+**`fullSteps` is defined precisely as: the number of risers whose top lies at or
+below `y_in`.** Equivalently, `fullSteps = floor(N)` except when `N` is an exact
+integer, in which case `fullSteps = N` (the last riser lands exactly on `y_in` and
+is complete). Do not count the overshooting riser. Worked values:
+
+| Example | sequence | `fullSteps` | `N` |
+|---|---|---|---|
+| A | 2.0e-3 → 6.0e-3 → 1.4e-2 → *3.0e-2 (overshoots)* | **2** | 2.459432 |
+| B | 4.0e-3 → 8.0e-3 → 1.2e-2 → 1.6e-2 → 2.0e-2 *(exact)* | **4** | 4.000000 |
+| C | 5.0e-3 → 1.088e-2 → 1.9112e-2 → *3.06e-2 (overshoots)* | **2** | 2.952706 |
+
+A naive loop of the form `while (y < yIn) { y = step(y); k++ }` returns `k = 3` on
+Examples A and C, because it counts the transition that overshoots. That `k` is the
+number of *risers drawn*, which is `fullSteps + 1` when there is a partial step —
+useful to the renderer, but it is **not** `fullSteps`. Report both if convenient,
+but do not confuse them.
+
+`N` is from (16)/(17) and **must not** be recomputed from `fullSteps`.
 
 Hard iteration guard: **200 steps**. See §5.5 for why 200 and not 50.
 
@@ -683,7 +760,7 @@ Verified on Example A (`N = 2.4594`, `N_act = 4`): `j = 1 → 2.000e-3 = y_out`
 exactly; `j = 5 → 2.000e-2 = y_in` exactly; intermediate values
 4.126e-3, 7.381e-3, 1.237e-2.
 
-`DECISION-08` — **be honest about what (29) is.** It spreads the theoretical
+`D-14` — **be honest about what (29) is.** It spreads the theoretical
 stages evenly over the actual trays, so each actual tray delivers `N/N_act ≈ E_o`
 theoretical stages. It is an *efficiency-smearing* model, **not** a rigorous
 tray-by-tray Murphree efficiency calculation. It is chosen because (a) it is
@@ -734,9 +811,17 @@ handle moves.
 > physically plausible and internally consistent, chosen so the demo shows
 > interesting behaviour, but they have **not** been checked against Seader,
 > *Separation Process Principles*, Ch. 6. Until the project owner checks them, the
-> site must display a persistent, visible note reading: *"Default parameter values
-> are illustrative and pending verification against Seader Ch. 6."* Remove the note
-> only after verification, and record the verification in `docs/DECISIONS.md`.
+> site must display a persistent, visible, **date-stamped** note reading:
+>
+> > *"Default parameter values are illustrative, chosen 2026-09-21, and pending
+> > verification against Seader Ch. 6."*
+>
+> The date is not decoration: it tells a viewer whether the caveat is a week old
+> or a year old, which is the difference between "work in progress" and
+> "abandoned." It costs one hard-coded string. `D-32`
+>
+> Remove the note only after verification, and record the verification in
+> `docs/DECISIONS.md` §4.
 
 ### 4.1 Tray and packing defaults
 
@@ -753,7 +838,7 @@ handle moves.
 | Metal Pall rings, 38 mm | 0.60 m | `VERIFY` |
 | Structured, 250 m²/m³ | 0.40 m | `VERIFY` |
 
-`DECISION-09`: `H_OG` is treated as a **constant property of the packing choice**,
+`D-16`: `H_OG` is treated as a **constant property of the packing choice**,
 not computed from flow rates via correlations. This keeps the MVP's physics
 closed-form and hand-checkable. Making `H_OG` a function of `G`, `L`, and packing
 factor is a natural later phase and is the same seam as the diameter work (§9).
@@ -791,6 +876,23 @@ Notes attached to each preset on the site:
      rate is *why* SO₂ scrubbing is done with alkaline solution rather than plain
      water. The "bad" preset teaches something the three "good" ones cannot.
 
+**The SO₂ warning goes on screen, not in a footnote.** `D-33` When the SO₂ preset
+is selected, the demo displays a persistent, visible callout beside the y–x
+diagram, worded roughly:
+
+> **Straight-line model strained here.** Real SO₂–water equilibrium is distinctly
+> curved even at these low compositions, so the single slope `m = 40` is a fit
+> over a narrow range, not a law. Treat the stage and height numbers on this
+> preset as illustrative of the *method*, not as a design. This is the case that
+> motivates curved-equilibrium support (see the project documentation).
+
+This was §8.2's own recommendation and it is adopted. The reasoning: SO₂ is in the
+preset list precisely *because* the model strains on it (`D-04`). Leaving that in
+a footnote risks a reader concluding the site is unaware of its weakest case,
+which is much worse than the weakness itself. An explicit on-screen label converts
+it into the teaching point it was always meant to be — and models the habit of
+stating a model's domain of validity, which is the more transferable lesson.
+
 ### 4.3 The `A ≈ 1` demonstration preset
 
 In addition to the four systems, the settings drawer offers a **"Balanced (A = 1)"**
@@ -799,6 +901,30 @@ x_out = 0.016`. This is Example B of §7: `N = N_OG = 4` exactly, `HETP = H_OG`
 exactly, the NTU shaded area is a perfect rectangle, and the packed composition
 profile is a straight line. It exists so that the `A = 1` special case — the most
 error-prone part of the physics — is one click away for a demo or a grader.
+
+**A second button, "Near-balanced (A = 1 − 5×10⁻⁷)"**, sits beside it and sets
+`L = 99.99995`, everything else unchanged. `D-31`
+
+Note the exact value matters. `L = 99.9999` gives `|A − 1| = 1e-6` *exactly*,
+which fails the strict `< 1e-6` test in §3.8 and takes the `log1p` branch — so it
+would not exercise what this button is for. `L = 99.99995` gives
+`|A − 1| = 5e-7`, comfortably inside the series band. Verified.
+
+The two buttons test *different* things, which is the point:
+
+| | `A = 1` exactly | `A = 1 − 5×10⁻⁷` |
+|---|---|---|
+| Which §3.8 path runs | series branch | series branch, well inside its threshold |
+| Naive form's behaviour there | **`NaN`** (0/0) | finite, but losing precision |
+| What it would expose | a missing special case | a *misplaced* threshold — a branch set at, say, `1e-9` falls through to the naive form here |
+| Expected `N` | 4.000000000 | 4.000005000 |
+
+A grader clicking only "Balanced" exercises the special case but never the branch
+*selection*. Both must display `N = N_OG = 4.000` and `HETP = H_OG = 0.600 m` to
+the shown precision, with no visible jump between them — a discontinuity means
+the threshold is misplaced. (For scale: at `A = 1 − 1e-8` the branched form gives
+4.000000100 and the naive form 4.000000060 — they part company in the 8th digit.)
+`stability.test.mjs` covers this in Node; these buttons put it in the demo path.
 
 ### 4.4 Axis autoscaling
 
@@ -866,7 +992,7 @@ notation below 1e-3. Do not let the SO₂ preset render as a column of `0.000`.
 | **Meaning** | "What is the gas composition at this elevation?" |
 | **Reads out** | Two values: tray-column `y` at that height (discrete — it jumps between trays) and packed-column `y` (smooth). Plus the height itself, and which tray number the probe is on. |
 | **Also updates** | A marker on the composition-vs-height overlay plot (§5.3). |
-| **Edge behaviour** | The two columns generally have **different** total heights. Above the shorter column's top, its readout shows "— (above column)" rather than extrapolating. This asymmetry is the point of the whole site; do not hide it by normalising the height axes. `DECISION-10` |
+| **Edge behaviour** | The two columns generally have **different** total heights. Above the shorter column's top, its readout shows "— (above column)" rather than extrapolating. This asymmetry is the point of the whole site; do not hide it by normalising the height axes. `D-21` |
 
 ### 5.2 Clamping rules
 
@@ -883,9 +1009,9 @@ Required flow, every time:
 pointermove
   → drag.js converts screen → data coordinates
   → state.setYOut(rawValue)
-      → physics.clampYOut(inp, rawValue) → {value, clamped, at}
+      → physics.clampYOut(inp, rawValue) → {value, clamped, at, pinch}
       → state.yOut = value              ← the CLAMPED value is stored
-      → state.pinch = clamped ? at : null
+      → state.pinch = pinch          ← from `pinch`, NEVER from `at` (see §2.4)
       → derived = physics.solve(state)
       → notify subscribers
   → renderers draw from `derived` only
@@ -976,7 +1102,7 @@ Verified worst cases:
 
 `ε = 0.02` is chosen because approaching the pinch closely is pedagogically the
 whole point — the student should see the tray count run away. The cost is that the
-tray renderer must cope with up to 70 trays. `DECISION-11`
+tray renderer must cope with up to 70 trays. `D-11`
 
 Therefore: **above 40 trays, the tray column switches to a compressed
 representation** — draw the top 8 and bottom 8 trays explicitly with a break
@@ -1061,9 +1187,11 @@ partial step); tray column drawing with trays added/removed live; readouts for
 
 **Acceptance (hand-checkable, generic preset):**
 > Set `y_out` = 0.002 and `x_out` = 0.009. The panel must read **N = 2.46**,
-> **actual trays = 4**, **tray height = 4.40 m**. The staircase must show **3**
-> complete risers with the third truncated at `y = 0.020`, and the riser tops must
-> fall at y = 2.0e-3 → 6.0e-3 → 1.4e-2 → 2.0e-2 (read them off the diagram).
+> **actual trays = 4**, **tray height = 4.40 m**. The staircase must show **2
+> complete risers plus a third truncated** at `y = 0.020` (consistent with
+> `N = 2.459432`: two whole stages and 0.459 of a third), and the riser tops must
+> fall at y = 2.0e-3 → 6.0e-3 → 1.4e-2, with the truncated third reaching
+> y = 2.0e-2 (read them off the diagram).
 > Count the trays drawn in the column: there must be exactly 4.
 
 > Switch `E_o` to 1.0: actual trays must become **3** (`ceil(2.4594) = 3`) and the
@@ -1223,9 +1351,14 @@ top), for reading off the diagram by hand:
 y₁ = 2.0e-3   y₂ = 6.0e-3   y₃ = 1.4e-2   y₄ = 3.0e-2 (overshoots y_in = 2.0e-2)
 ```
 
-Three complete risers; the third is truncated at `y_in`. Check by hand with
-eq. (12): `y₂ = 0.002 + 2(0.002 − 0) = 0.006` ✓;
-`y₃ = 0.002 + 2(0.006) = 0.014` ✓; `y₄ = 0.002 + 2(0.014) = 0.030` ✓.
+**Two complete risers, plus a third truncated at `y_in`.** The first two land at
+6.0e-3 and 1.4e-2, both below `y_in = 2.0e-2`; the third would reach 3.0e-2, so it
+is cut off at `y_in`. This is consistent with `N = 2.459432` (two whole stages plus
+0.459 of a third) and with the naive value `2.375 = 2 + 0.375`. Therefore
+`fullSteps = 2`, **not** 3 — a correct implementation reports two complete risers.
+
+Check by hand with eq. (12): `y₂ = 0.002 + 2(0.002 − 0) = 0.006` ✓;
+`y₃ = 0.002 + 2(0.006) = 0.014` ✓; `y₄ = 0.002 + 2(0.014) = 0.030` ✓ (overshoots).
 
 **Actual-tray gas profile** (eq. 29–30, `s(j) = 1 + (j−1)(2.4594/4)`):
 
@@ -1296,8 +1429,10 @@ constant, and the stages are evenly spaced.
 | `(L/V)_min`, `A_min` | 0.684932, 0.856164 |
 | `L/V ÷ (L/V)min` | 1.635 |
 
-**Staircase:** `y = 5.0e-3, 1.088e-2, 1.9112e-2, 3.06368e-2` — three complete
-risers, third truncated. Hand check via eq. (12):
+**Staircase:** `y = 5.0e-3, 1.088e-2, 1.9112e-2, 3.06368e-2` — **two complete
+risers** (1.088e-2 and 1.9112e-2, both below `y_in = 3.0e-2`), plus a third
+truncated at `y_in`. Consistent with `N = 2.952706`, so `fullSteps = 2`. Hand
+check via eq. (12):
 `y₂ = 0.005 + 1.4(0.005 − 0.0008) = 0.005 + 0.00588 = 0.01088` ✓.
 
 This example exercises `x_in ≠ 0` (which shifts the entire equilibrium reference),
@@ -1317,9 +1452,10 @@ assumption), and an `A` that is neither 1 nor a round number.
 | Test file | Asserts | Tolerance |
 |---|---|---|
 | `kremser.test.mjs` | `theoreticalStages` matches §7 for A, B, C | 1e-12 rel |
-| `staircase.test.mjs` | `stepStaircase().N === theoreticalStages()` for A, B, C **and** for a sweep of `A ∈ [0.5, 5]` × `R ∈ [2, 100]` | 1e-12 rel |
+| `staircase.test.mjs` | `stepStaircase().N === theoreticalStages()` for A, B, C **and** for a sweep of `A ∈ [0.5, 20]` × `R ∈ [1.02, 100]` (see note below) | 1e-12 rel |
+| | `fullSteps` matches §3.5.3: 2 (A), 4 (B), 2 (C), and `fullSteps === Math.floor(N)` whenever `N` is not an integer, across the sweep | exact |
 | | `vertices` alternate operating/equilibrium and start at `(x_in, y_out)` | — |
-| | the *naive* rule is explicitly computed and asserted **different** on A and C (a regression guard that the correct rule is in use) | — |
+| | the *naive* rule is computed and asserted equal to the **pinned constants** `2.375000` (A) and `2.944745` (C), and asserted **different** from `N` — a regression guard that the correct rule is in use | 1e-6 abs |
 | `ntu.test.mjs` | `ntuAnalytic` matches §7 | 1e-12 rel |
 | | `ntuAnalytic ≈ ntuNumeric(n=1000)` (Simpson) | 1e-9 rel |
 | | `ntuAnalytic ≈ ntuLogMean` | 1e-12 rel |
@@ -1332,6 +1468,13 @@ assumption), and an `A` that is neither 1 nor a round number.
 | | `feasibility()` is false exactly when `Δ_top ≤ 0` or `Δ_bot ≤ 0` | — |
 | | the log argument `1 + b(R−1) > 0` holds for every clamped input in a 10⁴-point sweep | — |
 | | nothing returns `NaN` for any clamped input in that sweep | — |
+| | **`at` vs `pinch` per §2.4**: `clampYOut` upper and `clampXOut` lower return `pinch === null`; the other two return `'top'`/`'bottom'` | exact |
+| | **`A < 1` is feasible** (C-04): for each of the four presets, `x_out` at the 98% clamp gives `A < 1` and `feasibility().feasible === true` | exact |
+| | **log-guard ↔ pinch equivalence** (C-10): sweeping `x_out → y_in/m`, `1 + b(R−1) → 0⁺` monotonically, and `feasibility().feasible` flips to `false` exactly at `Δ_bot ≤ 0` — not before | exact |
+| `solve.test.mjs` | `solve(inp).N === theoreticalStages(inp)`, `.NOG === ntuAnalytic(inp)`, `.Z === packedHeight(inp)`, `.HETP === hetp(inp)`, `.nActual === actualTrays(inp)`, `.ZTray === trayColumnHeight(inp)` | exact |
+| | `solve(inp).staircase.N === solve(inp).N` | exact |
+| | no field of the bundle is `NaN`, `null` (except documented nullables) or `undefined` anywhere in the 10⁴-point clamp sweep | — |
+| | `axes.xMax`/`axes.yMax` bracket all four presets' terminal points | — |
 | `profiles.test.mjs` | `gasProfilePacked(0) === y_out`, `gasProfilePacked(Z) === y_in` | 1e-10 rel |
 | | packed profile is monotonically increasing from top to bottom | — |
 | | `gasProfileTray(1) === y_out`, `gasProfileTray(N_act+1) === y_in` | 1e-10 rel |
@@ -1339,6 +1482,23 @@ assumption), and an `A` that is neither 1 nor a round number.
 | `stability.test.mjs` | `A = 1 ± 10^-k` for k = 2…12 gives finite, monotone, continuous `N`, `N_OG`, `g` | — |
 | | `A = 1` exactly gives exactly `R − 1`, not `NaN` | exact |
 | | branched vs. naive agree to 1e-9 across `A ∈ [0.99, 1.01] \ {1}` | 1e-9 |
+
+**Note on the sweep ranges.** `R ∈ [1.02, 100]` and `A ∈ [0.5, 20]` are chosen to
+cover what the UI can actually reach, which is wider than it first appears:
+
+- **`R = 1.0204` is reachable** — it occurs at the *upper* `y_out` clamp
+  (`y_out = y_in − 0.02·Δ_in`, i.e. minimum separation, `N < 1`). Note this is the
+  **opposite** end from the pinch: approaching the *top pinch* drives `R → 50`,
+  not toward 1. Both ends need covering, and a sweep starting at `R = 2` misses
+  the low end entirely.
+- **`A = 20` is reachable** — it is exactly Handle 2's lower bound
+  (`A_max = 20`, §5.1), and Phase 7's numeric inputs can approach it.
+- **`A < 1` is reachable** on all four presets (§3.3), so the sweep must extend
+  below 1 — hence `A ∈ [0.5, …]`, not `[1, …]`.
+
+The sweep must include points where `A` crosses each `§3.8` branch threshold
+(`1 ± 1e-6`, `1 ± 1e-8`, `1 ± 1e-5`), since the branch boundaries are where the
+stability work actually happens.
 
 **An honest note on the `N × HETP = Z` check.** The brief asks for this as a
 verification. It must be implemented, and it must be shown on the site — but it is
@@ -1414,7 +1574,7 @@ everybody demos.
 **`RISK-07` — `ceil` applied in the wrong place, and the height convention.**
 *The error:* `ceil` before dividing by `E_o`, or `ceil(N)/E_o`, or silently
 choosing `(N_act − 1)·S`.
-*Note:* the height convention is a genuine `DECISION-07`, not a bug — but it must
+*Note:* the height convention is a genuine `D-15`, not a bug — but it must
 be stated, not assumed. A critic may reasonably prefer the other one.
 *Caught by:* Phase 4's explicit `E_o = 1.0 → 3 trays, 3.80 m` check.
 
@@ -1458,7 +1618,7 @@ thing that makes the future phases in §9 require a rewrite rather than an addit
    `m` for all four systems — particularly SO₂, where the non-linearity means any
    single `m` is a fit over a chosen range, and the choice of range should be
    stated.
-2. **Tray height convention** (`DECISION-07`): `N_act·S` per the brief, or
+2. **Tray height convention** (`D-15`): `N_act·S` per the brief, or
    `(N_act − 1)·S`? One tray spacing of difference.
 3. Should the SO₂ preset display an explicit warning that the straight-line model
    is a poor fit for it, or is the footnote in §4.2 enough? Recommendation: an
@@ -1541,6 +1701,55 @@ abstraction is in the wrong place.
 - [ ] All six required assignment sections exist and are fillable
 - [ ] Light and dark both readable
 - [ ] Deployed to Netlify from the repo root with no build command
+- [ ] **`impl-a` and `impl-b` were implemented by *different* models.** `D-29` If one
+      model built both, `model-comparison.html` and `DECISIONS.md` §3.2 have
+      nothing to compare and the assignment's comparison requirement is unmet.
+      Record which model built which in `DECISIONS.md` §1.
 - [ ] `docs/DECISIONS.md` current, including the model-comparison table
 - [ ] Every §4 default either verified against Seader Ch. 6 or still flagged
       on screen as unverified
+
+---
+
+## 11. Changelog
+
+### v1.1 — 2026-09-21 — critique applied
+
+Reviewed by an independent model (Muse AI); findings in `docs/FEEDBACK.md`.
+The critic verified the physics derivations and all three worked examples by
+independent calculation and found them correct — no equation in §3 changed in
+this revision. The findings were cross-reference hygiene, three genuine wording
+errors, and test-coverage gaps.
+
+All 14 findings accepted. Two were implemented differently from the critic's
+literal suggestion; those departures are noted below and logged in
+`docs/DECISIONS.md`.
+
+| ID | Finding | Disposition | Sections touched |
+|---|---|---|---|
+| C-01 | 8 of 10 `DECISION-xx` markers pointed at the wrong `D-xx` entry | **Accepted.** All markers renamed to the `D-xx` form and repointed at the correct entries, so plan and log now share one vocabulary. | §0, §1.2, §1.3, §2.3, §3.2, §3.4, §3.9, §4.1, §5.1, §5.5, §8.1, §8.2 |
+| C-02 | `DECISION-03` (SVG not canvas) and `DECISION-04` (no build step) were marked but never logged | **Accepted.** Logged as `D-26` and `D-27`. | §1.3 |
+| C-03 | "Three complete risers" is self-contradictory; the Phase 4 acceptance criterion would have **failed a correct implementation** | **Accepted.** Confirmed by independent re-stepping: Examples A and C have **2 complete risers + 1 truncated**, not 3. Example B genuinely has 4 (its last riser lands exactly on `y_in`). §3.5.3 now defines `fullSteps` precisely, tabulates it for all three examples, and warns that the obvious `while (y < yIn)` loop returns `fullSteps + 1`. | §3.5.3, §6 Phase 4, §7.1, §7.3 |
+| C-04 | §3.3 prose invited reading `A < 1` as infeasible | **Accepted, and the risk was larger than reported.** `A < 1` is reachable on **all four** presets at the documented clamps (A = 0.918 generic/acetone/SO₂, 0.938 NH₃). Added an explicit callout: feasibility is `Δ_top > 0 ∧ Δ_bot > 0` only, and **do not add an `A >= 1` guard**. | §3.3 |
+| C-05 | Clamp functions returned inconsistent `at` enums (`'top'\|'bottom'` vs `'min'\|'max'`) | **Accepted, implemented differently.** The critic proposed unifying on `'top'\|'bottom'`; that would mislabel `clampXOut`'s lower bound — the `A_max = 20` liquid-rate cap — as a thermodynamic pinch, which it is not. Instead both now return `{value, clamped, at:'lower'\|'upper', pinch:null\|'top'\|'bottom'}`, separating range-end from pinch, with a table of which bound is which. `D-28` | §2.4, §5.2 |
+| C-06 | Test sweep `A ∈ [0.5, 5] × R ∈ [2, 100]` missed reachable regimes | **Accepted, rationale corrected.** Widened to `A ∈ [0.5, 20]`, `R ∈ [1.02, 100]`. The critic located `R = 1.0204` "near the pinch"; it is in fact at the *opposite* end — the minimum-separation clamp. Approaching the top pinch drives `R → 50`. Both ends now covered, and the note explains which is which. | §7.5 |
+| C-07 | Nothing required `impl-a` and `impl-b` to come from different models | **Accepted.** Added to §10 as `D-29`; without it the comparison page has nothing to compare. | §10 |
+| C-08 | No amendment process for the frozen §2.4 API | **Accepted.** Four-step protocol added: implementer logs, owner approves, version bumps, **all** existing implementations update and re-run the suite. `D-30` | §2.3 |
+| C-09 | `solve()` — the one function renderers consume — had no direct test | **Accepted.** New `solve.test.mjs` asserting bundle-vs-function agreement, internal consistency, and no `NaN` across the clamp sweep. | §2.1, §7.5 |
+| C-10 | The log-guard ↔ pinch equivalence was asserted but untested | **Accepted.** Added to `clamping.test.mjs`. | §7.5 |
+| C-11 | Pin the naive-rule regression values explicitly | **Accepted.** `2.375000` (A) and `2.944745` (C) are now asserted as named constants, not merely asserted different. | §7.5 |
+| C-12 | Add a near-`A = 1` demo affordance | **Accepted, value corrected.** A "Near-balanced" button is added — but at `A = 1 − 5×10⁻⁷` (`L = 99.99995`), not `1 − 10⁻⁶`. `L = 99.9999` gives `\|A − 1\| = 1e-6` *exactly*, which fails the strict `< 1e-6` test and takes the `log1p` branch, so it would not exercise the branch this button exists to exercise. `D-31` | §4.3 |
+| C-13 | Put the SO₂ straight-line warning on screen | **Accepted.** Was §8.2's own recommendation. Full callout text specified. `D-33` | §4.2 |
+| C-14 | Date-stamp the "defaults unverified" note | **Accepted.** `D-32` | §4 |
+
+**What did not change.** No equation, no worked number, no phase boundary, and no
+part of the verification strategy. The critic explicitly checked and endorsed the
+Kremser ↔ staircase identity proof, the §7.5 honesty note about `N × HETP = Z`
+being an identity, the pinch-decoupling argument in §3.10, the efficiency-smearing
+disclosure in §3.9, the `RISK-04` double-reciprocal warning, Phase 1 as a real
+gate, and the axis autoscale formulae.
+
+### v1.0 — 2026-09-21 — initial plan
+
+Written before any implementation code. All physics verified numerically prior to
+being written down.
