@@ -854,7 +854,8 @@ All four are selectable from a dropdown. All values `VERIFY`.
 | `x_in` | 0.0 | 0.0005 | 0.0 | 0.0 |
 | `y_out` (initial) | 0.0020 | 0.0020 | 0.0015 | 0.00050 |
 | `V` [kmol/h] | 100 | 100 | 120 | 100 |
-| `L` (initial) [kmol/h] | 200 | 128 | 300 | 6000 |
+| initial `L/V` | 2.000 | 1.275 | 2.500 | 60.00 |
+| &rarr; `L` (initial) [kmol/h] | 200 | 127.5 | 300 | 6000 |
 | initial `A` | 2.00 | 1.50 | 1.39 | 1.50 |
 | Conditions | — | 20 °C, 1 atm | 25 °C, 1 atm | 25 °C, 1 atm |
 
@@ -1451,12 +1452,12 @@ assumption), and an `A` that is neither 1 nor a round number.
 
 | Test file | Asserts | Tolerance |
 |---|---|---|
-| `kremser.test.mjs` | `theoreticalStages` matches §7 for A, B, C | 1e-12 rel |
+| `kremser.test.mjs` | `theoreticalStages` matches the **published** §7 values for A, B, C | 1e-6 rel (see note) |
 | `staircase.test.mjs` | `stepStaircase().N === theoreticalStages()` for A, B, C **and** for a sweep of `A ∈ [0.5, 20]` × `R ∈ [1.02, 100]` (see note below) | 1e-12 rel |
 | | `fullSteps` matches §3.5.3: 2 (A), 4 (B), 2 (C), and `fullSteps === Math.floor(N)` whenever `N` is not an integer, across the sweep | exact |
 | | `vertices` alternate operating/equilibrium and start at `(x_in, y_out)` | — |
 | | the *naive* rule is computed and asserted equal to the **pinned constants** `2.375000` (A) and `2.944745` (C), and asserted **different** from `N` — a regression guard that the correct rule is in use | 1e-6 abs |
-| `ntu.test.mjs` | `ntuAnalytic` matches §7 | 1e-12 rel |
+| `ntu.test.mjs` | `ntuAnalytic` matches the **published** §7 values | 1e-6 rel (see note) |
 | | `ntuAnalytic ≈ ntuNumeric(n=1000)` (Simpson) | 1e-9 rel |
 | | `ntuAnalytic ≈ ntuLogMean` | 1e-12 rel |
 | | `ntuNumeric` converges: error at n=1000 < error at n=100 | — |
@@ -1482,6 +1483,18 @@ assumption), and an `A` that is neither 1 nor a round number.
 | `stability.test.mjs` | `A = 1 ± 10^-k` for k = 2…12 gives finite, monotone, continuous `N`, `N_OG`, `g` | — |
 | | `A = 1` exactly gives exactly `R − 1`, not `NaN` | exact |
 | | branched vs. naive agree to 1e-9 across `A ∈ [0.99, 1.01] \ {1}` | 1e-9 |
+
+**Note on tolerances.** Two different things are being checked, and they deserve
+different tolerances:
+
+- **Against the published §7 values — `1e-6` relative.** Those numbers are
+  printed to six decimal places, so they carry about 5e-7 of absolute precision.
+  Asserting them to `1e-12` would be asserting against digits the document does
+  not contain. This check answers "does the code agree with the document?"
+- **Between two independent routes — `1e-12` relative.** Staircase vs. Kremser,
+  and Simpson/log-mean vs. Colburn, are computed at full double precision inside
+  the suite, so they can and should be pinned hard. This check answers "is the
+  physics right?" — and it is the one with teeth.
 
 **Note on the sweep ranges.** `R ∈ [1.02, 100]` and `A ∈ [0.5, 20]` are chosen to
 cover what the UI can actually reach, which is wider than it first appears:
