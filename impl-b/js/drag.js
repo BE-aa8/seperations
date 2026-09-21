@@ -16,6 +16,7 @@ export function makeDraggable({
   onStart = () => {},
   onEnd = () => {},
   nudgeStep = 0.001,
+  getNudgeStep = null,
   shiftFactor = 10
 }) {
   let active = false;
@@ -106,7 +107,7 @@ export function makeDraggable({
     const amount =
       (positive ? 1 : -1) *
       (event.shiftKey ? shiftFactor : 1) *
-      nudgeStep;
+      (typeof getNudgeStep === "function" ? getNudgeStep() : nudgeStep);
 
     onMove(getData() + amount, { keyboard: true });
   });
