@@ -36,8 +36,8 @@ export function mount(root) {
     }),
     tab: element("rect", {
       class: "probe-tab",
-      width: 18,
-      height: 34,
+      width: 30,
+      height: 44,
       rx: 5,
       tabindex: "0",
       role: "slider",
@@ -212,8 +212,8 @@ export function update(derived) {
   probeNodes.rule.setAttribute("y1", zToSvg(probeZ));
   probeNodes.rule.setAttribute("y2", zToSvg(probeZ));
 
-  probeNodes.tab.setAttribute("x", 351);
-  probeNodes.tab.setAttribute("y", zToSvg(probeZ) - 17);
+  probeNodes.tab.setAttribute("x", 345);
+  probeNodes.tab.setAttribute("y", zToSvg(probeZ) - 22);
   probeNodes.tab.setAttribute(
     "aria-valuetext",
     `height probe = ${probeZ.toFixed(3)} m`
