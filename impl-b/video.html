@@ -1,1 +1,64 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Video · Absorption Explorer</title><link rel="stylesheet" href="css/theme.css"><link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/layout.css"></head><body><header class="site-header"><a class="brand" href="index.html">Absorption Explorer</a><nav><a href="index.html">Demo</a><a href="video.html">Video</a><a href="transcript.html">Transcript</a><a href="docs.html">Docs</a><a href="model-comparison.html">Model comparison</a><a href="references.html">References</a></nav></header><main class="doc-page"><p class="eyebrow">PRESENTATION</p><h1>Project video</h1><article><div style="aspect-ratio:16/9;background:var(--surface2);display:grid;place-items:center">VIDEO_ID_PLACEHOLDER — replace with the final YouTube embed.</div><p>Final presentation should introduce the educational question and demonstrate the direct manipulation demo.</p></article><div class="fill">FILL IN — final caption, presenter information, and video ID.</div></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project Video · Absorption Explorer</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">Absorption Explorer</a>
+    <nav aria-label="Site navigation">
+      <a href="index.html">Demo</a>
+      <a href="video.html">Video</a>
+      <a href="transcript.html">Transcript</a>
+      <a href="docs.html">Docs</a>
+      <a href="model-comparison.html">Model comparison</a>
+      <a href="references.html">References</a>
+    </nav>
+  </header>
+
+  <main class="doc-page">
+    <p class="eyebrow">Presentation</p>
+    <h1>Project video</h1>
+
+    <article>
+      <h2>Final presentation</h2>
+      <p>
+        The final video should explain the teaching idea, show the y–x interaction,
+        demonstrate the tray/packed contrast, and discuss the modeling assumptions.
+      </p>
+
+      <div class="embed" aria-label="YouTube video placeholder">
+        <iframe
+          id="videoFrame"
+          title="Project presentation video"
+          loading="lazy"
+          allowfullscreen></iframe>
+      </div>
+
+      <p class="muted">
+        <strong>Editable constant:</strong> <code>VIDEO_ID</code> in the script below.
+        Replace the placeholder only after the final presentation is uploaded.
+      </p>
+    </article>
+
+    <article>
+      <h2>Caption</h2>
+      <!-- FILL IN — final caption, presenter name, course, and date. -->
+      <div class="fill">
+        FILL IN — Add the final video caption and presentation metadata.
+      </div>
+    </article>
+  </main>
+
+  <script>
+    const VIDEO_ID = "VIDEO_ID_PLACEHOLDER";
+    const frame = document.getElementById("videoFrame");
+    frame.src = `https://www.youtube-nocookie.com/embed/${VIDEO_ID}`;
+  </script>
+</body>
+</html>
