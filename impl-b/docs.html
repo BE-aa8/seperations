@@ -1,1 +1,228 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Documentation · Absorption Explorer</title><link rel="stylesheet" href="css/theme.css"><link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/layout.css"></head><body><header class="site-header"><a class="brand" href="index.html">Absorption Explorer</a><nav><a href="index.html">Demo</a><a href="video.html">Video</a><a href="transcript.html">Transcript</a><a href="docs.html">Docs</a><a href="model-comparison.html">Model comparison</a><a href="references.html">References</a></nav></header><main class="doc-page"><p class="eyebrow">PROJECT DOCUMENTATION</p><h1>How the explorer works</h1><article><h2>Overview</h2><p>This tool compares an equilibrium-stage tray absorber with a continuous packed absorber doing the same dilute gas absorption duty. Two graphical endpoints choose gas outlet purity and liquid rate; the mass balance derives L/V.</p></article><article><h2>Framing: this is an AI project exploring AI capabilities</h2><p>The physics is separated from rendering and interaction so two independent implementations can be compared.</p><div class="fill">FILL IN — student framing.</div></article><article><h2>Process</h2><p>The written plan freezes the physics API and acceptance criteria.</p><div class="fill">FILL IN — AI models, tools, prompts, and student edits.</div></article><article><h2>Planning and iteration</h2><p>Physics lives in a pure module; state owns clamping; renderers consume the derived bundle.</p><div class="fill">FILL IN — student guidance and iteration.</div></article><article><h2>Key technical content</h2><h3>Tray absorption</h3><p>Kremser gives the theoretical stage count. The fractional stage is logarithmic because the stage recursion is geometric.</p><h3>Packed absorption</h3><p>N_OG is the integral of 1/(y − y*) and Z = H_OG N_OG.</p><h3>Trays versus packing</h3><p>Trays create a discrete staircase; packing creates a smooth composition profile.</p></article><article><h2>What I learned, and what I want to learn next</h2><div class="fill">FILL IN — reflection.</div></article></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Technical Documentation · Absorption Explorer</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">Absorption Explorer</a>
+    <nav aria-label="Site navigation">
+      <a href="index.html">Demo</a>
+      <a href="video.html">Video</a>
+      <a href="transcript.html">Transcript</a>
+      <a href="docs.html">Docs</a>
+      <a href="model-comparison.html">Model comparison</a>
+      <a href="references.html">References</a>
+    </nav>
+  </header>
+
+  <main class="doc-page">
+    <p class="eyebrow">Technical documentation</p>
+    <h1>How the explorer works</h1>
+
+    <article>
+      <h2>1. Overview</h2>
+      <p>
+        The explorer compares a tray column and a packed column doing the same
+        dilute gas-absorption duty. The four terminal compositions are visible on
+        one y–x diagram. The user directly drags y_out and x_out; the overall
+        solute balance then determines the liquid-to-gas ratio and liquid flow.
+      </p>
+      <p>
+        The two designs are deliberately presented as two descriptions of the
+        same separation. The tray side resolves the duty into equilibrium stages;
+        the packed side resolves it into overall gas transfer units.
+      </p>
+    </article>
+
+    <article>
+      <h2>2. Model assumptions</h2>
+      <ol>
+        <li>Dilute solute: mole fractions are used and L and V remain constant.</li>
+        <li>The system is isothermal and isobaric.</li>
+        <li>Equilibrium is represented by a straight line, y* = m·x, through the origin.</li>
+        <li>The contacting is counter-current: gas moves upward and liquid moves downward.</li>
+        <li>The tray design uses equilibrium stages corrected by one overall efficiency E_o.</li>
+        <li>H_OG is treated as constant over the packed height.</li>
+      </ol>
+      <p>
+        These assumptions are what make the MVP closed-form and hand-checkable.
+        The SO₂ preset intentionally demonstrates where the straight-line assumption
+        becomes a weak representation of the real system.
+      </p>
+    </article>
+
+    <article>
+      <h2>3. Why L is derived, not entered</h2>
+      <p>
+        The overall solute balance is
+        <strong>V(y_in − y_out) = L(x_out − x_in)</strong>.
+        Therefore
+        <strong>L/V = (y_in − y_out)/(x_out − x_in)</strong>.
+      </p>
+      <p>
+        The interface is intentionally built around the two dragged terminal
+        points. There is no independent L input. This is central to the teaching
+        interaction: moving x_out is the act of selecting the liquid rate.
+      </p>
+    </article>
+
+    <article>
+      <h2>4. Operating and equilibrium lines</h2>
+      <p>
+        The equilibrium relation is <strong>y* = m·x</strong>. The operating line is
+        <strong>y = (L/V)(x − x_in) + y_out</strong>.
+        At the current endpoints it passes through
+        (x_in, y_out) and (x_out, y_in).
+      </p>
+      <p>
+        For absorption the operating line lies above the equilibrium line when the
+        duty is feasible. The two endpoint driving forces are
+        <strong>Δ_top = y_out − m·x_in</strong> and
+        <strong>Δ_bot = y_in − m·x_out</strong>.
+      </p>
+      <p>
+        The MVP treats the separation as feasible exactly when both endpoint
+        driving forces are positive. That means <strong>A &lt; 1 can be feasible</strong>;
+        an A ≥ 1 rule would add a constraint that the model does not specify.
+      </p>
+    </article>
+
+    <article>
+      <h2>5. Tray-column calculation</h2>
+      <h3>Kremser stage count</h3>
+      <p>
+        Define the absorption factor
+        <strong>A = (L/V)/m</strong> and
+        <strong>R = (y_in − m·x_in)/(y_out − m·x_in)</strong>.
+        For A ≠ 1 the theoretical stage count is
+        <strong>N = ln[1 + (A−1)R]/ln(A) − 1</strong>.
+        At A = 1 the limiting result is <strong>N = R − 1</strong>.
+      </p>
+      <h3>Fractional-stage staircase</h3>
+      <p>
+        A stage is one horizontal move to equilibrium followed by a vertical move
+        to the operating line. The stage recursion is geometric away from A = 1.
+        Therefore the last fractional stage is logarithmic, not a linear interpolation
+        of y. The implementation computes N analytically and draws the final staircase
+        segment truncated at y_in.
+      </p>
+      <h3>Actual trays and height</h3>
+      <p>
+        Actual trays are
+        <strong>N_act = ceil(N/E_o)</strong>, followed by
+        <strong>Z_tray = N_act·S + h_top + h_bot</strong>.
+        The current project intentionally uses this as a convention for installed
+        height; it is not presented as a universal geometric truth.
+      </p>
+    </article>
+
+    <article>
+      <h2>6. Packed-column calculation</h2>
+      <p>
+        The overall-gas transfer-unit number is
+        <strong>N_OG = ∫ dy/(y − y*)</strong>.
+        Substituting the linear operating relation gives a closed-form Colburn
+        expression. The packed height is simply
+        <strong>Z = H_OG·N_OG</strong>.
+      </p>
+      <p>
+        The implementation also evaluates the same integral with Simpson's rule and
+        with a log-mean driving force calculation. These are cross-checks against
+        the analytic expression rather than alternative user inputs.
+      </p>
+    </article>
+
+    <article>
+      <h2>7. HETP connection</h2>
+      <p>
+        Because the analytic expressions share the same numerator,
+        <strong>HETP = H_OG·g(A)</strong>, where
+        <strong>g(A) = A ln(A)/(A−1)</strong>.
+        Near A = 1, the implementation uses the prescribed series
+        <strong>g ≈ 1 + (A−1)/2 − (A−1)²/6</strong>.
+      </p>
+      <p>
+        At A = 1, HETP = H_OG. The balanced demo is included specifically so that
+        the removable singularity and its physical interpretation can be seen directly.
+      </p>
+    </article>
+
+    <article>
+      <h2>8. Clamping and pinches</h2>
+      <p>
+        State owns every clamp. The y_out lower bound is the top thermodynamic pinch;
+        the x_out upper bound is the bottom thermodynamic pinch. The opposite two
+        bounds are UI range limits rather than thermodynamic pinches.
+      </p>
+      <p>
+        That distinction matters pedagogically. The visible drawing and numerical
+        state always use the same already-clamped values.
+      </p>
+    </article>
+
+    <article>
+      <h2>9. Staged versus continuous contacting</h2>
+      <p>
+        A tray column resolves the absorber into discrete contacting stages. Its
+        composition profile therefore has jumps between tray levels, and the
+        installed tray count is an integer. A packed column represents differential
+        mass transfer continuously along the bed, so its profile varies smoothly and
+        its height is continuous.
+      </p>
+      <p>
+        The project does not claim that one contacting method is universally preferred.
+        Selection depends on the wider process design and on constraints not included
+        in this MVP. Future phase F-3 in the project plan proposes a separate teaching
+        exercise using scenarios such as fouling, low pressure drop, vacuum operation,
+        side draws, and turndown.
+      </p>
+    </article>
+
+    <article>
+      <h2>10. The SO₂ teaching case</h2>
+      <p>
+        SO₂–air–water is included to show a model limitation. The preset uses a large
+        m value and an illustrative straight-line fit, while the real equilibrium is
+        curved over appreciable composition ranges. The site therefore presents the
+        SO₂ numbers as illustrative of the method rather than as a process design.
+      </p>
+    </article>
+
+    <article>
+      <h2>11. What I learned</h2>
+      <!-- FILL IN — personal reflection. -->
+      <div class="fill">
+        FILL IN — Describe what you learned from building, checking, and presenting
+        the tool, and what you want to study next.
+      </div>
+    </article>
+
+    <article>
+      <h2>12. AI-project framing and process</h2>
+      <p>
+        This is an AI project exploring the capabilities and limits of AI-generated
+        technical software. The implementation deliberately separates physics,
+        state, interaction, and rendering so that the artifact can be compared
+        against an independently produced implementation.
+      </p>
+      <!-- FILL IN — owner-specific process narrative and prompt links. -->
+      <div class="fill">
+        FILL IN — Record the AI models, tools, prompts, planning decisions, and
+        places where the student guided or corrected the work. Link to the relevant
+        prompt files in <code>docs/prompts/</code>.
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <span>See the interactive model on the <a href="index.html">demo page</a>.</span>
+    <a href="references.html">References</a>
+  </footer>
+</body>
+</html>
