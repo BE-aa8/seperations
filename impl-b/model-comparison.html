@@ -1,1 +1,88 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Model comparison · Absorption Explorer</title><link rel="stylesheet" href="css/theme.css"><link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/layout.css"></head><body><header class="site-header"><a class="brand" href="index.html">Absorption Explorer</a><nav><a href="index.html">Demo</a><a href="video.html">Video</a><a href="transcript.html">Transcript</a><a href="docs.html">Docs</a><a href="model-comparison.html">Model comparison</a><a href="references.html">References</a></nav></header><main class="doc-page"><p class="eyebrow">PROCESS</p><h1>Model comparison</h1><article><h2>Plan and critique</h2><div class="fill">FILL IN — which model wrote the plan, which critiqued it, and accepted/rejected critique points from docs/DECISIONS.md.</div></article><article><h2>Implementation comparison</h2><p>Implementation B was built independently from the written specification without reading implementation A.</p><div class="fill">FILL IN — concrete differences in architecture, physics, interaction, accessibility, and testing.</div></article></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Model Comparison · Absorption Explorer</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">Absorption Explorer</a>
+    <nav aria-label="Site navigation">
+      <a href="index.html">Demo</a>
+      <a href="video.html">Video</a>
+      <a href="transcript.html">Transcript</a>
+      <a href="docs.html">Docs</a>
+      <a href="model-comparison.html">Model comparison</a>
+      <a href="references.html">References</a>
+    </nav>
+  </header>
+
+  <main class="doc-page">
+    <p class="eyebrow">Process</p>
+    <h1>Model comparison</h1>
+
+    <article>
+      <h2>1. Planning model</h2>
+      <!-- FILL IN — identify the planning model. -->
+      <div class="fill">FILL IN — Which model produced docs/PLAN.md?</div>
+    </article>
+
+    <article>
+      <h2>2. Critique and iteration</h2>
+      <!-- FILL IN — identify the critique model and summarize dispositions. -->
+      <div class="fill">
+        FILL IN — Which model critiqued the plan? Summarize the accepted and rejected
+        critique points and why, using the project's decision log.
+      </div>
+    </article>
+
+    <article>
+      <h2>3. Implementation B</h2>
+      <p>
+        This implementation was produced independently from the written plan and
+        targeted defect reports. It intentionally did not inspect implementation A.
+      </p>
+      <div class="fill">
+        FILL IN — Identify the implementation-B model, model version, and the exact
+        prompt used to delegate the work.
+      </div>
+    </article>
+
+    <article>
+      <h2>4. Physics comparison</h2>
+      <p>
+        The primary comparison dimensions should be numerical agreement, treatment
+        of the A = 1 limit, fractional-stage handling, clamp behavior, and how the
+        shared physics API was separated from the UI.
+      </p>
+      <div class="fill">
+        FILL IN — Record measured differences between Implementation A and B without
+        turning the comparison into an overall winner or score.
+      </div>
+    </article>
+
+    <article>
+      <h2>5. Interaction and accessibility comparison</h2>
+      <p>
+        Compare the direct-manipulation design, pointer handling, keyboard operation,
+        mobile behavior, SVG geometry, and accessibility labeling.
+      </p>
+      <div class="fill">
+        FILL IN — Record observed differences from the browser-driving round.
+      </div>
+    </article>
+
+    <article>
+      <h2>6. Lessons from independent implementations</h2>
+      <div class="fill">
+        FILL IN — Explain what the comparison revealed about model independence,
+        specification quality, verification, and the role of human review.
+      </div>
+    </article>
+  </main>
+</body>
+</html>
