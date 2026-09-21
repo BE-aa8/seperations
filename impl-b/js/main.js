@@ -49,6 +49,7 @@ makeDraggable({
   getScale: getYXScale,
   getData: () => getState().yOut,
   nudgeStep: 0.001,
+  getNudgeStep: () => getYXScale().yMax * 0.005,
   onMove: (value) => setField("yOut", value)
 });
 
@@ -59,6 +60,7 @@ makeDraggable({
   getScale: getYXScale,
   getData: () => getState().xOut,
   nudgeStep: 0.001,
+  getNudgeStep: () => getYXScale().xMax * 0.005,
   onMove: (value) => setField("xOut", value)
 });
 
