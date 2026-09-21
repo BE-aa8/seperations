@@ -37,8 +37,8 @@ Fill in as the project proceeds. This table feeds `model-comparison.html`.
 |---|---|---|---|
 | Plan author | Claude Opus 5 (Claude Code) | 2026-09-21 | Wrote `docs/PLAN.md` v1.0 |
 | Plan critic | Muse AI | 2026-09-21 | `docs/FEEDBACK.md`, findings C-01…C-14 |
-| Implementer A → `impl-a/` | *(to be filled)* | | |
-| Implementer B → `impl-b/` | *(to be filled)* | | |
+| Implementer A → `impl-a/` | Claude Opus 5 (Claude Code) | 2026-09-21 | `impl-a/`, Phases 0–10 |
+| Implementer B → `impl-b/` | ChatGPT | 2026-09-21 | `impl-b/`, 24 commits |
 | Owner / director | *(your name)* | | UC Separation Processes |
 
 ---
@@ -149,10 +149,68 @@ checking it is part of the process.
 | D-41 | Test tolerances are **split**: 1e-6 against the plan's published numbers, 1e-12 between independent routes. | The plan asked for 1e-12 against values printed to six decimal places, which is not a meaningful assertion. The hard tolerance belongs where it has teeth — staircase vs. Kremser, Simpson and log-mean vs. Colburn. | Model:Opus5 (plan corrected) |
 | D-42 | Playwright is installed with `--no-save` for verification only. | The site must ship with zero dependencies; `package.json` still declares none. Browser verification is a development activity, not a project dependency. | Model:Opus5 |
 
-### Implementation round B — *(to be filled)*
+### Implementation round B — 2026-09-21 — `impl-b/` (ChatGPT)
 
-| ID | Decision | Rationale | Driver |
+ChatGPT built `impl-b/` from `docs/PLAN.md` v1.1 across 24 commits, then it was
+graded against the shared suite and driven in a browser.
+
+**Headline: the physics is excellent, the site does not run.**
+
+| ID | Decision / finding | Detail | Driver |
 |---|---|---|---|
+| D-43 | `solve()` gains `LoVratio`; `PLAN` §2.4 amended to v1.2 under the D-30 protocol. | `impl-a` computed and displayed it; the spec never listed it; a test asserted it anyway. `impl-b` implemented the published bundle correctly and failed that one assertion. **Attributable to a specification gap at build time, not to `impl-b`.** Closing it needs a one-line addition there, deliberately not applied so the artifact stays as delivered. | Critic:impl-b (exposed) → Owner |
+| D-44 | The shared test suite is rewritten to depend only on the published contract. | The suite called six symbols `impl-a` exports but the spec never required — `gFactor`, `xOutPinch`, `yOutRange`, `xOutRange`, `TOL_N`, `TOL_G` — plus `guardHit` on `stepStaircase`. **16 of `impl-b`'s 17 initial failures came from those, none from its physics.** The §2.3 claim that both implementations pass "the same suite, unmodified" was therefore false as written: the suite encoded *impl-a*, not the contract. Now derived from the frozen API in `tests/helpers/load-physics.mjs`, with branch thresholds pinned to documented literals rather than read back out of the implementation under test. | Critic:impl-b (exposed) → Model:Opus5 |
+| D-45 | `impl-b` is left exactly as delivered — minified source, syntax errors and all. | Altering it would contaminate the only thing the exercise measures. Its defects are recorded, not repaired. | Owner |
+
+#### Measured results
+
+| Measure | impl-a | impl-b |
+|---|---|---|
+| Shared suite, as first run | 61/61 | **44/61** |
+| Shared suite, after the suite was corrected (D-44) | 61/61 | **60/61** |
+| Remaining failure | — | `LoVratio` only (D-43) |
+| Worked examples A, B, C | exact | **exact** |
+| Agreement with the other implementation | — | **bit-identical**: 0.000e+0 worst relative difference in N, N_OG, HETP and Z across 4837 points; 0 tray-count and 0 feasibility disagreements |
+| The five documented traps | all correct | **all correct** |
+| JS modules that parse | 12 / 12 | **9 / 12** |
+| Site runs in a browser | yes | **no** |
+| Source formatting | readable, commented | minified, 0 newlines |
+| Written report | n/a | **none supplied** |
+
+#### The three syntax errors that kill `impl-b`'s site
+
+All three are single-character typos, each fatal to its module:
+
+| File | Cause |
+|---|---|
+| `js/drag.js` | Unterminated string literal — `e.key==='ArrowLeft` is missing its closing quote. Braces balance; it is purely the quote. A commit titled *"Fix pointer keyboard nudge expression"* is what introduced it. |
+| `js/render-ntu.js` | One extra `}` — 11 closing against 10 opening. |
+| `js/render-profile.js` | One extra `}` — 9 closing against 8 opening. |
+
+Because `drag.js` fails to parse, no handle is ever wired; the demo renders zero
+SVG elements and nothing is draggable. All six pages still return HTTP 200.
+
+#### What this round actually showed
+
+1. **A sufficiently prescriptive spec makes two models converge exactly.** The
+   plan specified the `log1p` forms and the branch thresholds down to the
+   constant, and the two implementations came out *bit-identical* across 4837
+   operating points. Not "close" — the same doubles.
+2. **Both avoided the trap that the plan's own author fell into.** The
+   fractional-stage rule was the v1.0 error (2.375 vs 2.459432); both
+   implementations got it right, because the corrected plan explained it. The
+   plan earning its keep is the clearest single result here.
+3. **Passing a physics suite says nothing about whether the thing runs.** The
+   module scored 60/61 while three sibling modules would not parse. Tests were
+   written for the pure layer, which is exactly where the plan put the gate — so
+   this is a gap in the *plan's* verification strategy, not just in `impl-b`.
+4. **Minification made the failure invisible to review.** Three one-character
+   typos in 12 single-line files cannot be spotted by reading, and the spec
+   never said "write readable source" — so it is a legitimate reading of the
+   brief that turned out to carry a real cost.
+5. **No report means no reasoning.** The handoff asked for an account of
+   ambiguities, deviations and traps hit. None came back, so the comparison can
+   say *what* was produced but not *why*.
 
 ---
 

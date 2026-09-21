@@ -3,7 +3,7 @@
 **Course:** Separation Processes, University of Cincinnati (Chemical Engineering)
 **Artifact type:** "AI Project" — an interactive educational website
 **Status:** PLAN ONLY. No implementation code exists yet.
-**Document version:** 1.1 — revised after independent critique. See §11 Changelog.
+**Document version:** 1.2 — see §11 Changelog.
 **Critique applied:** `docs/FEEDBACK.md` (Muse AI, 2026-09-21), findings C-01…C-14.
 
 ---
@@ -346,6 +346,10 @@ thermodynamics forbids something that is merely a UI range limit. `D-28`
   NOG, HETP, Z, HOG,
   nActual, ZTray,
   LoVmin, Amin, xOutPinch,          // xOutPinch = yIn/m
+  LoVratio,                         // LoV / LoVmin — "how many times minimum
+                                    // liquid rate", the number a designer
+                                    // actually cares about. ADDED in v1.2; see
+                                    // the changelog and D-44.
   driving:{top, bottom, logMean},   // driving forces, for the NTU plot and checks
   axes:{xMax, yMax}                 // suggested autoscale (see 4.4)
 }
@@ -1730,6 +1734,34 @@ abstraction is in the wrong place.
 ---
 
 ## 11. Changelog
+
+### v1.2 — 2026-09-21 — one API amendment, found by the second implementation
+
+`impl-b` (ChatGPT) was built from v1.1 and graded against the shared suite. The
+grading exposed a defect in the **suite**, not in either implementation.
+
+**`solve()` gains `LoVratio`.** `impl-a` had been computing and displaying it —
+it is the ratio of the operating liquid rate to the minimum, which is the number
+a designer actually uses — but §2.4 never listed it, and a test asserted it
+anyway. `impl-b` implemented the published bundle correctly and failed that
+assertion. Amended under the protocol in §2.3, logged as `D-43`.
+
+**Fairness note.** `impl-b` was built against the contract as published, which
+did not contain this field. Its absence is a specification gap at build time,
+not an implementation defect, and the comparison records it that way. Closing it
+requires a one-line addition to `impl-b`.
+
+**The larger finding, logged as `D-44`.** The suite was calling six symbols that
+`impl-a` exports but the specification never required — `gFactor`, `xOutPinch`,
+`yOutRange`, `xOutRange`, `TOL_N`, `TOL_G` — plus `guardHit` on the
+`stepStaircase` return. Sixteen of `impl-b`'s seventeen initial failures came
+from those, none from its physics. The claim in §2.3 that both implementations
+pass "the same suite, unmodified" was therefore not true as written: the suite
+encoded *impl-a*, not the contract. It has been rewritten to derive everything
+from the frozen API (see `tests/helpers/load-physics.mjs`), and the branch
+thresholds are now pinned to the documented literals rather than read back out
+of the implementation under test — asserting an implementation against its own
+constant proves nothing.
 
 ### v1.1 — 2026-09-21 — critique applied
 

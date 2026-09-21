@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { physics as P, relErr } from './helpers/load-physics.mjs';
+import { physics as P, relErr, pinchX } from './helpers/load-physics.mjs';
 import { ALL } from './fixtures/worked-examples.mjs';
 
 const PUB = 1e-6; // published §7 values carry 6 decimal places
@@ -45,6 +45,6 @@ test('trayColumnHeight matches the published Z_tray', () => {
 test('minimum L/V and A_min match', () => {
   for (const ex of ALL) {
     assert.ok(relErr(P.minLiquidToGasRatio(ex.inp), ex.published.LoVmin) < PUB, `${ex.name}: (L/V)min`);
-    assert.ok(relErr(P.xOutPinch(ex.inp), ex.published.xOutPinch) < PUB, `${ex.name}: x_out,pinch`);
+    assert.ok(relErr(pinchX(ex.inp), ex.published.xOutPinch) < PUB, `${ex.name}: x_out,pinch`);
   }
 });

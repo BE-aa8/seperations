@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { physics as P, relErr } from './helpers/load-physics.mjs';
+import { physics as P, relErr, pinchX, yOutBounds, xOutBounds } from './helpers/load-physics.mjs';
 import { ALL, A, PRESET_INPUTS } from './fixtures/worked-examples.mjs';
 
 const EPS = 0.02; // PLAN §5.5, D-11
@@ -102,7 +102,7 @@ test('A < 1 gives a finite positive N well away from the pinch', () => {
 
 test('log-guard and the geometric pinch are the same condition (critique C-10)', () => {
   const inp = { ...A.inp };
-  const pinchAt = P.xOutPinch(inp);
+  const pinchAt = pinchX(inp);
   let prev = Infinity;
   for (const frac of [0.5, 0.9, 0.99, 0.999, 0.9999]) {
     const probe = { ...inp, xOut: inp.xIn + frac * (pinchAt - inp.xIn) };
@@ -124,11 +124,11 @@ test('log-guard and the geometric pinch are the same condition (critique C-10)',
 test('nothing returns NaN anywhere in the clamped region', () => {
   let n = 0;
   for (const { id, inp } of PRESET_INPUTS) {
-    const yr = P.yOutRange(inp);
+    const yr = yOutBounds(inp);
     for (let i = 0; i <= 100; i++) {
       const yOut = yr.lower + (i / 100) * (yr.upper - yr.lower);
       const withY = { ...inp, yOut };
-      const xr = P.xOutRange(withY);
+      const xr = xOutBounds(withY);
       for (let j = 0; j <= 100; j++) {
         const xOut = xr.lower + (j / 100) * (xr.upper - xr.lower);
         const probe = { ...withY, xOut };
@@ -146,12 +146,17 @@ test('nothing returns NaN anywhere in the clamped region', () => {
 
 test('the staircase iteration guard is never hit inside the clamps', () => {
   for (const { id, inp } of PRESET_INPUTS) {
-    const yr = P.yOutRange(inp);
+    const yr = yOutBounds(inp);
     const probe = { ...inp, yOut: yr.lower };
-    const xr = P.xOutRange(probe);
+    const xr = xOutBounds(probe);
     const worst = { ...probe, xOut: xr.upper };
     const st = P.stepStaircase(worst);
-    assert.equal(st.guardHit, false, `${id}: staircase guard hit`);
+    // Contract-only check that the 200-step guard (PLAN §5.5) is nowhere near
+    // being hit: N stays under the documented worst case of 49, and the drawn
+    // polyline is correspondingly short. An implementation may or may not
+    // expose a `guardHit` flag — §2.4 documents only {vertices, fullSteps, N}.
     assert.ok(st.N < 60, `${id}: N = ${st.N} exceeds the documented worst case of 49`);
+    assert.ok(st.vertices.length < 2 * 200,
+      `${id}: staircase drew ${st.vertices.length} vertices — the 200-step guard was hit`);
   }
 });

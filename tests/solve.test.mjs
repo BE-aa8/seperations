@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { physics as P, relErr } from './helpers/load-physics.mjs';
+import { physics as P, relErr, pinchX, yOutBounds, xOutBounds } from './helpers/load-physics.mjs';
 import { ALL, A, PRESET_INPUTS } from './fixtures/worked-examples.mjs';
 
 /**
@@ -23,7 +23,7 @@ test('the bundle agrees with the individual functions', () => {
     assert.equal(b.LoV, P.liquidToGasRatio(ex.inp), `${ex.name}: LoV`);
     assert.equal(b.L, P.liquidFlow(ex.inp), `${ex.name}: L`);
     assert.equal(b.LoVmin, P.minLiquidToGasRatio(ex.inp), `${ex.name}: LoVmin`);
-    assert.equal(b.xOutPinch, P.xOutPinch(ex.inp), `${ex.name}: xOutPinch`);
+    assert.ok(relErr(b.xOutPinch, ex.inp.yIn / ex.inp.m) < 1e-12, `${ex.name}: xOutPinch`);
   }
 });
 
@@ -71,7 +71,7 @@ test('axes bracket the terminal points of every preset', () => {
     const { axes } = P.solve(inp);
     assert.ok(axes.xMax > inp.xOut, `${id}: xMax ${axes.xMax} does not clear x_out`);
     assert.ok(axes.yMax > inp.yIn, `${id}: yMax ${axes.yMax} does not clear y_in`);
-    assert.ok(axes.xMax > P.xOutPinch(inp), `${id}: xMax does not clear the pinch`);
+    assert.ok(axes.xMax > pinchX(inp), `${id}: xMax does not clear the pinch`);
     assert.ok(Number.isFinite(axes.xMax) && Number.isFinite(axes.yMax), id);
   }
 });
@@ -89,11 +89,11 @@ test('no bundle field is NaN or undefined across the clamped region', () => {
   const nullable = new Set(['pinch']);
   let points = 0;
   for (const { id, inp } of PRESET_INPUTS) {
-    const yr = P.yOutRange(inp);
+    const yr = yOutBounds(inp);
     for (let i = 0; i <= 40; i++) {
       const yOut = yr.lower + (i / 40) * (yr.upper - yr.lower);
       const withY = { ...inp, yOut };
-      const xr = P.xOutRange(withY);
+      const xr = xOutBounds(withY);
       for (let j = 0; j <= 40; j++) {
         const probe = { ...withY, xOut: xr.lower + (j / 40) * (xr.upper - xr.lower) };
         const b = P.solve(probe);

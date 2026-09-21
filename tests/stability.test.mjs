@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { physics as P, relErr } from './helpers/load-physics.mjs';
+import { physics as P, relErr, gOf, SPEC_TOL_N, SPEC_TOL_G } from './helpers/load-physics.mjs';
 
 /**
  * Build an input with a chosen A, at R = 5 (so N = N_OG = 4 when A = 1).
@@ -20,7 +20,7 @@ test('A = 1 exactly returns R - 1, not NaN', () => {
   assert.equal(P.absorptionFactor(inp), 1);
   assert.equal(P.theoreticalStages(inp), 4);
   assert.equal(P.ntuAnalytic(inp), 4);
-  assert.equal(P.gFactor(1), 1);
+  assert.equal(gOf(inp), 1);
   // The naive forms are NaN here — that is what the branches exist for.
   assert.ok(Number.isNaN(Math.log((1 - 1 / 1) * 5 + 1 / 1) / Math.log(1)),
     'sanity: the naive Kremser form should be NaN at A = 1');
@@ -33,7 +33,7 @@ test('finite and continuous across A = 1 +/- 10^-k for k = 2..12', () => {
       const inp = atA(Aval);
       for (const [name, v] of [['N', P.theoreticalStages(inp)],
                                ['N_OG', P.ntuAnalytic(inp)],
-                               ['g', P.gFactor(P.absorptionFactor(inp))]]) {
+                               ['g', gOf(inp)]]) {
         assert.ok(Number.isFinite(v), `${name} not finite at A = 1${sign > 0 ? '+' : '-'}1e-${k}`);
       }
       // N varies genuinely with A: dN/dA ≈ R(1-R)/2 = -10 here, so the
@@ -68,15 +68,15 @@ test('the series branch is accurate AT its threshold', () => {
 
   for (const sign of [1, -1]) {
     for (const frac of [0.999, 0.5, 0.1]) {
-      const Aval = 1 + sign * P.TOL_N * frac; // inside the series band
+      const Aval = 1 + sign * SPEC_TOL_N * frac; // inside the series band
       const got = P.theoreticalStages(atA(Aval));
       const want = referenceN(Aval, 5);
       assert.ok(Math.abs(got - want) < 1e-9,
-        `series N off by ${Math.abs(got - want)} at A - 1 = ${sign * P.TOL_N * frac}`);
+        `series N off by ${Math.abs(got - want)} at A - 1 = ${sign * SPEC_TOL_N * frac}`);
     }
-    const Ag = 1 + sign * P.TOL_G * 0.999;
-    assert.ok(Math.abs(P.gFactor(Ag) - referenceG(Ag)) < 1e-9,
-      `series g off at A - 1 = ${sign * P.TOL_G * 0.999}`);
+    const Ag = 1 + sign * SPEC_TOL_G * 0.999;
+    assert.ok(Math.abs(gOf(atA(Ag)) - referenceG(Ag)) < 1e-9,
+      `series g off at A - 1 = ${sign * SPEC_TOL_G * 0.999}`);
   }
 });
 
@@ -84,9 +84,9 @@ test('N is continuous across the threshold to the precision A itself resolves', 
   // Stepping from just inside to just outside the branch changes A by 0.002*TOL,
   // so N must change by no more than |dN/dA| * that, plus the branch error.
   for (const sign of [1, -1]) {
-    const inside = P.theoreticalStages(atA(1 + sign * P.TOL_N * 0.999));
-    const outside = P.theoreticalStages(atA(1 + sign * P.TOL_N * 1.001));
-    const physicalChange = 10 * P.TOL_N * 0.002; // |dN/dA| * dA
+    const inside = P.theoreticalStages(atA(1 + sign * SPEC_TOL_N * 0.999));
+    const outside = P.theoreticalStages(atA(1 + sign * SPEC_TOL_N * 1.001));
+    const physicalChange = 10 * SPEC_TOL_N * 0.002; // |dN/dA| * dA
     assert.ok(Math.abs(inside - outside) < physicalChange + 1e-9,
       `jump of ${Math.abs(inside - outside)} exceeds the physical change ` +
       `of ${physicalChange} at the threshold`);
@@ -100,15 +100,15 @@ test('branched form agrees with the naive form where the naive form is valid', (
     const Aval = 1 + d;
     const inp = atA(Aval);
     assert.ok(relErr(P.theoreticalStages(inp), naiveN(Aval, 5)) < 1e-9, `N at A = ${Aval}`);
-    assert.ok(relErr(P.gFactor(Aval), naiveG(Aval)) < 1e-9, `g at A = ${Aval}`);
+    assert.ok(relErr(gOf(atA(Aval)), naiveG(Aval)) < 1e-9, `g at A = ${Aval}`);
   }
 });
 
 test('the near-balanced demo value sits INSIDE the series band (D-31)', () => {
   // L/V = 0.9999995 -> |A - 1| = 5e-7 < TOL_N = 1e-6. The rejected value
   // 0.999999 would give exactly 1e-6, which fails the strict comparison.
-  assert.ok(Math.abs(0.9999995 - 1) < P.TOL_N, 'chosen value must be inside the band');
-  assert.ok(!(Math.abs(0.999999 - 1) < P.TOL_N),
+  assert.ok(Math.abs(0.9999995 - 1) < SPEC_TOL_N, 'chosen value must be inside the band');
+  assert.ok(!(Math.abs(0.999999 - 1) < SPEC_TOL_N),
     'the rejected value 1 - 1e-6 must fall OUTSIDE the band, as documented');
   const inp = atA(0.9999995);
   assert.ok(relErr(P.theoreticalStages(inp), 4.000005) < 1e-6);

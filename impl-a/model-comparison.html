@@ -45,13 +45,13 @@ specification independently. This page reports what happened.</p>
     <tr><th>Role</th><th>Model</th><th>What it produced</th></tr>
   </thead>
   <tbody>
-    <tr><td>Plan author</td><td class="fill">[FILL IN]</td>
+    <tr><td>Plan author</td><td>Claude Opus 5</td>
         <td><code>docs/PLAN.md</code> v1.0 — spec, physics derivations, phases, worked examples, risk register</td></tr>
-    <tr><td>Plan critic</td><td class="fill">[FILL IN]</td>
+    <tr><td>Plan critic</td><td>Muse AI</td>
         <td><code>docs/FEEDBACK.md</code> — 14 findings, C-01 to C-14</td></tr>
-    <tr><td>Implementation A</td><td class="fill">[FILL IN]</td>
+    <tr><td>Implementation A</td><td>Claude Opus 5</td>
         <td><code>impl-a/</code></td></tr>
-    <tr><td>Implementation B</td><td class="fill">[FILL IN]</td>
+    <tr><td>Implementation B</td><td>ChatGPT</td>
         <td><code>impl-b/</code></td></tr>
   </tbody>
 </table>
@@ -155,9 +155,22 @@ distrust.</p>
 <h2>3. Implementation A versus B</h2>
 
 <p>Both implementations were written against the same frozen module interface and
-had to pass the <strong>same test suite, unmodified</strong>. That is what makes
-this a measurement rather than an impression: the suite runs against either one
-by pointing an environment variable at it.</p>
+graded by the same test suite, which runs against either one by pointing an
+environment variable at it.</p>
+
+<div class="note note--warning">
+  <span class="note__icon">&#9888;</span>
+  <div><strong>That claim needed correcting.</strong> This page originally said
+    both implementations pass "the same suite, unmodified", and that was not
+    true when it was written. The suite had been written alongside
+    implementation A and had quietly come to depend on seven symbols that A
+    exports but the specification never required. It was really asking "is this
+    also implementation A?". Implementation B exposed it by implementing the
+    contract exactly and failing sixteen assertions for reasons unrelated to its
+    physics. The suite has since been rewritten to use only the published API —
+    which is what makes the numbers below a measurement rather than an
+    impression.</div>
+</div>
 
 <pre><code>npm test                                          # grades impl-a
 PHYSICS_PATH=../../impl-b/js/physics.js npm test  # grades impl-b</code></pre>
@@ -167,16 +180,95 @@ PHYSICS_PATH=../../impl-b/js/physics.js npm test  # grades impl-b</code></pre>
     <tr><th>Dimension</th><th>Implementation A</th><th>Implementation B</th></tr>
   </thead>
   <tbody>
-    <tr><td>Model used</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
-    <tr><td>Passed the physics suite first try?</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
-    <tr><td>Which documented risks did it actually hit?</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
-    <tr><td>Deviations from the frozen API</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
-    <tr><td>Lines of JavaScript</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
-    <tr><td>Drag feel on touch</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
-    <tr><td>Did anything better than asked</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
-    <tr><td>Quietly skipped</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
+    <tr><td>Model used</td><td>Claude Opus 5</td><td>ChatGPT</td></tr>
+    <tr><td>Shared suite, as first run</td><td>61 / 61</td><td><strong>44 / 61</strong></td></tr>
+    <tr><td>Shared suite, after the suite itself was corrected</td>
+        <td>61 / 61</td><td><strong>60 / 61</strong></td></tr>
+    <tr><td>Worked examples A, B, C</td><td>exact</td><td>exact</td></tr>
+    <tr><td>Agreement between the two</td><td colspan="2" style="text-align:center">
+        <strong>bit-identical</strong> — 0.000e+0 worst relative difference in
+        N, N<sub>OG</sub>, HETP and Z across 4,837 operating points</td></tr>
+    <tr><td>The five documented traps</td><td>all correct</td><td>all correct</td></tr>
+    <tr><td>JavaScript modules that parse</td><td>12 / 12</td><td><strong>9 / 12</strong></td></tr>
+    <tr><td>Site runs in a browser</td><td>yes</td><td><strong>no</strong></td></tr>
+    <tr><td>Deviations from the frozen API</td>
+        <td>none, but exported seven extras the spec never required — which is
+            how the test suite came to depend on them</td>
+        <td>none; implemented the published contract exactly</td></tr>
+    <tr><td>Source formatting</td><td>readable, commented</td>
+        <td>minified — every file one line, zero newlines</td></tr>
+    <tr><td>Written report supplied</td><td>n/a</td><td><strong>none</strong></td></tr>
   </tbody>
 </table>
+
+<h3>What the grading actually showed</h3>
+
+<p><strong>The physics converged exactly.</strong> Not "closely" — the two
+implementations return <em>the same doubles</em> across 4,837 operating points.
+The specification prescribed the <code>log1p</code> forms and the numerical
+branch thresholds down to the constant, and that was apparently enough to remove
+all freedom from the result. This is the strongest evidence in the project that
+writing the plan first was worth the effort.</p>
+
+<p><strong>Both avoided the trap the plan's own author fell into.</strong> The
+fractional-stage rule was the error in plan v1.0 — 2.375 against a correct
+2.459432 — caught by the critique. Both implementations got it right, because
+by then the plan explained it. A defect found in planning was prevented twice
+over in implementation.</p>
+
+<p><strong>But implementation B's site does not run.</strong> Three of its twelve
+JavaScript modules fail to parse, each from a single-character typo:</p>
+
+<table>
+  <thead><tr><th>File</th><th>Cause</th></tr></thead>
+  <tbody>
+    <tr><td><code>js/drag.js</code></td>
+        <td>Unterminated string literal — <code>e.key==='ArrowLeft</code> is
+            missing its closing quote</td></tr>
+    <tr><td><code>js/render-ntu.js</code></td><td>One extra <code>}</code></td></tr>
+    <tr><td><code>js/render-profile.js</code></td><td>One extra <code>}</code></td></tr>
+  </tbody>
+</table>
+
+<p>Because <code>drag.js</code> never parses, no handle is wired: the demo
+renders no SVG and nothing can be dragged. All six pages still return HTTP 200,
+so a casual check would miss it entirely.</p>
+
+<p><strong>And the test suite was wrong.</strong> Implementation B's first run
+scored 44/61 — but sixteen of those seventeen failures had nothing to do with
+its physics. The suite was calling <code>gFactor</code>, <code>xOutPinch</code>,
+<code>yOutRange</code>, <code>xOutRange</code>, <code>TOL_N</code>,
+<code>TOL_G</code> and <code>guardHit</code>: all things implementation A
+happens to export, none of them in the contract the two models were given. The
+claim that both implementations pass "the same suite, unmodified" was not true
+as written — the suite encoded implementation A rather than the specification.
+Rewriting it to use only the published API took B from 44/61 to 60/61, and the
+single remaining failure is a field the specification genuinely omitted.</p>
+
+<div class="note">
+  <span class="note__icon">&#9432;</span>
+  <div><strong>On fairness.</strong> That last failure is recorded as a
+    specification gap at build time, not as a defect in implementation B. It was
+    built against the contract as published, which did not contain the field.
+    The specification has since been amended; implementation B has deliberately
+    <em>not</em> been patched, so the artifact remains exactly what the model
+    produced.</div>
+</div>
+
+<h3>Three lessons worth stating</h3>
+
+<ol>
+  <li><strong>A precise specification removes variance.</strong> Where the plan
+    was prescriptive, the two models produced identical output. Where it was
+    silent — it never said "write readable source" — they diverged completely.</li>
+  <li><strong>Passing the tests is not the same as working.</strong> The physics
+    module scored 60/61 while three sibling modules would not parse. The plan
+    put its hard gate on the pure layer and got exactly what it asked for. That
+    is a gap in the plan's verification strategy as much as in the
+    implementation.</li>
+  <li><strong>Unreviewable code hides cheap mistakes.</strong> Three
+    one-character typos, fatal, invisible in twelve single-line files.</li>
+</ol>
 
 <div class="fillin">
   <p><strong>The comparison in prose.</strong> Numbers in a table do not make an
