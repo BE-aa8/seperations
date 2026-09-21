@@ -1,1 +1,88 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Transcript · Absorption Explorer</title><link rel="stylesheet" href="css/theme.css"><link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/layout.css"></head><body><header class="site-header"><a class="brand" href="index.html">Absorption Explorer</a><nav><a href="index.html">Demo</a><a href="video.html">Video</a><a href="transcript.html">Transcript</a><a href="docs.html">Docs</a><a href="model-comparison.html">Model comparison</a><a href="references.html">References</a></nav></header><main class="doc-page"><p class="eyebrow">PRESENTATION</p><h1>Transcript</h1><article><div class="fill">FILL IN — paste the verbatim auto-generated transcript here. Keep it plain selectable text.</div></article></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transcript · Absorption Explorer</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">Absorption Explorer</a>
+    <nav aria-label="Site navigation">
+      <a href="index.html">Demo</a>
+      <a href="video.html">Video</a>
+      <a href="transcript.html">Transcript</a>
+      <a href="docs.html">Docs</a>
+      <a href="model-comparison.html">Model comparison</a>
+      <a href="references.html">References</a>
+    </nav>
+  </header>
+
+  <main class="doc-page">
+    <p class="eyebrow">Presentation</p>
+    <h1>Transcript</h1>
+
+    <article>
+      <h2>Searchable transcript</h2>
+      <p class="muted">
+        Paste the verbatim auto-generated transcript into the block below. The
+        search field finds text without changing the stored transcript.
+      </p>
+
+      <div class="transcript-tools">
+        <label>
+          Search transcript
+          <input id="transcriptSearch" type="search" placeholder="Find a word or phrase">
+        </label>
+        <button id="copyTranscript" type="button">Copy transcript</button>
+      </div>
+
+      <pre id="transcriptText" class="transcript-box" tabindex="0">FILL IN — Paste the verbatim auto-generated transcript here.
+Do not paraphrase it on this page; this region is intended to preserve the transcript text exactly.</pre>
+
+      <p id="transcriptStatus" class="control-note" aria-live="polite"></p>
+    </article>
+
+    <article>
+      <h2>Transcript metadata</h2>
+      <!-- FILL IN — add date, source, duration, and any required attribution. -->
+      <div class="fill">
+        FILL IN — Add the transcript source and metadata.
+      </div>
+    </article>
+  </main>
+
+  <script>
+    const search = document.getElementById("transcriptSearch");
+    const transcript = document.getElementById("transcriptText");
+    const status = document.getElementById("transcriptStatus");
+
+    search.addEventListener("input", () => {
+      const query = search.value.trim().toLowerCase();
+      if (!query) {
+        status.textContent = "";
+        return;
+      }
+
+      const text = transcript.textContent.toLowerCase();
+      const matches = text.includes(query);
+
+      status.textContent = matches
+        ? `Found “${search.value}” in the transcript.`
+        : `No match found for “${search.value}”.`;
+    });
+
+    document.getElementById("copyTranscript").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(transcript.textContent);
+        status.textContent = "Transcript copied.";
+      } catch {
+        status.textContent = "Copy failed; select the transcript text and copy it manually.";
+      }
+    });
+  </script>
+</body>
+</html>
