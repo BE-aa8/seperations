@@ -1,1 +1,113 @@
-let svg,g;const E=(n,a={})=>{const x=document.createElementNS('http://www.w3.org/2000/svg',n);Object.entries(a).forEach(([k,v])=>x.setAttribute(k,v));return x};export function mount(r){svg=E('svg',{viewBox:'0 0 700 300','aria-label':'NTU plot'});g=E('g');svg.append(g);r.append(svg);return{svg}}export function update(d){g.replaceChildren();const t=d.terminals,s=y=>70+(y-t.yOut)/(t.yIn-t.yOut)*580,v=[];for(let i=0;i<=80;i++){const y=t.yOut+(t.yIn-t.yOut)*i/80,x=t.xIn+(y-t.yOut)/d.LoV;v.push([y,1/(y-t.m*x)])}const ym=Math.max(...v.map(q=>q[1]))*1.1,path=v.map((q,i)=>(i?'L':'M')+s(q[0])+' '+(250-q[1]/ym*190)).join(' '),area='M'+s(t.yOut)+' 250 '+v.map(q=>'L'+s(q[0])+' '+(250-q[1]/ym*190)).join(' ')+' L'+s(t.yIn)+' 250 Z';g.append(E('path',{d:area,class:'area'}),E('path',{d:path,class:'ntu-curve'}));const z=E('text',{x:350,y:24,'text-anchor':'middle',class:'chart-title'});z.textContent='1 / (y − y*) · N_OG = '+d.NOG.toFixed(3);g.append(z)}}
+let svg;
+let layer;
+
+const NS = "http://www.w3.org/2000/svg";
+
+function element(name, attributes = {}) {
+  const node = document.createElementNS(NS, name);
+
+  Object.entries(attributes).forEach(([key, value]) => {
+    node.setAttribute(key, value);
+  });
+
+  return node;
+}
+
+export function mount(root) {
+  svg = element("svg", {
+    viewBox: "0 0 700 300",
+    class: "chart-svg",
+    role: "img",
+    "aria-label": "Overall gas transfer unit plot"
+  });
+
+  layer = element("g");
+  svg.append(layer);
+  root.append(svg);
+
+  return { svg };
+}
+
+export function update(derived) {
+  layer.replaceChildren();
+
+  const terminal = derived.terminals;
+  const left = 72;
+  const right = 660;
+  const bottom = 248;
+  const top = 44;
+  const samples = 100;
+  const values = [];
+
+  for (let i = 0; i <= samples; i += 1) {
+    const y =
+      terminal.yOut +
+      (terminal.yIn - terminal.yOut) * i / samples;
+    const x =
+      terminal.xIn +
+      (y - terminal.yOut) / derived.LoV;
+    values.push({
+      y,
+      value: 1 / (y - terminal.m * x)
+    });
+  }
+
+  const maxValue = Math.max(...values.map((point) => point.value));
+  const xScale = (y) =>
+    left + (y - terminal.yOut) / (terminal.yIn - terminal.yOut) * (right - left);
+  const yScale = (value) =>
+    bottom - value / (maxValue * 1.12) * (bottom - top);
+
+  const path = values
+    .map((point, index) =>
+      `${index === 0 ? "M" : "L"}${xScale(point.y).toFixed(2)} ${yScale(point.value).toFixed(2)}`
+    )
+    .join(" ");
+
+  const areaPath = [
+    `M${xScale(terminal.yOut).toFixed(2)} ${bottom}`,
+    ...values.map((point) =>
+      `L${xScale(point.y).toFixed(2)} ${yScale(point.value).toFixed(2)}`
+    ),
+    `L${xScale(terminal.yIn).toFixed(2)} ${bottom} Z`
+  ].join(" ");
+
+  layer.append(
+    element("line", {
+      x1: left, y1: bottom, x2: right, y2: bottom, class: "axis"
+    }),
+    element("line", {
+      x1: left, y1: bottom, x2: left, y2: top, class: "axis"
+    }),
+    element("path", { d: areaPath, class: "area" }),
+    element("path", { d: path, class: "ntu-curve" })
+  );
+
+  const title = element("text", {
+    x: 350,
+    y: 24,
+    "text-anchor": "middle",
+    class: "chart-title"
+  });
+  title.textContent = `N_OG = ${derived.NOG.toFixed(3)} · shaded area`;
+  layer.append(title);
+
+  const xLabel = element("text", {
+    x: 365,
+    y: 291,
+    "text-anchor": "middle",
+    class: "chart-label"
+  });
+  xLabel.textContent = "gas mole fraction, y";
+  layer.append(xLabel);
+
+  const yLabel = element("text", {
+    x: 18,
+    y: 150,
+    transform: "rotate(-90 18 150)",
+    "text-anchor": "middle",
+    class: "chart-label"
+  });
+  yLabel.textContent = "1 / (y − y*)";
+  layer.append(yLabel);
+}
