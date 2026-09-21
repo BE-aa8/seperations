@@ -135,10 +135,19 @@ rather than reading. The fixes were adopted; the reasoning was corrected. This i
 worth putting in the presentation — a critique is evidence, not an oracle, and
 checking it is part of the process.
 
-### Implementation round A — *(to be filled)*
+### Implementation round A — 2026-09-21 — `impl-a/`
 
 | ID | Decision | Rationale | Driver |
 |---|---|---|---|
+| D-34 | Added `js/dom.js`, a small SVG/HTML element helper not in the plan's file list. | Five render modules would otherwise each repeat `createElementNS` boilerplate. It contains no physics and no state, so it does not weaken the architecture. | Model:Opus5 |
+| D-35 | Presets specify an **initial `L/V`** and derive `x_out` from the mass balance, rather than storing `x_out` directly. | `L/V` is the physically meaningful quantity and keeps `A` exact across all four systems; storing `x_out` made the NH₃ preset land on A = 1.513 when the plan documented 1.500. The drag handle still owns `x_out` thereafter (D-09). | Model:Opus5 |
+| D-36 | `physics.js` additionally exports `ntuIntegrand()` and `drivingForceAt()`. | The NTU plot must draw the curve it shades. Without these the renderer would have had to compute `1/(y − y*)` itself, which is exactly `RISK-12`. | Model:Opus5 |
+| D-37 | The equilibrium line is drawn by **sampling the injected `yStar` adapter into a polyline**, not as a straight segment from `m·x`. | Caught by a self-audit during verification: the first version computed `inp.m * x` inside the renderer, silently bypassing the `yStar` seam that `D-25` exists to protect. A curved equilibrium (F-4) would have rendered as a straight line. Sampling costs nothing and makes the seam real rather than nominal. | Model:Opus5 (self-audit) |
+| D-38 | The summary panel adds a **"shell with equal allowances"** row alongside the reported heights. | The plan compares the packed *bed* height against the tray *shell* height, which is not like-for-like — the bed excludes the disengaging allowances. The plan's acceptance criteria are kept exactly as written; this extra row makes the unfair comparison visible instead of hiding it. | Model:Opus5 |
+| D-39 | Axis tick steps round **up** to the next nice value (1, 2, 2.5, 5, 10). | Rounding down overshot the requested tick count and collided the labels — 12 ticks where 5 were asked for. Visible in the first render. | Model:Opus5 |
+| D-40 | Exactly **two categorical hues** (blue = tray, orange = packed), each keeping its meaning in every plot; the equilibrium and operating lines use **chrome ink** rather than a third hue. | Ran the palette validator rather than eyeballing: the two-hue set passes all-pairs in both modes with wide margins (CVD ΔE 24.7 light / 26.8 dark against a floor of 8). Adding a third hue for the equilibrium line threw a light-mode contrast warning, and reserving the hues to mean strictly "tray" and "packed" is the stronger encoding anyway. | Model:Opus5 |
+| D-41 | Test tolerances are **split**: 1e-6 against the plan's published numbers, 1e-12 between independent routes. | The plan asked for 1e-12 against values printed to six decimal places, which is not a meaningful assertion. The hard tolerance belongs where it has teeth — staircase vs. Kremser, Simpson and log-mean vs. Colburn. | Model:Opus5 (plan corrected) |
+| D-42 | Playwright is installed with `--no-save` for verification only. | The site must ship with zero dependencies; `package.json` still declares none. Browser verification is a development activity, not a project dependency. | Model:Opus5 |
 
 ### Implementation round B — *(to be filled)*
 

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model comparison — Tray vs. Packed</title>
+<meta name="description" content="Which model planned, which critiqued, what was accepted or rejected, and how the two implementations compared.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='9' y='3' width='14' height='26' rx='3' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Cpath d='M12 11h8M12 16h8M12 21h8' stroke='%23eb6834' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand">Tray vs. Packed
+      <small>Separation Processes &middot; University of Cincinnati</small>
+    </div>
+    <nav class="nav" aria-label="Main">
+      <a href="index.html">Demo</a>
+      <a href="video.html">Video</a>
+      <a href="transcript.html">Transcript</a>
+      <a href="docs.html">Documentation</a>
+      <a href="model-comparison.html">Model comparison</a>
+      <a href="references.html">References</a>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Switch colour theme">&#9686; Auto</button>
+  </div>
+</header>
+
+<main class="page">
+<div class="prose">
+
+<h1>Model comparison</h1>
+
+<p>The project deliberately used several models in distinct roles: one to plan,
+a different one to critique the plan, and two more to implement the same
+specification independently. This page reports what happened.</p>
+
+<h2>1. Roles</h2>
+
+<table>
+  <thead>
+    <tr><th>Role</th><th>Model</th><th>What it produced</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Plan author</td><td class="fill">[FILL IN]</td>
+        <td><code>docs/PLAN.md</code> v1.0 — spec, physics derivations, phases, worked examples, risk register</td></tr>
+    <tr><td>Plan critic</td><td class="fill">[FILL IN]</td>
+        <td><code>docs/FEEDBACK.md</code> — 14 findings, C-01 to C-14</td></tr>
+    <tr><td>Implementation A</td><td class="fill">[FILL IN]</td>
+        <td><code>impl-a/</code></td></tr>
+    <tr><td>Implementation B</td><td class="fill">[FILL IN]</td>
+        <td><code>impl-b/</code></td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <span class="note__icon">&#9432;</span>
+  <div>Implementations A and B must come from <strong>different</strong> models.
+    If one model built both, there is nothing to compare and the exercise
+    collapses. This is recorded as a condition in the project's definition of
+    done.</div>
+</div>
+
+<h2>2. The critique round</h2>
+
+<p>The plan was handed to a second model with explicit instructions to attack it
+and to sort its findings into <em>errors</em>, <em>omissions</em> and
+<em>preferences</em>. It returned 14 findings. <strong>All 14 were accepted;
+two were implemented differently from the fix that was proposed.</strong></p>
+
+<p>The critic verified the physics derivations and all three worked examples by
+independent calculation, and they held — no equation changed as a result of the
+critique. What it did find was one error that would have actively misled an
+implementer, one that could have caused a wrong guard in the tool's headline
+interaction, and a systematic traceability failure between two documents.</p>
+
+<h3>The findings that mattered most</h3>
+
+<table>
+  <thead>
+    <tr><th>ID</th><th>Finding</th><th>Outcome</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>C-03</td>
+      <td>The plan said the worked example had "three complete risers, the third
+        truncated" — which is self-contradictory. It has <strong>two</strong>
+        complete risers plus a truncated third.</td>
+      <td><strong>Accepted.</strong> The serious part was downstream: an
+        acceptance criterion demanded "3 complete risers", so a
+        <em>correct</em> implementation would have failed the check and sent
+        someone hunting a bug that did not exist.</td>
+    </tr>
+    <tr>
+      <td>C-04</td>
+      <td>The plan's wording implied that an absorption factor below 1 is
+        infeasible.</td>
+      <td><strong>Accepted, and the risk was larger than reported.</strong>
+        Checking all four presets showed <em>A</em> &lt; 1 is reachable on
+        every one. An implementer adding an <code>A ≥ 1</code> guard would have
+        broken the exact regime the tool exists to demonstrate.</td>
+    </tr>
+    <tr>
+      <td>C-01</td>
+      <td>Eight of ten cross-references between the plan and the decision log
+        pointed at the wrong entry.</td>
+      <td><strong>Accepted.</strong> An artefact of writing the two documents in
+        different orders and never reconciling them. Now verified
+        programmatically.</td>
+    </tr>
+    <tr>
+      <td>C-05</td>
+      <td>The clamping functions returned inconsistent labels for which limit
+        had been hit.</td>
+      <td><strong>Accepted, fixed differently.</strong> The proposed
+        unification would have labelled a liquid-rate cap as a thermodynamic
+        pinch. It is a user-interface limit, not physics, and telling a student
+        otherwise teaches something false. The two concepts are now reported
+        separately.</td>
+    </tr>
+    <tr>
+      <td>C-12</td>
+      <td>Add a demonstration preset just off <em>A</em> = 1, to exercise the
+        numerical branch selection rather than only the special case.</td>
+      <td><strong>Accepted, value corrected.</strong> The suggested value sits
+        <em>exactly on</em> the branch threshold and so takes the other code
+        path — it would not have tested what it was meant to test.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Where the critic was wrong, and how that was caught</h3>
+
+<p>Two findings had correct conclusions supported by incorrect reasoning. One
+mislocated which operating limit produces a particular value; the other proposed
+a numerical value on the wrong side of a strict inequality. Both were found by
+recomputing the claim rather than reading it. The fixes were adopted and the
+reasoning corrected.</p>
+
+<p>This is the most transferable lesson of the exercise: <strong>a critique is
+evidence, not a verdict.</strong> A second model is very good at finding things
+the author cannot see in their own work, and is also capable of being confidently
+wrong in the same breath. Checking it is part of the process, not a sign of
+distrust.</p>
+
+<div class="fillin">
+  <p><strong>Your reading of the critique round.</strong> Was the critique worth the
+    step? Did it find things you would have caught yourself? Did any finding
+    change how you think about relying on a single model's output?</p>
+</div>
+
+<h2>3. Implementation A versus B</h2>
+
+<p>Both implementations were written against the same frozen module interface and
+had to pass the <strong>same test suite, unmodified</strong>. That is what makes
+this a measurement rather than an impression: the suite runs against either one
+by pointing an environment variable at it.</p>
+
+<pre><code>npm test                                          # grades impl-a
+PHYSICS_PATH=../../impl-b/js/physics.js npm test  # grades impl-b</code></pre>
+
+<table>
+  <thead>
+    <tr><th>Dimension</th><th>Implementation A</th><th>Implementation B</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Model used</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
+    <tr><td>Passed the physics suite first try?</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
+    <tr><td>Which documented risks did it actually hit?</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
+    <tr><td>Deviations from the frozen API</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
+    <tr><td>Lines of JavaScript</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
+    <tr><td>Drag feel on touch</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
+    <tr><td>Did anything better than asked</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
+    <tr><td>Quietly skipped</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
+  </tbody>
+</table>
+
+<div class="fillin">
+  <p><strong>The comparison in prose.</strong> Numbers in a table do not make an
+    argument. Which implementation would you rather maintain, and why? Where did
+    the two diverge most — the physics, the interaction, or the code structure?
+    Did the detailed plan make them converge, or did they still differ
+    substantially despite it?</p>
+</div>
+
+<h2>4. What the process suggests about these models</h2>
+
+<div class="fillin">
+  <p><strong>Your conclusions.</strong> Worth addressing directly: how much did
+    planning before coding help? Was the independent critique worth its cost?
+    Did the shared test suite change the outcome, or just measure it? Where did
+    you have to supply judgement that no model supplied?</p>
+</div>
+
+<p>The full decision log, including every point where the project owner overrode
+a model's recommendation, is kept in <code>docs/DECISIONS.md</code> in the
+repository. Entries marked as owner overrides are the direct record of human
+steering.</p>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    Implementation A &middot; Static site, no framework, no build step.
+    <a href="../index.html">Switch implementation</a>
+  </div>
+</footer>
+
+<script type="module" src="js/site.js"></script>
+</body>
+</html>

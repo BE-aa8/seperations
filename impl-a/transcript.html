@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transcript — Tray vs. Packed</title>
+<meta name="description" content="Verbatim auto-generated transcript of the project presentation.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='9' y='3' width='14' height='26' rx='3' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Cpath d='M12 11h8M12 16h8M12 21h8' stroke='%23eb6834' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand">Tray vs. Packed
+      <small>Separation Processes &middot; University of Cincinnati</small>
+    </div>
+    <nav class="nav" aria-label="Main">
+      <a href="index.html">Demo</a>
+      <a href="video.html">Video</a>
+      <a href="transcript.html">Transcript</a>
+      <a href="docs.html">Documentation</a>
+      <a href="model-comparison.html">Model comparison</a>
+      <a href="references.html">References</a>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Switch colour theme">&#9686; Auto</button>
+  </div>
+</header>
+
+<main class="page">
+  <h1>Transcript</h1>
+
+  <div class="prose">
+    <p>The <strong>verbatim auto-generated transcript</strong> of the
+      <a href="video.html">presentation video</a>, reproduced unedited —
+      including the transcription errors that automatic captioning produces.
+      It is presented as plain selectable text so it can be searched with the
+      browser's own find (Ctrl/&#8984;+F) and copied.</p>
+  </div>
+
+  <div style="display:flex; gap:0.5rem; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap">
+    <button class="btn" type="button" id="copy-btn">Copy transcript</button>
+    <span class="field__hint" id="copy-status" role="status" aria-live="polite"></span>
+  </div>
+
+  <div class="transcript" id="transcript" tabindex="0" role="region"
+       aria-label="Presentation transcript">[FILL IN]
+
+Paste the full auto-generated transcript here, exactly as YouTube produces it,
+replacing this placeholder text.
+
+To get it: open the video on YouTube, use the "..." menu below the player and
+choose "Show transcript", then select all of the transcript panel and copy it.
+Paste it between the tags of the element with id="transcript" in this file.
+
+Keep it verbatim. The assignment asks for the auto-generated transcript, not a
+cleaned-up version — the transcription mistakes are part of what is being shown.
+If you want to annotate it, add a separate commentary section below rather than
+editing the transcript itself.</div>
+
+  <div class="prose" style="margin-top:1.75rem">
+    <h2>Notes on the transcript</h2>
+    <div class="fillin">
+      <p>Optional. If the auto-captioning mangled any technical terms worth
+        flagging — "Kremser", "Colburn", "HETP", "packed" and "backed", and so on
+        are common casualties — note the corrections here, leaving the transcript
+        above untouched.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    Implementation A &middot; Static site, no framework, no build step.
+    <a href="../index.html">Switch implementation</a>
+  </div>
+</footer>
+
+<script type="module" src="js/site.js"></script>
+<script>
+  document.getElementById('copy-btn').addEventListener('click', async () => {
+    const text = document.getElementById('transcript').textContent;
+    const status = document.getElementById('copy-status');
+    try {
+      await navigator.clipboard.writeText(text);
+      status.textContent = 'Copied.';
+    } catch {
+      status.textContent = 'Copy failed — select the text and copy manually.';
+    }
+    setTimeout(() => { status.textContent = ''; }, 3000);
+  });
+</script>
+</body>
+</html>

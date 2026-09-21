@@ -302,20 +302,31 @@ export function ntuNumeric(inp, n = 1000) {
   let m = Math.max(2, Math.floor(n));
   if (m % 2 !== 0) m += 1; // Simpson needs an even interval count
 
+  const h = (inp.yIn - inp.yOut) / m;
+  let sum = ntuIntegrand(inp, inp.yOut) + ntuIntegrand(inp, inp.yIn);
+  for (let i = 1; i < m; i++) {
+    sum += ntuIntegrand(inp, inp.yOut + i * h) * (i % 2 === 1 ? 4 : 2);
+  }
+  return (sum * h) / 3;
+}
+
+/**
+ * The NTU integrand, 1/(y - y*), at gas composition y.
+ *
+ * Exported so the NTU plot can draw the curve it shades without doing any
+ * physics of its own (RISK-12). Uses eq. (19): the driving force is linear in
+ * y, y - y* = (1 - 1/A)*(y - m*x_in) + dTop/A.
+ */
+export function ntuIntegrand(inp, y) {
+  return 1 / drivingForceAt(inp, y);
+}
+
+/** The local driving force y - y* at gas composition y, eq. (19). */
+export function drivingForceAt(inp, y) {
   const A = absorptionFactor(inp);
   const b = 1 - 1 / A;
   const { dTop } = deltas(inp);
-  const eqAtXIn = yStar(inp, inp.xIn);
-
-  // eq. (19): y - y* = (1 - 1/A)*(y - m*x_in) + dTop/A
-  const integrand = (y) => 1 / (b * (y - eqAtXIn) + dTop / A);
-
-  const h = (inp.yIn - inp.yOut) / m;
-  let sum = integrand(inp.yOut) + integrand(inp.yIn);
-  for (let i = 1; i < m; i++) {
-    sum += integrand(inp.yOut + i * h) * (i % 2 === 1 ? 4 : 2);
-  }
-  return (sum * h) / 3;
+  return b * (y - yStar(inp, inp.xIn)) + dTop / A;
 }
 
 /**

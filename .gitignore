@@ -2,3 +2,7 @@ node_modules/
 .DS_Store
 .netlify/
 *.log
+
+# transient local tooling
+smoke-tmp.mjs
+shots/

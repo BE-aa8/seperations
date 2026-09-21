@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>References &amp; attribution — Tray vs. Packed</title>
+<meta name="description" content="Sources, attribution, and contributions for the Separation Processes AI project.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='9' y='3' width='14' height='26' rx='3' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Cpath d='M12 11h8M12 16h8M12 21h8' stroke='%23eb6834' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand">Tray vs. Packed
+      <small>Separation Processes &middot; University of Cincinnati</small>
+    </div>
+    <nav class="nav" aria-label="Main">
+      <a href="index.html">Demo</a>
+      <a href="video.html">Video</a>
+      <a href="transcript.html">Transcript</a>
+      <a href="docs.html">Documentation</a>
+      <a href="model-comparison.html">Model comparison</a>
+      <a href="references.html">References</a>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Switch colour theme">&#9686; Auto</button>
+  </div>
+</header>
+
+<main class="page">
+<div class="prose">
+
+<h1>References &amp; attribution</h1>
+
+<h2>Course and coursework</h2>
+
+<div class="fillin">
+  <p>Course number and title, term, instructor, and the assignment this was
+    submitted for. Add your own name and any collaborators.</p>
+</div>
+
+<h2>Technical sources</h2>
+
+<p>The physics implemented here is standard dilute-absorption theory. The
+primary reference for this course, and the one every default value in the demo
+is to be checked against:</p>
+
+<ul>
+  <li>Seader, Henley &amp; Roper, <em>Separation Process Principles</em> —
+    Chapter 6, absorption and stripping of dilute mixtures. Source for the
+    Kremser and Colburn treatments, the absorption factor, and the
+    stage-versus-transfer-unit relationship.</li>
+</ul>
+
+<div class="fillin">
+  <p>Add the edition and publisher you actually used, plus any other sources you
+    consulted — lecture notes, other textbooks (Treybal and Wankat are the usual
+    companions for this material), or vendor data for packing characteristics.
+    Cite them in whatever format the course requires.</p>
+</div>
+
+<div class="note note--warning">
+  <span class="note__icon">&#9888;</span>
+  <div><strong>Defaults still pending verification.</strong> The numeric defaults
+    in the demo — equilibrium slopes, transfer-unit heights, tray efficiency and
+    spacing — were chosen to be physically plausible and to make the
+    demonstration legible. They have <em>not</em> been checked against the
+    reference above. A verification ledger listing every value is kept in
+    <code>docs/DECISIONS.md</code>; tick the rows off as you check them, then
+    remove the standing caveat from the demo page.</div>
+</div>
+
+<h2>Named equations</h2>
+
+<ul>
+  <li><strong>Kremser equation</strong> — the closed-form stage count for
+    counter-current cascades with straight operating and equilibrium lines.</li>
+  <li><strong>Colburn equation</strong> — the corresponding closed form for the
+    number of overall gas-phase transfer units.</li>
+  <li><strong>Souders–Brown</strong> and the <strong>generalised pressure-drop
+    correlation</strong> — not implemented here; they are what a future
+    column-diameter phase would be built on.</li>
+</ul>
+
+<h2>AI tools used</h2>
+
+<p>This is an AI project, so the tools are part of the subject matter rather than
+a footnote. A full account of which model did what is on the
+<a href="model-comparison.html">model comparison page</a>, and every design
+decision is logged with its rationale and attribution in
+<code>docs/DECISIONS.md</code>.</p>
+
+<div class="fillin">
+  <p>List the models and interfaces used, with dates. Note anything that affects
+    reproducibility — settings, versions, whether sessions were continued or
+    started fresh.</p>
+</div>
+
+<h2>Software and standards</h2>
+
+<p>The site has <strong>no runtime dependencies and no build step</strong>. It is
+plain HTML, CSS and JavaScript modules, using only platform features:</p>
+
+<ul>
+  <li><strong>SVG</strong> for every diagram and column drawing.</li>
+  <li><strong>Pointer Events</strong> for dragging, so that one code path serves
+    mouse, touch and pen.</li>
+  <li><strong>Node's built-in test runner</strong> for the physics test suite —
+    no test framework installed.</li>
+  <li><strong>Netlify</strong> for static hosting.</li>
+</ul>
+
+<p>The categorical colours used for the two column types were checked against
+colour-vision-deficiency separation and contrast thresholds in both light and
+dark themes rather than chosen by eye.</p>
+
+<h2>Contributions</h2>
+
+<div class="fillin">
+  <p>Who did what. If this was individual work, say so. If anyone else
+    contributed — reviewing the physics, testing the interface, filming or
+    editing the presentation — credit them here, and be specific about the
+    contribution.</p>
+</div>
+
+<h2>Reuse</h2>
+
+<div class="fillin">
+  <p>State how you want this to be reused, if at all. If you would like others to
+    be able to build on it, a permissive licence such as MIT is the
+    straightforward choice; the repository's <code>package.json</code> currently
+    declares MIT, so either confirm that or change it to match your intent.</p>
+</div>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    Implementation A &middot; Static site, no framework, no build step.
+    <a href="../index.html">Switch implementation</a>
+  </div>
+</footer>
+
+<script type="module" src="js/site.js"></script>
+</body>
+</html>
