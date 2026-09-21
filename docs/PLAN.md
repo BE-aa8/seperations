@@ -475,12 +475,16 @@ N_act = ceil( N / E_o )                                                     (10)
 Z_tray = N_act · S + h_top + h_bot                                          (11)
 ```
 
-`D-15`: Equation (11) uses `N_act · S`, following the brief. The common
-alternative is `(N_act − 1)·S + h_top + h_bot`, since *n* trays have *n−1* gaps
-between them. Both appear in practice depending on whether the allowances are
-measured from the trays or from the tangent lines. The difference is one tray
-spacing (0.55–0.6 m here), which is not negligible. **This is flagged as a
-convention choice, not a physical fact**, and the site will say so. `VERIFY`
+`D-15`: Equation (11) uses `N_act · S`. **Decided by the project owner,
+2026-09-21.** The common alternative is `(N_act − 1)·S + h_top + h_bot`, since
+*n* trays have *n−1* gaps between them; both appear in practice depending on
+whether the allowances are measured from the trays or from the tangent lines,
+and the difference is one tray spacing (0.55–0.6 m here), which is not
+negligible.
+
+This remains a **convention choice, not a physical fact**, and the site says so
+— but it is no longer an open question. Implementations must use `N_act · S`;
+every worked example in §7 and every test assertion depends on it.
 
 ### 3.5 The McCabe-Thiele staircase, and the exact fractional stage
 
@@ -1587,8 +1591,10 @@ everybody demos.
 **`RISK-07` — `ceil` applied in the wrong place, and the height convention.**
 *The error:* `ceil` before dividing by `E_o`, or `ceil(N)/E_o`, or silently
 choosing `(N_act − 1)·S`.
-*Note:* the height convention is a genuine `D-15`, not a bug — but it must
-be stated, not assumed. A critic may reasonably prefer the other one.
+*Note:* the height convention is a genuine `D-15`, not a bug. It was **settled
+by the owner on 2026-09-21 in favour of `N_act · S`**, so silently choosing the
+other form is now simply wrong and will fail the §7 worked examples — but it
+remains a convention rather than a physical fact, and the site says so.
 *Caught by:* Phase 4's explicit `E_o = 1.0 → 3 trays, 3.80 m` check.
 
 **`RISK-08` — Profile direction inverted.**
@@ -1631,16 +1637,15 @@ thing that makes the future phases in §9 require a rewrite rather than an addit
    `m` for all four systems — particularly SO₂, where the non-linearity means any
    single `m` is a fit over a chosen range, and the choice of range should be
    stated.
-2. **Tray height convention** (`D-15`): `N_act·S` per the brief, or
-   `(N_act − 1)·S`? One tray spacing of difference.
-3. Should the SO₂ preset display an explicit warning that the straight-line model
-   is a poor fit for it, or is the footnote in §4.2 enough? Recommendation: an
-   explicit on-screen note, because it is a teaching opportunity rather than an
-   embarrassment.
+2. ~~**Tray height convention** (`D-15`): `N_act·S` or `(N_act − 1)·S`?~~
+   **RESOLVED 2026-09-21** — the owner chose `N_act·S`. See §3.4.
+3. ~~Should the SO₂ preset display an explicit on-screen warning?~~
+   **RESOLVED** — yes, via critique point C-13; see `D-33` and §4.2.
 4. Does the assignment require the site to be usable offline / from a local file?
    (`file://` breaks ES module imports without a server; if so, that changes §1.3.)
-5. Should the composition-vs-height plot put height on the x-axis or the y-axis?
-   Recommendation: **y-axis**, so it reads like the physical columns beside it.
+   **Still open.**
+5. ~~Should the composition-vs-height plot put height on the x-axis or the y-axis?~~
+   **RESOLVED** — y-axis, so it reads like the physical columns beside it.
 
 ---
 

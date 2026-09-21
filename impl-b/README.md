@@ -3,6 +3,10 @@
 This directory is reserved for an **independent implementation of the same
 specification** that produced `impl-a/`.
 
+> **To fill this slot:** paste `docs/prompts/03-impl-b-handoff.md` into a
+> second model. It is self-contained and covers the chat-only case (where the
+> model has no repository access) as well as the agentic one.
+
 ## The rule
 
 `impl-a/` and `impl-b/` must be built by **different AI models**. If one model

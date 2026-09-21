@@ -180,9 +180,11 @@ export function actualTrays(inp) {
 /**
  * Tray column height, eq. (11): N_act * S + h_top + h_bot.
  *
- * CONVENTION, NOT PHYSICS (D-15). The common alternative is (N_act - 1) * S,
- * since n trays have n-1 gaps between them. The difference is one tray spacing.
- * Flagged in the plan as an open question, not settled fact.
+ * CONVENTION, NOT PHYSICS (D-15), but SETTLED: the project owner chose this
+ * form on 2026-09-21. The common alternative is (N_act - 1) * S, since n trays
+ * have n-1 gaps between them, and the difference is one tray spacing (~0.6 m
+ * here) -- so it stays a convention rather than a fact, and the site says so.
+ * Do not switch it: every worked example and test assertion depends on it.
  */
 export function trayColumnHeight(inp) {
   return actualTrays(inp) * inp.traySpacing + inp.hTop + inp.hBot;
