@@ -1,1 +1,36 @@
-export function createScale(o={}){const{xMax=1,yMax=1,width=700,height=480,margin={left:64,right:24,top:24,bottom:52}}=o,iw=width-margin.left-margin.right,ih=height-margin.top-margin.bottom;return{width,height,margin,xMax,yMax,xToSvg:x=>margin.left+x/xMax*iw,yToSvg:y=>height-margin.bottom-y/yMax*ih,svgToX:x=>(x-margin.left)/iw*xMax,svgToY:y=>(height-margin.bottom-y)/ih*yMax}}export function screenToSvg(svg,x,y){const p=new DOMPoint(x,y).matrixTransform(svg.getScreenCTM().inverse());return{x:p.x,y:p.y}}
+export function createScale({
+  xMax = 1,
+  yMax = 1,
+  width = 700,
+  height = 480,
+  margin = { left: 70, right: 28, top: 28, bottom: 58 }
+} = {}) {
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  return {
+    width,
+    height,
+    margin,
+    xMax,
+    yMax,
+    xToSvg: (x) => margin.left + (x / xMax) * innerWidth,
+    yToSvg: (y) =>
+      height - margin.bottom - (y / yMax) * innerHeight,
+    svgToX: (x) => ((x - margin.left) / innerWidth) * xMax,
+    svgToY: (y) =>
+      ((height - margin.bottom - y) / innerHeight) * yMax
+  };
+}
+
+export function screenToSvg(svg, clientX, clientY) {
+  const point = new DOMPoint(clientX, clientY);
+  const transformed = point.matrixTransform(
+    svg.getScreenCTM().inverse()
+  );
+
+  return {
+    x: transformed.x,
+    y: transformed.y
+  };
+}
