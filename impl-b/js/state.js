@@ -1,10 +1,5 @@
 import * as physics from "./physics.js";
-import {
-  BALANCED,
-  DEFAULTS,
-  NEAR_BALANCED,
-  PACKINGS
-} from "./presets.js";
+import { BALANCED, DEFAULTS, NEAR_BALANCED, PACKINGS } from "./presets.js";
 
 let state = makeState(DEFAULTS);
 let derived = physics.solve(state);
@@ -29,21 +24,28 @@ function makeState(source) {
     hBot: source.hBot,
     packing,
     presetId: source.id || "generic",
-    probeZ: 0
+    probeZ: source.probeZ ?? 0
   };
 }
 
 function clampState(candidate) {
   const yClamp = physics.clampYOut(candidate, candidate.yOut);
-  const withY = {
-    ...candidate,
-    yOut: yClamp.value
-  };
+  const withY = { ...candidate, yOut: yClamp.value };
 
+  // x_out lower bound depends on y_out, so re-clamp it after y_out changes.
   return {
     ...withY,
     xOut: physics.clampXOut(withY, withY.xOut).value
   };
+}
+
+function heightLimit(input) {
+  const nextDerived = physics.solve(input);
+  return Math.max(nextDerived.Z, nextDerived.ZTray, 0);
+}
+
+function clampProbeZ(input, value) {
+  return Math.min(Math.max(value, 0), heightLimit(input));
 }
 
 function emit() {
@@ -62,12 +64,11 @@ function emit() {
     );
   }
 
+  // The packed profile is parameterised from the top, so convert the
+  // common bottom-origin probe coordinate into distance from that top.
   const packedY =
     probeZ <= derived.Z
-      ? physics.gasProfilePacked(
-        state,
-        derived.Z - probeZ
-      )
+      ? physics.gasProfilePacked(state, derived.Z - probeZ)
       : null;
 
   const trayY =
@@ -106,16 +107,8 @@ export function subscribe(listener) {
 
 export function setField(field, value) {
   if (!(field in state) || !Number.isFinite(value)) {
-    return {
-      ok: false,
-      message: "Enter a finite number."
-    };
+    return { ok: false, message: "Enter a finite number." };
   }
-
-  const candidate = {
-    ...state,
-    [field]: value
-  };
 
   if (field === "m" && value <= 0) {
     return { ok: false, message: "m must be positive." };
@@ -126,29 +119,29 @@ export function setField(field, value) {
   }
 
   if (field === "Eo" && (value <= 0 || value > 1)) {
-    return { ok: false, message: "E_o must be greater than 0 and no more than 1." };
+    return {
+      ok: false,
+      message: "E_o must be greater than 0 and no more than 1."
+    };
   }
 
-  if (
-    ["traySpacing", "hTop", "hBot"].includes(field) &&
-    value < 0
-  ) {
+  if (["traySpacing", "hTop", "hBot"].includes(field) && value < 0) {
     return { ok: false, message: "Geometry values cannot be negative." };
   }
 
   if (field === "probeZ") {
-    state = {
-      ...state,
-      probeZ: Math.max(0, value)
-    };
+    state = { ...state, probeZ: clampProbeZ(state, value) };
     emit();
     return { ok: true };
   }
 
+  const candidate = { ...state, [field]: value };
+
   if (candidate.yIn <= candidate.m * candidate.xIn) {
     return {
       ok: false,
-      message: "The gas inlet composition must exceed equilibrium with the liquid inlet."
+      message:
+        "The gas inlet composition must exceed equilibrium with the liquid inlet."
     };
   }
 
@@ -156,20 +149,23 @@ export function setField(field, value) {
   const f = physics.feasibility(next);
 
   if (!f.feasible) {
-    return {
-      ok: false,
-      message: f.reason
-    };
+    return { ok: false, message: f.reason };
   }
 
-  state = next;
-  emit();
+  // Numeric inputs can change column height, so keep the probe inside the
+  // new common physical range as part of the state mutation.
+  state = {
+    ...next,
+    probeZ: clampProbeZ(next, next.probeZ)
+  };
 
+  emit();
   return { ok: true };
 }
 
 export function loadPreset(preset) {
-  state = clampState(makeState(preset));
+  const next = clampState(makeState(preset));
+  state = { ...next, probeZ: clampProbeZ(next, next.probeZ) };
   emit();
 }
 
@@ -178,12 +174,13 @@ export function setPacking(id) {
     return;
   }
 
-  state = {
+  const next = {
     ...state,
     packing: id,
     HOG: PACKINGS[id].HOG
   };
 
+  state = { ...next, probeZ: clampProbeZ(next, next.probeZ) };
   emit();
 }
 
