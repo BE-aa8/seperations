@@ -310,6 +310,36 @@ control in a direction it was already clamped against.</p>
 innocent. That is worth carrying out of this project: when an automated check
 disagrees with a piece of work, the check is a hypothesis too.</p>
 
+<h3>The outcome: implementation A was chosen</h3>
+
+<p>After viewing both running side by side, <strong>implementation A was chosen
+as the version to carry forward</strong>. The root URL now opens it;
+implementation B remains in the repository in full, and both are still
+browsable together at <a href="../compare.html">the comparison view</a>.</p>
+
+<p>It is worth being precise about what that decision was and was not. It was
+<strong>not</strong> a judgement that A is more correct: the two agree to the
+last digit across 4,837 operating points, and both pass the shared suite 65/65.
+It was a preference between two defensible interface designs &mdash; most
+visibly, B opens with a landing section and a call to action, while A puts the
+tool on screen immediately.</p>
+
+<div class="note note--warning">
+  <span class="note__icon">&#9888;</span>
+  <div><strong>Two asymmetries the choice should be read against.</strong> B
+    received a targeted defect report and a second attempt; A received neither,
+    because it was verified in a browser as it was built. And A's supporting
+    pages were written out in full while B's were left largely as placeholders,
+    so A was further along as a document regardless of its interface. A
+    like-for-like judgement on interface alone would have to discount both.</div>
+</div>
+
+<div class="fillin">
+  <p><strong>Your reasons, in your own words.</strong> What actually decided it
+    when you had both in front of you? Anything B did better that you gave up by
+    choosing A?</p>
+</div>
+
 <h3>Three lessons worth stating</h3>
 
 <ol>
@@ -352,8 +382,9 @@ steering.</p>
 
 <footer class="site-footer">
   <div class="site-footer__inner">
-    Implementation A &middot; Static site, no framework, no build step.
-    <a href="../index.html">Switch implementation</a>
+    Static site &middot; no framework, no build step.
+    <a href="../compare.html">Compare with implementation B</a> &middot;
+    <a href="../overview.html">Project overview</a>
   </div>
 </footer>
 

@@ -3,6 +3,14 @@
   publish = "."
   command = ""
 
+# Implementation A is the canonical site (D-50). The root redirects to it;
+# impl-b/ and compare.html remain reachable as the model-comparison evidence.
+[[redirects]]
+  from = "/"
+  to = "/impl-a/index.html"
+  status = 301
+  force = true
+
 [[headers]]
   for = "/*"
   [headers.values]

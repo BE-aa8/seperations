@@ -239,6 +239,8 @@ not taken from the report:
 |---|---|---|---|
 | D-48 | A **source-parse smoke test** (`tests/parse.test.mjs`) is added to the shared suite, covering every `impl-*/js/*.js`. | **Identified by impl-b itself**, in §5 of its round-2 report: a physics-only gate reported 60/61 while the application was dead. Zero dependencies — it shells out to `node --check`. It includes a negative case asserting the checker actually catches both round-1 defect shapes, because a smoke test that cannot fail is worse than none. | Critic:impl-b → Model:Opus5 |
 | D-49 | Browser verification stays a **manual** step and the plan now says so explicitly. | Automating it means a browser-automation dependency, and the site ships with none. Better to state the limit than imply the suite covers it. | Model:Opus5 |
+| D-50 | **Implementation A is the canonical site.** The root URL redirects to it; `impl-b/` is kept in full and `compare.html` stays live. | The owner chose it after viewing both side by side. Explicitly an interface preference, not a correctness judgement — the two agree to the last digit across 4,837 points and both pass 65/65. `impl-b` is retained as the model-comparison evidence, not as a fallback; deleting it would destroy the thing the assignment is about. | Owner |
+| D-51 | `impl-b`'s one remaining defect is **still not patched**. | It stays as the model produced it. Now that A is canonical the defect ships in nothing user-facing, and fixing it would retroactively edit the artifact the comparison rests on. | Owner |
 
 #### One defect remains in impl-b
 
