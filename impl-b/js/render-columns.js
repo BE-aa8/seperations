@@ -29,10 +29,11 @@ export function mount(root) {
   svg.append(layer);
   root.append(svg);
 
+  // One shared tab controls the physical-height probe for both columns.
   probeNodes = {
     rule: element("line", {
       class: "probe-rule",
-      "pointer-events": "stroke"
+      "pointer-events": "none"
     }),
     tab: element("rect", {
       class: "probe-tab",
@@ -44,7 +45,10 @@ export function mount(root) {
       "aria-label": "Height probe, drag vertically",
       "aria-orientation": "vertical"
     }),
-    label: element("text", { class: "probe-label" })
+    label: element("text", {
+      class: "probe-label",
+      "aria-hidden": "true"
+    })
   };
 
   layer.append(
@@ -64,7 +68,9 @@ export function getScale() {
 }
 
 export function update(derived) {
-  layer.querySelectorAll(".column-static").forEach((node) => node.remove());
+  layer
+    .querySelectorAll(".column-static")
+    .forEach((node) => node.remove());
 
   const maxHeight = Math.max(derived.ZTray, derived.Z, 1);
   const baseY = 450;
@@ -84,8 +90,10 @@ export function update(derived) {
     }
   });
 
-  // zToSvg uses the same bottom-origin convention as the generic scale.
-  const zToSvg = (z) => baseY - (z / maxHeight) * activePixels;
+  // Keep the physical-height axis common to both columns without
+  // normalising the two total heights.
+  const zToSvg = (z) =>
+    baseY - (z / maxHeight) * activePixels;
 
   const drawColumn = ({
     cx,
@@ -118,6 +126,7 @@ export function update(derived) {
         rx: 8,
         class: "packing-fill column-static"
       });
+
       layer.insertBefore(fill, probeNodes.rule);
 
       const text = element("text", {
@@ -148,6 +157,7 @@ export function update(derived) {
         layer.insertBefore(label, probeNodes.rule);
       }
     } else {
+      // Above 40 trays, keep the top/bottom detail and compress the middle.
       for (let i = 1; i <= 8; i += 1) {
         const line = element("line", {
           x1: x + 9,
@@ -207,6 +217,8 @@ export function update(derived) {
   });
 
   const probeZ = derived.probe?.z ?? 0;
+  const probeMaxZ = Math.max(derived.Z, derived.ZTray, 0);
+
   probeNodes.rule.setAttribute("x1", 40);
   probeNodes.rule.setAttribute("x2", 680);
   probeNodes.rule.setAttribute("y1", zToSvg(probeZ));
@@ -214,6 +226,9 @@ export function update(derived) {
 
   probeNodes.tab.setAttribute("x", 345);
   probeNodes.tab.setAttribute("y", zToSvg(probeZ) - 22);
+  probeNodes.tab.setAttribute("aria-valuemin", "0");
+  probeNodes.tab.setAttribute("aria-valuemax", String(probeMaxZ));
+  probeNodes.tab.setAttribute("aria-valuenow", String(probeZ));
   probeNodes.tab.setAttribute(
     "aria-valuetext",
     `height probe = ${probeZ.toFixed(3)} m`
@@ -224,6 +239,3 @@ export function update(derived) {
   probeNodes.label.setAttribute("y", zToSvg(probeZ) - 22);
 }
 
-export function getProbeScale() {
-  return scale;
-}
