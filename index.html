@@ -20,7 +20,17 @@
   .chooser .tag { display: inline-block; font-size: 0.7rem; letter-spacing: 0.08em;
                   font-weight: 700; color: var(--ink-muted); border: 1px solid var(--axis);
                   border-radius: 999px; padding: 0.05rem 0.5rem; margin-bottom: 0.6rem; }
-  .chooser a[aria-disabled="true"] { opacity: 0.6; pointer-events: none; }
+  .compare-cta { display: block; text-decoration: none; color: inherit;
+                 background: var(--surface); border: 1px solid var(--hairline);
+                 border-left: 4px solid var(--tray); border-radius: var(--r-lg);
+                 padding: 1.25rem; margin: 2rem 0 0; }
+  .compare-cta:hover { border-color: var(--tray); }
+  .compare-cta h2 { margin: 0 0 0.3rem; font-size: 1.15rem; }
+  .compare-cta p { margin: 0; color: var(--ink-2); font-size: 0.9rem; max-width: 62ch; }
+  .compare-cta .tag { display: inline-block; font-size: 0.7rem; letter-spacing: 0.08em;
+                      font-weight: 700; color: var(--ink-muted);
+                      border: 1px solid var(--axis); border-radius: 999px;
+                      padding: 0.05rem 0.5rem; margin-bottom: 0.6rem; }
 </style>
 </head>
 <body>
@@ -34,41 +44,37 @@
     different AI models, and both must pass the same physics test suite.
   </p>
 
+  <a href="compare.html" class="compare-cta">
+    <span class="tag">SIDE BY SIDE</span>
+    <h2>Compare both, live &rarr;</h2>
+    <p>Both implementations running next to each other, with blind mode and a
+      side-swap so position does not steer the judgement. The physics is
+      identical in both &mdash; this is an interface comparison.</p>
+  </a>
+
   <div class="chooser">
     <a href="impl-a/index.html">
       <span class="tag">IMPLEMENTATION A</span>
       <h2>Open implementation A &rarr;</h2>
-      <p>The full site: interactive demo, documentation, model comparison and
+      <p>Claude's build: interactive demo, documentation, model comparison and
         references.</p>
     </a>
     <a href="impl-b/index.html" id="impl-b-link">
       <span class="tag">IMPLEMENTATION B</span>
       <h2>Open implementation B &rarr;</h2>
-      <p>The second model's independent build from the same plan.</p>
+      <p>ChatGPT's independent build from the same plan.</p>
     </a>
   </div>
 
   <div class="note">
     <span class="note__icon">&#9432;</span>
-    <div>Both implementations are written against the same frozen module
-      interface and graded by the same unmodified test suite, so the comparison
-      is a measurement rather than an impression. The specification they were
-      built from is <code>docs/PLAN.md</code>; the running decision log is
-      <code>docs/DECISIONS.md</code>.</div>
+    <div>Both are written against the same frozen module interface and graded
+      by the same test suite &mdash; currently <strong>65 / 65 each</strong> &mdash;
+      and their physics agrees to the last digit across 4,837 operating points.
+      The specification they were built from is <code>docs/PLAN.md</code>; the
+      running decision log is <code>docs/DECISIONS.md</code>.</div>
   </div>
 </main>
 
-<script>
-  // Soften the link to implementation B until it exists.
-  fetch('impl-b/index.html', { method: 'HEAD' })
-    .then((r) => { if (!r.ok) throw new Error('not built'); })
-    .catch(() => {
-      const a = document.getElementById('impl-b-link');
-      a.setAttribute('aria-disabled', 'true');
-      a.querySelector('h2').textContent = 'Implementation B — not built yet';
-      a.querySelector('p').textContent =
-        'Reserved for the second model. See impl-b/README.md for the contract it must satisfy.';
-    });
-</script>
 </body>
 </html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Side by side — Tray vs. Packed</title>
+<meta name="description" content="Compare the two implementations of the same specification, running live, side by side.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='5' width='11' height='22' rx='2.5' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Crect x='18' y='5' width='11' height='22' rx='2.5' fill='none' stroke='%23eb6834' stroke-width='2.5'/%3E%3C/svg%3E">
+<style>
+  :root {
+    color-scheme: light;
+    --surface: #fcfcfb;
+    --plane: #f9f9f7;
+    --raised: #ffffff;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --ink-muted: #898781;
+    --hairline: rgba(11, 11, 11, 0.10);
+    --axis: #c3c2b7;
+    --a: #2a78d6;
+    --b: #eb6834;
+    --warning: #fab219;
+    --warning-wash: rgba(250, 178, 25, 0.12);
+    --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --surface: #1a1a19; --plane: #0d0d0d; --raised: #232322;
+      --ink: #ffffff; --ink-2: #c3c2b7; --ink-muted: #898781;
+      --hairline: rgba(255, 255, 255, 0.10); --axis: #383835;
+      --a: #3987e5; --b: #d95926;
+      --warning-wash: rgba(250, 178, 25, 0.16);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--plane); color: var(--ink);
+    font-family: var(--font); display: flex; flex-direction: column;
+  }
+
+  header {
+    border-bottom: 1px solid var(--hairline); background: var(--surface);
+    padding: 0.6rem 1rem; flex: none;
+  }
+  .bar { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; align-items: center; }
+  .title { font-weight: 700; margin-right: auto; line-height: 1.3; }
+  .title small { display: block; font-weight: 400; font-size: 0.75rem; color: var(--ink-muted); }
+
+  .group { display: flex; gap: 0.3rem; align-items: center; }
+  button, .linkbtn {
+    font: inherit; font-size: 0.85rem; cursor: pointer; text-decoration: none;
+    background: var(--raised); color: var(--ink);
+    border: 1px solid var(--axis); border-radius: 5px; padding: 0.35rem 0.65rem;
+  }
+  button:hover, .linkbtn:hover { border-color: var(--ink-muted); }
+  button[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+  label.check { display: inline-flex; gap: 0.35rem; align-items: center;
+                font-size: 0.85rem; color: var(--ink-2); cursor: pointer; }
+
+  .note {
+    margin: 0.6rem 1rem 0; padding: 0.55rem 0.8rem; font-size: 0.83rem;
+    border: 1px solid var(--hairline); border-left: 3px solid var(--warning);
+    background: var(--warning-wash); border-radius: 6px; color: var(--ink-2);
+  }
+  .note strong { color: var(--ink); }
+  .note[hidden] { display: none; }
+
+  main { flex: 1; display: grid; gap: 1px; background: var(--hairline);
+         padding: 0.75rem 1rem 1rem; grid-template-columns: 1fr 1fr; min-height: 0; }
+  main[data-view="a"], main[data-view="b"] { grid-template-columns: 1fr; }
+  main[data-view="a"] .panel[data-impl="b"],
+  main[data-view="b"] .panel[data-impl="a"] { display: none; }
+
+  .panel { display: flex; flex-direction: column; min-width: 0; min-height: 0;
+           background: var(--surface); border: 1px solid var(--hairline); border-radius: 10px;
+           overflow: hidden; }
+  .panel__head { display: flex; align-items: center; gap: 0.6rem;
+                 padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--hairline);
+                 font-size: 0.85rem; flex: none; }
+  .panel__tag { font-weight: 700; letter-spacing: 0.02em; }
+  .panel[data-impl="a"] .panel__tag { color: var(--a); }
+  .panel[data-impl="b"] .panel__tag { color: var(--b); }
+  .panel__model { color: var(--ink-muted); font-size: 0.78rem; }
+  .panel__head .linkbtn { margin-left: auto; font-size: 0.78rem; padding: 0.2rem 0.5rem; }
+  .panel iframe { flex: 1; width: 100%; border: 0; background: var(--plane); min-height: 0; }
+
+  body.blind .panel__model { visibility: hidden; }
+  body.blind .panel__tag::after { content: " (hidden)"; font-weight: 400; color: var(--ink-muted); }
+  body.blind .panel[data-impl="a"] .panel__tag,
+  body.blind .panel[data-impl="b"] .panel__tag { color: var(--ink); }
+
+  main.swapped .panel[data-impl="a"] { order: 2; }
+  main.swapped .panel[data-impl="b"] { order: 1; }
+
+  @media (max-width: 900px) {
+    main { grid-template-columns: 1fr; }
+    .panel iframe { min-height: 70vh; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <div class="title">Side by side
+      <small>Two implementations of one specification &middot; Separation Processes, University of Cincinnati</small>
+    </div>
+
+    <div class="group" role="group" aria-label="View">
+      <button type="button" data-view-btn="split" aria-pressed="true">Both</button>
+      <button type="button" data-view-btn="a" aria-pressed="false">A only</button>
+      <button type="button" data-view-btn="b" aria-pressed="false">B only</button>
+    </div>
+
+    <div class="group">
+      <button type="button" id="swap">Swap sides</button>
+      <label class="check"><input type="checkbox" id="blind"> Blind</label>
+      <button type="button" id="reload">Reload both</button>
+    </div>
+
+    <a class="linkbtn" href="index.html">&larr; Overview</a>
+  </div>
+</header>
+
+<div class="note" id="tip">
+  <strong>Judging on UI/UX, not physics.</strong> Both produce
+  <em>numerically identical</em> results — the same values to the last digit — so
+  anything you prefer here is a genuine interface preference, not one being more
+  correct. Worth trying in each: drag the two points on the y–x diagram, drag the
+  height probe on the columns, switch to the SO₂ preset, and click the A = 1
+  demo. Tick <strong>Blind</strong> to hide which is which, and
+  <strong>Swap sides</strong> to check that left/right position is not steering
+  you. At this width each is in a half-width column, so use <strong>A only</strong>
+  / <strong>B only</strong> to judge either at full size.
+  <button type="button" id="dismiss" style="margin-left:0.4rem">Hide</button>
+</div>
+
+<main id="stage" data-view="split">
+  <section class="panel" data-impl="a">
+    <div class="panel__head">
+      <span class="panel__tag">Implementation A</span>
+      <span class="panel__model">Claude Opus 5</span>
+      <a class="linkbtn" href="impl-a/index.html" target="_blank" rel="noopener">Open full &nearr;</a>
+    </div>
+    <iframe data-src="impl-a/index.html" title="Implementation A" loading="eager"></iframe>
+  </section>
+
+  <section class="panel" data-impl="b">
+    <div class="panel__head">
+      <span class="panel__tag">Implementation B</span>
+      <span class="panel__model">ChatGPT</span>
+      <a class="linkbtn" href="impl-b/index.html" target="_blank" rel="noopener">Open full &nearr;</a>
+    </div>
+    <iframe data-src="impl-b/index.html" title="Implementation B" loading="eager"></iframe>
+  </section>
+</main>
+
+<script>
+  const stage = document.getElementById('stage');
+  const frames = [...document.querySelectorAll('iframe')];
+
+  const load = () => frames.forEach((f) => { f.src = f.dataset.src; });
+  load();
+
+  for (const btn of document.querySelectorAll('[data-view-btn]')) {
+    btn.addEventListener('click', () => {
+      stage.dataset.view = btn.dataset.viewBtn;
+      document.querySelectorAll('[data-view-btn]').forEach((b) =>
+        b.setAttribute('aria-pressed', String(b === btn)));
+    });
+  }
+
+  document.getElementById('swap').addEventListener('click', () =>
+    stage.classList.toggle('swapped'));
+
+  document.getElementById('blind').addEventListener('change', (e) => {
+    document.body.classList.toggle('blind', e.target.checked);
+    // Randomise the order when going blind, so position carries no information.
+    if (e.target.checked && Math.random() < 0.5) stage.classList.toggle('swapped');
+  });
+
+  document.getElementById('reload').addEventListener('click', () => {
+    frames.forEach((f) => { f.src = 'about:blank'; });
+    setTimeout(load, 40);
+  });
+
+  document.getElementById('dismiss').addEventListener('click', () => {
+    document.getElementById('tip').hidden = true;
+  });
+</script>
+</body>
+</html>
