@@ -41,7 +41,8 @@ mountProfile($("profile"));
 mountSummary($("summary"));
 mountControls($("controls"));
 
-// These are the three direct-manipulation handles required by the plan.
+// Direct manipulation is the primary input path: two composition handles
+// and one shared physical-height probe.
 makeDraggable({
   element: yx.top,
   svg: yx.svg,
@@ -71,6 +72,8 @@ makeDraggable({
   getScale: getColumnScale,
   getData: () => getState().probeZ,
   nudgeStep: 0.05,
+  getNudgeStep: () =>
+    Math.max(getColumnScale().yMax * 0.005, 0.01),
   onMove: (value) => setField("probeZ", value)
 });
 
@@ -88,6 +91,7 @@ subscribe((state, derived) => {
     : "Feasible";
   pinchBadge.className =
     "status " + (derived.pinch ? "warning" : "ok");
+  pinchBadge.setAttribute("aria-live", "polite");
 
   const probe = derived.probe;
 
@@ -100,6 +104,11 @@ subscribe((state, derived) => {
     probe.packedY === null
       ? "— (above packed bed)"
       : `y = ${probe.packedY.toExponential(3)}`;
+
+  const trayPosition =
+    probe.trayY === null
+      ? "no tray at this elevation"
+      : `tray ${probe.trayIndex} from top`;
 
   const probeMessage =
     probe.trayY === null && probe.packedY === null
@@ -115,7 +124,7 @@ subscribe((state, derived) => {
     z = ${probe.z.toFixed(3)} m ·
     tray readout = ${trayReadout} ·
     packed readout = ${packedReadout} ·
-    tray index from top = ${probe.trayIndex} ·
+    ${trayPosition} ·
     <span class="muted">${probeMessage}</span>
   `;
 
@@ -128,6 +137,6 @@ subscribe((state, derived) => {
 
   yx.bottom.setAttribute(
     "aria-valuetext",
-    `x_out = ${state.xOut.toExponential(3)} mole fraction; L/V = ${derived.LoV.toFixed(3)}`
+    `x_out = ${state.xOut.toExponential(3)} mole fraction; L/V = ${derived.LoV.toFixed(3)}; L/V ratio to minimum = ${derived.LoVratio.toFixed(3)}`
   );
 });
