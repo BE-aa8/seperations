@@ -25,8 +25,8 @@ function profileStepPath(points, xScale, yScale) {
     const point = points[i];
     const previous = points[i - 1];
 
-    // Horizontal move in composition at a tray elevation, then vertical
-    // move through the next inter-tray section.
+    // Keep the tray profile visibly discrete: horizontal composition changes
+    // occur at tray elevations, with vertical sections between trays.
     path +=
       `L${xScale(previous.y).toFixed(2)} ${yScale(point.zFromBottom).toFixed(2)}`;
     path +=
@@ -67,10 +67,18 @@ export function update(derived) {
 
   layer.append(
     element("line", {
-      x1: left, y1: bottom, x2: right, y2: bottom, class: "axis"
+      x1: left,
+      y1: bottom,
+      x2: right,
+      y2: bottom,
+      class: "axis"
     }),
     element("line", {
-      x1: left, y1: bottom, x2: left, y2: top, class: "axis"
+      x1: left,
+      y1: bottom,
+      x2: left,
+      y2: top,
+      class: "axis"
     })
   );
 
@@ -97,9 +105,11 @@ export function update(derived) {
     })
   );
 
-  const probeZ = derived.probe?.z ?? 0;
-  const probeY = derived.probe?.packedY;
+  const probe = derived.probe;
+  const probeZ = probe?.z ?? 0;
 
+  // Plot both probe readings when the corresponding column actually exists
+  // at that elevation. Above the shorter column, do not extrapolate.
   layer.append(
     element("line", {
       x1: left,
@@ -110,13 +120,26 @@ export function update(derived) {
     })
   );
 
-  if (probeY !== null && probeY !== undefined) {
+  if (probe?.packedY !== null && probe?.packedY !== undefined) {
     layer.append(
       element("circle", {
-        cx: xScale(probeY),
+        cx: xScale(probe.packedY),
         cy: yScale(probeZ),
-        r: 5,
-        class: "probe-marker"
+        r: 6,
+        class: "probe-marker probe-marker-packed",
+        "aria-label": "Packed-column probe point"
+      })
+    );
+  }
+
+  if (probe?.trayY !== null && probe?.trayY !== undefined) {
+    layer.append(
+      element("circle", {
+        cx: xScale(probe.trayY),
+        cy: yScale(probeZ),
+        r: 6,
+        class: "probe-marker probe-marker-tray",
+        "aria-label": "Tray-column probe point"
       })
     );
   }
