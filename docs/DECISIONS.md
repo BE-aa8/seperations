@@ -214,6 +214,69 @@ SVG elements and nothing is draggable. All six pages still return HTTP 200.
    ambiguities, deviations and traps hit. None came back, so the comparison can
    say *what* was produced but not *why*.
 
+### Implementation round B, round 2 — 2026-09-22
+
+A targeted defect report (`docs/prompts/04-impl-b-round2.md`) was sent naming
+the three syntax errors exactly. ChatGPT returned 3,572 insertions across 22
+files plus `impl-b/ROUND2-REPORT.md`.
+
+**Everything asked for was delivered, and the site now works.** Measured here,
+not taken from the report:
+
+| Measure | Round 1 | Round 2 |
+|---|---|---|
+| Modules that parse | 9 / 12 | **12 / 12** |
+| Shared suite | 60 / 61 | **61 / 61** (65/65 with the new parse test) |
+| Six pages load | yes | yes |
+| SVG renders | **no** — nothing drawn | **yes** — 4 SVGs, 40+ shapes |
+| Draggable handles | **0** wired | **3 of 3**, all working |
+| Keyboard nudge | untestable | **3 of 3**, all working |
+| Source formatting | minified, 0 newlines | readable, 100s of lines/file |
+| Written report | none | supplied |
+| Agreement with impl-a | bit-identical | **still bit-identical** — 0.000e+0 across 4,837 points including `LoVratio` |
+
+| ID | Decision / finding | Detail | Driver |
+|---|---|---|---|
+| D-48 | A **source-parse smoke test** (`tests/parse.test.mjs`) is added to the shared suite, covering every `impl-*/js/*.js`. | **Identified by impl-b itself**, in §5 of its round-2 report: a physics-only gate reported 60/61 while the application was dead. Zero dependencies — it shells out to `node --check`. It includes a negative case asserting the checker actually catches both round-1 defect shapes, because a smoke test that cannot fail is worse than none. | Critic:impl-b → Model:Opus5 |
+| D-49 | Browser verification stays a **manual** step and the plan now says so explicitly. | Automating it means a browser-automation dependency, and the site ships with none. Better to state the limit than imply the suite covers it. | Model:Opus5 |
+
+#### One defect remains in impl-b
+
+`state.js` line 5 initialises `let derived = physics.solve(state)` at module
+scope, but the `probe` object is only attached inside `emit()`. `subscribe()`
+then immediately invokes the new listener with that probe-less `derived`, so the
+**first** render throws `Cannot read properties of undefined (reading 'trayY')`.
+
+Consequences: one console error on load, and the tail of the first render is
+skipped — the SO₂ warning toggle and the `aria-valuetext` carrying `LoVratio`.
+It self-corrects on the first interaction, because `emit()` does attach `probe`.
+A one-line fix (attach `probe` to the initial `derived`, or guard the readout).
+
+Also cosmetic: impl-b declares no `rel="icon"`, so browsers request
+`/favicon.ico` and take a 404. impl-a carries an inline SVG icon.
+
+#### A methodological note on this grading
+
+Two of my own "failures" during this round were defects in my **test harness**,
+not in impl-b: I dragged the height probe downward while it was already clamped
+at z = 0, and I measured a handle whose bounding box sat at y = 1976 in a
+1000 px viewport, so the pointer events never landed on it. Both initially read
+as "drag is dead". Re-testing each handle in isolation, scrolled into view and
+in a direction that was not already clamped, showed all three working.
+
+Worth recording because it is the same failure mode the project keeps hitting
+from different directions: **the measurement instrument is as capable of being
+wrong as the thing being measured.** Round 1 had a suite that encoded impl-a;
+round 2 had a browser probe that mis-aimed. In both cases the implementation was
+blamed first and was innocent.
+
+#### impl-a gap closed
+
+The >40-tray compressed rendering path — the one impl-a path previously asserted
+rather than observed — was driven in a browser for the first time. At both
+clamps (70 actual trays, 44.00 m) it renders 16 trays, two break marks and a
+"54 more" label, with the staircase in its thinned mode and no console errors.
+
 ---
 
 ## 3. Model comparison notes

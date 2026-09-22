@@ -181,22 +181,31 @@ PHYSICS_PATH=../../impl-b/js/physics.js npm test  # grades impl-b</code></pre>
   </thead>
   <tbody>
     <tr><td>Model used</td><td>Claude Opus 5</td><td>ChatGPT</td></tr>
-    <tr><td>Shared suite, as first run</td><td>61 / 61</td><td><strong>44 / 61</strong></td></tr>
-    <tr><td>Shared suite, after the suite itself was corrected</td>
+    <tr><td>Shared suite, round 1 as first run</td><td>61 / 61</td><td><strong>44 / 61</strong></td></tr>
+    <tr><td>Shared suite, round 1 after the suite itself was corrected</td>
         <td>61 / 61</td><td><strong>60 / 61</strong></td></tr>
+    <tr><td><strong>Shared suite, round 2</strong></td>
+        <td><strong>65 / 65</strong></td><td><strong>65 / 65</strong></td></tr>
     <tr><td>Worked examples A, B, C</td><td>exact</td><td>exact</td></tr>
     <tr><td>Agreement between the two</td><td colspan="2" style="text-align:center">
         <strong>bit-identical</strong> — 0.000e+0 worst relative difference in
         N, N<sub>OG</sub>, HETP and Z across 4,837 operating points</td></tr>
     <tr><td>The five documented traps</td><td>all correct</td><td>all correct</td></tr>
-    <tr><td>JavaScript modules that parse</td><td>12 / 12</td><td><strong>9 / 12</strong></td></tr>
-    <tr><td>Site runs in a browser</td><td>yes</td><td><strong>no</strong></td></tr>
+    <tr><td>Modules that parse — round 1 / round 2</td>
+        <td>14 / 14 · 14 / 14</td><td><strong>9 / 12</strong> · <strong>12 / 12</strong></td></tr>
+    <tr><td>Site runs in a browser — round 1 / round 2</td>
+        <td>yes · yes</td><td><strong>no</strong> · <strong>yes</strong></td></tr>
+    <tr><td>Draggable handles working</td><td>3 of 3</td><td>0 of 3 · <strong>3 of 3</strong></td></tr>
+    <tr><td>Keyboard nudge on every handle</td><td>yes</td><td>untestable · <strong>yes</strong></td></tr>
+    <tr><td>Console errors on load</td><td>none</td>
+        <td><strong>one</strong> — first render throws on an uninitialised probe
+            object, then self-corrects on first interaction</td></tr>
     <tr><td>Deviations from the frozen API</td>
         <td>none, but exported seven extras the spec never required — which is
             how the test suite came to depend on them</td>
         <td>none; implemented the published contract exactly</td></tr>
     <tr><td>Source formatting</td><td>readable, commented</td>
-        <td>minified — every file one line, zero newlines</td></tr>
+        <td>round 1 minified (one line per file); <strong>round 2 readable</strong></td></tr>
     <tr><td>Written report supplied</td><td>n/a</td><td><strong>none</strong></td></tr>
   </tbody>
 </table>
@@ -254,6 +263,52 @@ single remaining failure is a field the specification genuinely omitted.</p>
     <em>not</em> been patched, so the artifact remains exactly what the model
     produced.</div>
 </div>
+
+<h3>Round 2 — and what it changed</h3>
+
+<p>Implementation B was sent a targeted defect report naming the three syntax
+errors precisely, and returned 3,572 lines of changes plus a written report.
+Everything asked for was delivered: readable source, the three errors fixed, the
+height probe finally wired, and all six pages built out. <strong>The site now
+works</strong> — SVG renders, all three handles drag, all three respond to the
+keyboard.</p>
+
+<p>And the physics is <em>still</em> bit-identical to implementation A across
+4,837 operating points, now including the amended <code>LoVratio</code> field.
+Two independent implementations, a specification, and a round of substantial
+rewriting later, and they still return the same doubles.</p>
+
+<p>One defect remains, and it is instructive: implementation B's
+<code>state.js</code> creates its initial derived state at module load but only
+attaches the probe data inside its update function, so the very first render
+throws before it finishes. It self-corrects the moment anything is dragged,
+which is exactly why it survives casual use — the page looks fine, and only the
+console knows.</p>
+
+<div class="note note--warning">
+  <span class="note__icon">&#9888;</span>
+  <div><strong>The comparison is not symmetric, and should not be read as
+    though it were.</strong> Implementation B received a detailed defect report
+    and a second attempt. Implementation A received neither — it was verified in
+    a browser as it was built, which is why its equivalent defects were caught
+    before they were ever committed. Round 2 measures "can this model fix
+    precisely-described faults", which is a real and useful capability, but it is
+    a different question from round 1's "what does this model produce from a
+    specification alone".</div>
+</div>
+
+<h3>A note on the measurements themselves</h3>
+
+<p>Twice during this project the <em>instrument</em> was wrong rather than the
+thing being measured. The shared test suite silently encoded implementation A
+rather than the specification, and failed implementation B sixteen times for
+reasons unrelated to its physics. Later, a browser probe reported "drag is dead"
+when it had simply aimed at an element scrolled outside the viewport and pushed a
+control in a direction it was already clamped against.</p>
+
+<p>In both cases the implementation was blamed first, and in both cases it was
+innocent. That is worth carrying out of this project: when an automated check
+disagrees with a piece of work, the check is a hypothesis too.</p>
 
 <h3>Three lessons worth stating</h3>
 

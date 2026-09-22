@@ -1488,9 +1488,19 @@ assumption), and an `A` that is neither 1 nor a round number.
 | | packed profile is monotonically increasing from top to bottom | — |
 | | `gasProfileTray(1) === y_out`, `gasProfileTray(N_act+1) === y_in` | 1e-10 rel |
 | | `A = 1` packed profile is linear in `z` (second differences vanish) | 1e-12 |
+| `parse.test.mjs` | every `impl-*/js/*.js` parses as an ES module (`node --check`), plus a negative case proving the checker can fail | — |
 | `stability.test.mjs` | `A = 1 ± 10^-k` for k = 2…12 gives finite, monotone, continuous `N`, `N_OG`, `g` | — |
 | | `A = 1` exactly gives exactly `R − 1`, not `NaN` | exact |
 | | branched vs. naive agree to 1e-9 across `A ∈ [0.99, 1.01] \ {1}` | 1e-9 |
+
+**What the suite does NOT cover.** It proves the physics is right and that
+every module parses. It does **not** prove the application runs: a module can
+parse perfectly and still throw on first execution, and nothing here renders a
+page, clicks a handle, or checks a layout. Browser verification is a **manual**
+step (`D-49`) — automating it would mean taking on a browser-automation
+dependency, and this project ships with none. Implementation B round 1 scored
+60/61 with a completely dead website; that is the failure this note exists to
+keep visible.
 
 **Note on tolerances.** Two different things are being checked, and they deserve
 different tolerances:
