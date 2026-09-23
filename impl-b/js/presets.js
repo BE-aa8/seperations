@@ -1,0 +1,111 @@
+const common = Object.freeze({
+  Eo: 0.70,
+  traySpacing: 0.60,
+  hTop: 1.0,
+  hBot: 1.0,
+  packing: "pall"
+});
+
+export const PACKINGS = Object.freeze({
+  raschig: Object.freeze({
+    id: "raschig",
+    name: "Ceramic Raschig rings, 25 mm",
+    HOG: 0.90,
+    source: "Seader Ch. 6 — verify before design use",
+    verify: true
+  }),
+  pall: Object.freeze({
+    id: "pall",
+    name: "Metal Pall rings, 38 mm",
+    HOG: 0.60,
+    source: "Seader Ch. 6 — verify before design use",
+    verify: true
+  }),
+  structured: Object.freeze({
+    id: "structured",
+    name: "Structured, 250 m²/m³",
+    HOG: 0.40,
+    source: "Seader Ch. 6 — verify before design use",
+    verify: true
+  })
+});
+
+export const SYSTEMS = Object.freeze({
+  generic: Object.freeze({
+    id: "generic",
+    name: "Generic solute A",
+    m: 1.0,
+    yIn: 0.020,
+    xIn: 0.0,
+    yOut: 0.002,
+    V: 100,
+    condition: "Illustrative round numbers",
+    verify: true,
+    ...common
+  }),
+  nh3: Object.freeze({
+    id: "nh3",
+    name: "NH₃–air–water",
+    m: 0.85,
+    yIn: 0.020,
+    xIn: 0.0005,
+    yOut: 0.002,
+    V: 100,
+    condition: "20 °C, 1 atm",
+    verify: true,
+    ...common
+  }),
+  acetone: Object.freeze({
+    id: "acetone",
+    name: "Acetone–air–water",
+    m: 1.80,
+    yIn: 0.015,
+    xIn: 0.0,
+    yOut: 0.0015,
+    V: 120,
+    condition: "25 °C, 1 atm",
+    verify: true,
+    ...common
+  }),
+  so2: Object.freeze({
+    id: "so2",
+    name: "SO₂–air–water",
+    m: 40,
+    yIn: 0.0050,
+    xIn: 0.0,
+    yOut: 0.0005,
+    V: 100,
+    condition: "25 °C, 1 atm",
+    verify: true,
+    ...common
+  })
+});
+
+export const BALANCED = Object.freeze({
+  id: "balanced",
+  name: "Balanced (A = 1)",
+  m: 1.0,
+  V: 100,
+  yIn: 0.020,
+  xIn: 0.0,
+  yOut: 0.004,
+  xOut: 0.016,
+  HOG: 0.60,
+  ...common
+});
+
+export const NEAR_BALANCED = Object.freeze({
+  ...BALANCED,
+  id: "near-balanced",
+  name: "Near-balanced (A = 1 − 5×10⁻⁷)",
+  xOut: 0.016000008000004
+});
+
+export const DEFAULTS = Object.freeze({
+  ...SYSTEMS.generic,
+  HOG: PACKINGS.pall.HOG
+});
+
+export function systemList() {
+  return Object.values(SYSTEMS);
+}

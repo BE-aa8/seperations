@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Absorption Column Explorer</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">Absorption Explorer</a>
+    <nav aria-label="Site navigation">
+      <a href="index.html">Demo</a>
+      <a href="video.html">Video</a>
+      <a href="transcript.html">Transcript</a>
+      <a href="docs.html">Docs</a>
+      <a href="model-comparison.html">Model comparison</a>
+      <a href="references.html">References</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Separation Processes · AI Project</p>
+        <h1>One absorption duty.<br><span>Two column designs.</span></h1>
+        <p>
+          A tray absorber and a packed absorber do the same dilute-gas separation.
+          Drag the actual terminal points and watch the stage count, transfer units,
+          and column heights respond.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#explorer">Start dragging</a>
+          <a class="button" href="docs.html">Read the model</a>
+        </div>
+      </div>
+
+      <aside class="hero-card" aria-label="Project properties">
+        <div class="metric"><strong>Core interaction</strong><span>Direct SVG dragging</span></div>
+        <div class="metric"><strong>Physics</strong><span>Pure ES module</span></div>
+        <div class="metric"><strong>Units</strong><span>SI only</span></div>
+        <div class="metric"><strong>Dependencies</strong><span>None</span></div>
+      </aside>
+    </section>
+
+    <div class="notice">
+      <strong>Default parameter values are illustrative, chosen 2026-09-21, and pending
+      verification against Seader Ch. 6.</strong>
+      The MVP uses a straight equilibrium line, constant molar flow rates, and constant
+      H_OG.
+    </div>
+
+    <section id="explorer" class="panel">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">01 · Setup</p>
+          <h2>Choose the chemical system and packing</h2>
+        </div>
+        <span id="pinchBadge" class="status ok">Feasible</span>
+      </div>
+      <div id="controls"></div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">02 · Direct manipulation</p>
+          <h2>Move the physical endpoints</h2>
+          <p class="muted">
+            Drag <strong>y_out</strong> vertically to set the treated-gas purity.
+            Drag <strong>x_out</strong> horizontally to select the liquid rate.
+            The overall balance determines L/V and L.
+          </p>
+        </div>
+      </div>
+      <div id="yxDiagram" class="svg-wrap"></div>
+
+      <div id="so2Warning" class="warning-callout" hidden>
+        <strong>Straight-line model strained here.</strong>
+        Real SO₂–water equilibrium is distinctly curved even at low compositions.
+        The single slope m = 40 is therefore a narrow-range teaching model, not a
+        design correlation.
+      </div>
+
+      <div class="probe-readout">
+        <strong>Height probe</strong>
+        <p id="probeReadout">Move the probe on the column drawing to read local gas composition.</p>
+      </div>
+    </section>
+
+    <section class="two-col">
+      <article class="panel">
+        <p class="eyebrow">03 · Tray column</p>
+        <h2>Staged contacting</h2>
+        <p class="muted">
+          The staircase shows theoretical equilibrium stages; the physical drawing
+          shows the actual tray count after applying the overall tray efficiency.
+        </p>
+        <div id="columns" class="svg-wrap"></div>
+      </article>
+
+      <article class="panel">
+        <p class="eyebrow">04 · Packed column</p>
+        <h2>Continuous contacting</h2>
+        <p class="muted">
+          The packed design uses the overall-gas transfer-unit integral. Its height
+          is continuous rather than quantised.
+        </p>
+        <div id="ntu" class="svg-wrap"></div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <p class="eyebrow">05 · Height profile</p>
+      <h2>Staged versus continuous composition profiles</h2>
+      <p class="muted">
+        Both profiles use the same physical height origin: z = 0 at the bottom.
+        The packed line is smooth; the tray line is intentionally stepped.
+      </p>
+      <div id="profile" class="svg-wrap"></div>
+    </section>
+
+    <section class="panel">
+      <p class="eyebrow">06 · Comparison</p>
+      <h2>Same duty, different sizing</h2>
+      <p class="muted">
+        Read L/V, the absorption factor A, theoretical stages, transfer units,
+        HETP, actual trays, and the two total heights in one place.
+      </p>
+      <div id="summary"></div>
+    </section>
+
+    <section class="takeaways">
+      <article>
+        <p class="eyebrow">Teaching point</p>
+        <h3>Fractional stages are not linear</h3>
+        <p>
+          The final partial stage follows the geometric stage recursion and is
+          therefore obtained from the logarithmic Kremser relation.
+        </p>
+      </article>
+      <article>
+        <p class="eyebrow">Teaching point</p>
+        <h3>A below 1 can still be feasible</h3>
+        <p>
+          Feasibility is controlled by the two endpoint driving forces, not by an
+          arbitrary A ≥ 1 rule.
+        </p>
+      </article>
+      <article>
+        <p class="eyebrow">Teaching point</p>
+        <h3>HETP connects the descriptions</h3>
+        <p>
+          HETP = H_OG·A ln(A)/(A−1), with the balanced limit HETP = H_OG at A = 1.
+        </p>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <span>Static educational site · no framework · no build step</span>
+    <a href="references.html">Technical references</a>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

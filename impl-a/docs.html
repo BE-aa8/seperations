@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation — Tray vs. Packed</title>
+<meta name="description" content="What this tool shows, the physics behind it, and how it was built with AI models.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='9' y='3' width='14' height='26' rx='3' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Cpath d='M12 11h8M12 16h8M12 21h8' stroke='%23eb6834' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand">Tray vs. Packed
+      <small>Separation Processes &middot; University of Cincinnati</small>
+    </div>
+    <nav class="nav" aria-label="Main">
+      <a href="index.html">Demo</a>
+      <a href="video.html">Video</a>
+      <a href="transcript.html">Transcript</a>
+      <a href="docs.html">Documentation</a>
+      <a href="model-comparison.html">Model comparison</a>
+      <a href="references.html">References</a>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Switch colour theme">&#9686; Auto</button>
+  </div>
+</header>
+
+<main class="page">
+<div class="prose">
+
+<h1>Documentation</h1>
+
+<nav aria-label="On this page" style="margin-bottom:2rem">
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#ai-project">Framing: this is an AI project</a></li>
+    <li><a href="#process">The process — models, tools, prompts</a></li>
+    <li><a href="#iteration">Planning and iteration</a></li>
+    <li><a href="#physics">The physics</a></li>
+    <li><a href="#staged">Staged versus continuous contacting</a></li>
+    <li><a href="#choosing">Choosing trays or packing</a></li>
+    <li><a href="#verification">How the numbers were verified</a></li>
+    <li><a href="#learned">What I learned, and what's next</a></li>
+  </ol>
+</nav>
+
+<h2 id="overview">1. Overview</h2>
+
+<p>This site puts a <strong>tray column</strong> and a <strong>packed column</strong>
+side by side doing the <em>same</em> dilute gas absorption job: the same solute,
+the same entering gas and liquid compositions, the same required outlet purity,
+and the same molar flow rates. Everything about the duty is identical. Only the
+hardware differs — and the point of the tool is to let you watch the two designs
+size themselves differently, live, as you change the duty.</p>
+
+<p>The interaction is deliberately <strong>direct manipulation</strong> rather than
+sliders. There are three things you can grab:</p>
+
+<ul>
+  <li>the <strong>top of the operating line</strong>, dragged vertically, which sets
+    how clean the treated gas must be;</li>
+  <li>the <strong>bottom of the operating line</strong>, dragged horizontally, which
+    sets the liquid rate;</li>
+  <li>a <strong>height probe</strong>, dragged up and down the two columns, which
+    reads the local gas composition in each.</li>
+</ul>
+
+<p>Everything else on the page is a consequence of those three. The stage count,
+the tray count, the packed height, the transfer-unit area, the composition
+profiles and the comparison table all recompute on every pointer move.</p>
+
+<h2 id="ai-project">2. Framing: this is an AI project</h2>
+
+<p>This is an <strong>AI project</strong> for the Separation Processes course, and
+the process is as much the artefact as the website. The brief was not "build a
+tool" but "explore what these models can and cannot do, and document it
+honestly."</p>
+
+<p>Concretely, that meant a deliberate pipeline: one model wrote a detailed
+implementation plan before any code existed; a <em>different</em> model critiqued
+that plan; the critique was adjudicated point by point; and then the revised plan
+was implemented independently by two different models against a shared,
+unmodifiable test suite. The <a href="model-comparison.html">model comparison
+page</a> reports what came out of that.</p>
+
+<p>Two design choices exist purely to make the exploration honest:</p>
+
+<ul>
+  <li><strong>The physics lives in a pure module</strong> with no access to the
+    page, and is checked by a test suite that both implementations must pass
+    unmodified. Without a fixed bar, "which model did better" is an impression;
+    with one, it is a measurement.</li>
+  <li><strong>Every design decision is logged with a rationale and an
+    attribution</strong> — owner, assignment, or model — in a running decision
+    log, including the cases where the human overrode the model's
+    recommendation. Those overrides are the most interesting entries, because
+    they are the places where judgement was actually exercised rather than
+    delegated.</li>
+</ul>
+
+<h2 id="process">3. The process — models, tools, prompts</h2>
+
+<h3>The models, and what each one did</h3>
+
+<p>Four distinct roles, deliberately kept separate so that no model was asked to
+check its own work:</p>
+
+<table>
+  <thead>
+    <tr><th>Role</th><th>Model</th><th>Produced</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Planner</td><td>Claude Opus 5, via Claude Code</td>
+        <td>The specification — physics derivations, phases, worked examples,
+            a ranked list of where an implementation would likely go wrong</td></tr>
+    <tr><td>Critic</td><td>Muse AI</td>
+        <td>14 findings against the plan, sorted into errors, omissions and
+            preferences</td></tr>
+    <tr><td>Implementer A</td><td>Claude Opus 5, via Claude Code</td>
+        <td>This site</td></tr>
+    <tr><td>Implementer B</td><td>ChatGPT</td>
+        <td>An independent build from the same written specification</td></tr>
+  </tbody>
+</table>
+
+<p>Claude Code ran in a cloud container with repository access, so it could run
+the test suite and drive a real browser against its own output. That mattered
+more than it sounds: implementation B reported that its environment gave it
+<em>no</em> shell or browser, so it could verify its work only by reasoning about
+the equations. Its first delivery had correct physics and a website that did not
+run at all — three single-character syntax errors — and nothing in its own
+process could have caught that.</p>
+
+<div class="fillin">
+  <p><strong>Add the interface details for the other two.</strong> I can only
+    speak first-hand for Claude Code. Note how you drove Muse AI and ChatGPT —
+    which interface, whether sessions were continued or started fresh, and any
+    settings worth recording for reproducibility.</p>
+</div>
+
+<h3>Tools</h3>
+
+<ul>
+  <li><strong>Git and GitHub</strong> for version control — 68 commits, all
+    work on one branch, with the decision log updated alongside the code rather
+    than reconstructed afterwards.</li>
+  <li><strong>Node's built-in test runner</strong> for the 65-test physics
+    suite. No test framework was installed.</li>
+  <li><strong>Playwright</strong> for browser verification during development,
+    installed without saving so it never became a project dependency.</li>
+  <li><strong>Netlify</strong> for hosting.</li>
+</ul>
+
+<p>The site itself has <strong>no build step and no runtime dependencies</strong>,
+so deployment is nothing more than pushing files. That was a deliberate
+constraint: it keeps what is served identical to what is written, which matters
+when two models have to produce comparable work and a third party has to read
+both.</p>
+
+<h3>The prompts</h3>
+
+<p>Kept verbatim in the repository under <code>docs/prompts/</code>:</p>
+
+<table>
+  <thead><tr><th>Prompt</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>01-planning.md</code></td>
+        <td>The originating brief. States the concept, the physics as equations,
+            the no-sliders constraint <em>and the reason for it</em>, and asks to
+            be questioned before any work begins.</td></tr>
+    <tr><td><code>02-critique.md</code></td>
+        <td>Handing the plan to a second model to be attacked. The exact wording
+            was not captured — noted honestly rather than reconstructed.</td></tr>
+    <tr><td><code>03-impl-b-handoff.md</code></td>
+        <td>Briefing a second model to implement the same specification, with an
+            explicit instruction not to read the first implementation.</td></tr>
+    <tr><td><code>04-impl-b-round2.md</code></td>
+        <td>A defect report naming three syntax errors precisely, plus the
+            self-verification steps its first round had skipped.</td></tr>
+  </tbody>
+</table>
+
+<p>Two things about these are worth more than their wording. First, the planning
+prompt <em>asked to be questioned</em>, and the four clarifying questions that
+came back changed the design before a line was written. Second, the prompts get
+progressively more specific about <em>verification</em> rather than about
+features — which is the direction the project kept discovering it needed to
+move.</p>
+
+<h2 id="iteration">4. Planning and iteration</h2>
+
+<p>The project ran in four passes, and the structure was chosen so that mistakes
+would surface early and cheaply:</p>
+
+<ol>
+  <li><strong>Plan before code.</strong> A full implementation plan was written
+    first — file structure, a frozen module API, the physics with derivations,
+    the interaction design for every draggable element, phases with
+    hand-checkable acceptance criteria, worked examples with expected numbers,
+    and a ranked list of the places an implementation was most likely to go
+    wrong.</li>
+  <li><strong>Independent critique.</strong> The plan was handed to a different
+    model with explicit instructions to attack it and to separate <em>errors</em>
+    from <em>omissions</em> from <em>preferences</em>.</li>
+  <li><strong>Adjudication.</strong> Every critique point was checked before being
+    accepted — several by recomputing the disputed quantity from scratch. Two
+    were accepted but implemented differently from the fix that was proposed,
+    because the proposed fix would have introduced a different problem.</li>
+  <li><strong>Implementation against a fixed bar.</strong> The physics module and
+    its test suite were written and made to pass <em>before</em> any rendering
+    code existed. A wrong number and a wrong drawing can agree with each other,
+    so the numbers were pinned down while they were still the only thing on
+    screen.</li>
+</ol>
+
+<p>The decision log marks every point where a model's recommendation was
+overridden. These are the ones where the two of us actually disagreed:</p>
+
+<table>
+  <thead><tr><th>#</th><th>The model proposed</th><th>The decision</th></tr></thead>
+  <tbody>
+    <tr><td>D-03</td>
+        <td>Ship <em>one</em> generic chemical system, for implementation
+            simplicity and easier verification.</td>
+        <td>Require <strong>all four</strong> systems as a selector.</td></tr>
+    <tr><td>D-15</td>
+        <td>Flag the tray-height convention as an open question and defer it.</td>
+        <td>Settle it: <code>N_act·S</code> plus allowances.</td></tr>
+    <tr><td>D-45</td>
+        <td>(No proposal — the question was put open.)</td>
+        <td>Leave implementation B's minified, broken source <strong>exactly as
+            delivered</strong> rather than repairing it.</td></tr>
+    <tr><td>D-50</td>
+        <td>Decline to pick a winner, on the grounds of having built one of
+            them.</td>
+        <td>Choose implementation A, on interface grounds.</td></tr>
+    <tr><td>D-52</td>
+        <td>Keep flagging every default as pending a textbook check.</td>
+        <td>Retire the promise; state what the numbers actually are.</td></tr>
+  </tbody>
+</table>
+
+<div class="fillin">
+  <p><strong>Your reasoning, in your own words.</strong> Pick the two or three
+    that mattered most and say what <em>you</em> were optimising for.</p>
+  <p>Worth drawing out on D-03 specifically: the model optimised for
+    implementation cleanliness — fewer presets, fewer defaults to defend, less
+    that could be wrong. You optimised for teaching value, and got the SO₂ case,
+    which is the one preset where the straight-line model visibly breaks and is
+    arguably the most instructive thing on the site. That is a real difference in
+    what the two of us were treating as the goal. Was that the reasoning at the
+    time, or is it only clear in hindsight?</p>
+  <p>D-45 is worth a sentence too: keeping a broken artifact unrepaired is an
+    unusual instinct, and it is the decision that made the model comparison mean
+    anything.</p>
+</div>
+
+<h2 id="physics">5. The physics</h2>
+
+<p>The model is deliberately the simplest one that is still honest for this duty:
+<strong>dilute</strong> solute, <strong>isothermal</strong> and
+<strong>isobaric</strong> operation, constant molar flows <em>L</em> and
+<em>V</em>, a <strong>straight equilibrium line</strong> <em>y</em>* =
+<em>m·x</em> through the origin, and counter-current contacting. Those
+assumptions are what make every result below closed-form, and therefore
+checkable by hand.</p>
+
+<h3>The operating line, and why L is not an input</h3>
+
+<p>An overall solute balance around the whole column gives</p>
+
+<pre><code>V·(y_in − y_out) = L·(x_out − x_in)</code></pre>
+
+<p>so the operating line is straight, runs between the two column terminals
+(<em>x_in</em>, <em>y_out</em>) at the top and (<em>x_out</em>, <em>y_in</em>) at
+the bottom, and has slope</p>
+
+<pre><code>L/V = (y_in − y_out) / (x_out − x_in)</code></pre>
+
+<p>This is why the tool has you drag <em>two endpoints</em> rather than type in a
+liquid rate. With the feed conditions fixed, those two endpoints carry exactly
+two degrees of freedom, and the mass balance then <em>determines</em> L/V. The
+liquid rate is not something you set independently; it is what your choice of
+outlet compositions implies. Dragging the bottom endpoint to the right
+<em>is</em> the act of choosing a smaller liquid rate.</p>
+
+<h3>The absorption factor</h3>
+
+<pre><code>A = L / (m·V) = (L/V) / m</code></pre>
+
+<p>A single dimensionless group does most of the work here. It compares the
+liquid's capacity to carry solute against the gas's tendency to hold on to it.
+<em>A</em> &gt; 1 means the solvent has more than enough capacity and the column
+is limited by the purity you demand; <em>A</em> &lt; 1 means it does not, and the
+column is limited by the solvent. <em>A</em> = 1 is the balanced case, and it is a
+genuine removable singularity in every formula below — the expressions all go to
+0/0 there and have to be handled by their limits.</p>
+
+<p>One thing worth stating plainly, because it is easy to assume otherwise:
+<strong><em>A</em> &lt; 1 is not infeasible.</strong> A column with <em>A</em> &lt; 1
+still works and still has a finite height; it is simply operating nearer its
+solvent-limited pinch. In this tool, <em>A</em> falls below 1 on every preset as
+you drag toward the minimum liquid rate.</p>
+
+<h3>The tray column: Kremser</h3>
+
+<p>Stepping off equilibrium stages on the y–x diagram produces a staircase, and
+for straight lines that staircase has a closed form — the Kremser equation:</p>
+
+<pre><code>N = ln[ (1 − 1/A)·R + 1/A ] / ln A        where R = (y_in − m·x_in)/(y_out − m·x_in)
+N = R − 1                                  when A = 1</code></pre>
+
+<p><em>N</em> is the number of <strong>theoretical</strong> stages, and it is
+generally fractional. Real trays do not reach equilibrium, so an overall
+efficiency converts it to hardware:</p>
+
+<pre><code>N_actual = ceil( N / E_o )
+Z_tray   = N_actual · (tray spacing) + top allowance + bottom allowance</code></pre>
+
+<p>The <code>ceil</code> is the whole reason a tray column's height is
+<em>quantised</em>: you cannot install 3.5 trays. Drag the specification slowly
+and you will see the tray count sit still and then jump.</p>
+
+<h3>The packed column: transfer units</h3>
+
+<p>A packed column has no stages. Mass transfer happens continuously up the bed,
+so instead of counting stages you integrate the driving force:</p>
+
+<pre><code>N_OG = ∫ dy / (y − y*)     from y_out to y_in
+Z    = H_OG · N_OG</code></pre>
+
+<p><em>N_OG</em> is the number of <strong>overall gas-phase transfer units</strong> —
+a measure of how hard the separation is. <em>H_OG</em> is the <strong>height of a
+transfer unit</strong> — a measure of how good the hardware is. The separation
+duty and the hardware quality are cleanly separated, which is why changing the
+packing in the demo moves the height but leaves <em>N_OG</em> untouched.</p>
+
+<p>For straight lines the integral has a closed form, the Colburn equation:</p>
+
+<pre><code>N_OG = ln[ (1 − 1/A)·R + 1/A ] / (1 − 1/A)
+N_OG = R − 1                                when A = 1</code></pre>
+
+<p>Notice that the <strong>numerator is identical to Kremser's</strong>. That is not
+a coincidence; it is the structural reason the two column types are so tightly
+linked.</p>
+
+<p>There is also a third, equivalent route that is worth knowing because it is the
+one most often used by hand: for straight lines,
+<code>N_OG = (y_in − y_out) / Δ_lm</code>, where Δ_lm is the
+<strong>log-mean</strong> of the driving forces at the two ends of the column.</p>
+
+<h3>The link between them: HETP</h3>
+
+<p>Dividing Colburn by Kremser, the shared numerator cancels and leaves a pure
+function of <em>A</em>:</p>
+
+<pre><code>N_OG / N = A·ln A / (A − 1) ≡ g(A),     g(1) = 1
+HETP = Z / N = H_OG · g(A)</code></pre>
+
+<p>HETP — the <strong>height equivalent to a theoretical plate</strong> — is the
+translation between the two languages: the depth of packing that does the job of
+one equilibrium stage. When <em>A</em> = 1, HETP is exactly <em>H_OG</em>; away
+from 1 they differ by <em>g</em>(<em>A</em>).</p>
+
+<p>It is worth being clear about what this identity does and does not prove. The
+demo shows the check <em>N</em> × HETP = <em>Z</em>, and it always passes — but it
+passes <em>by construction</em>, because HETP is defined as
+<em>H_OG</em>·<em>N_OG</em>/<em>N</em>. It is a useful consistency check (it would
+catch an inverted <em>g</em>(<em>A</em>)), but it is not independent evidence that
+the physics is right. The checks that are independent are described in
+<a href="#verification">section 8</a>.</p>
+
+<h3>The pinch</h3>
+
+<p>The operating line must stay above the equilibrium line everywhere between the
+two terminals, or the driving force changes sign and the solute transfers the
+wrong way. Because both lines are straight, their difference is linear in
+<em>x</em>, so its minimum is at one end or the other. The whole constraint
+therefore reduces to two conditions, one per end:</p>
+
+<pre><code>y_out &gt; m·x_in     (top pinch — a purity limit)
+y_in  &gt; m·x_out    (bottom pinch — the minimum liquid rate)</code></pre>
+
+<p>Each is governed by exactly one of the two drag handles, which is why the tool
+can enforce them with two independent limits rather than a constraint solver.
+The top condition is a <em>thermodynamic</em> limit: no column of any height,
+with any liquid rate, can produce gas leaner than equilibrium with the entering
+liquid. The bottom condition gives the classical minimum liquid rate,</p>
+
+<pre><code>(L/V)_min = (y_in − y_out) / (y_in/m − x_in)</code></pre>
+
+<p>at which the required height goes to infinity. Real designs run at some
+multiple of it — the demo reports that multiple, because it is the number a
+designer actually cares about.</p>
+
+<h2 id="staged">6. Staged versus continuous contacting</h2>
+
+<p>This is the conceptual heart of the comparison, and the composition-against-height
+plot is where it becomes visible.</p>
+
+<p>In a <strong>tray column</strong>, contact happens at discrete locations. Gas
+bubbles through the liquid on a tray, approaches equilibrium with it, then
+travels unchanged to the next tray. The composition profile is a
+<strong>staircase</strong>: flat between trays, jumping at each one. The natural
+unit of design is the <em>stage</em>, and the natural question is "how many?"</p>
+
+<p>In a <strong>packed column</strong>, contact happens everywhere. Liquid films
+flow over the packing surface while gas moves past them continuously, so the
+composition changes smoothly with height. The profile is a <strong>curve</strong>.
+The natural unit is the <em>transfer unit</em>, and the natural question is "how
+tall?"</p>
+
+<p>These are two descriptions of the same physics, not two different physics.
+That is exactly what HETP expresses: the packing depth equivalent to one stage.
+A packed column can be <em>described</em> in stages and a tray column can be
+<em>described</em> in transfer units; each is just more natural in its own
+setting. The tool makes the equivalence concrete by computing both for the same
+duty and showing that they agree.</p>
+
+<p>One asymmetry survives the translation, and it is physical rather than
+notational: <strong>the tray column's height is quantised and the packed
+column's is not.</strong> A tray column can only be built in whole trays, so its
+height moves in steps of one tray spacing divided by the efficiency; a packed bed
+can be built to any depth. In the demo, the packed height moves continuously as
+you drag while the tray height sits still and then jumps.</p>
+
+<h2 id="choosing">7. Choosing trays or packing</h2>
+
+<p>The sizing calculation does not, on its own, decide the hardware. In practice
+the choice is driven by service characteristics. The usual reasoning:</p>
+
+<h3>Packing tends to win when</h3>
+<ul>
+  <li><strong>The service is corrosive.</strong> Ceramic and plastic packings
+    tolerate duties that would demand expensive alloy trays.</li>
+  <li><strong>Pressure drop matters.</strong> Packing has a much lower pressure
+    drop per theoretical stage, which is decisive under vacuum and valuable
+    whenever compression costs money.</li>
+  <li><strong>The system foams.</strong> Packing provides less of the violent
+    gas–liquid agitation that generates and stabilises foam.</li>
+  <li><strong>The column is small.</strong> Below roughly 0.6 m in diameter,
+    installing and maintaining trays is awkward and packing is usually cheaper.</li>
+  <li><strong>Liquid holdup should be low</strong> — for heat-sensitive material,
+    or where inventory is a safety concern.</li>
+</ul>
+
+<h3>Trays tend to win when</h3>
+<ul>
+  <li><strong>Solids or fouling are present.</strong> Trays are far easier to clean,
+    and packing plugs.</li>
+  <li><strong>The column is large in diameter.</strong> Liquid distribution across a
+    wide packed bed is genuinely difficult, and poor distribution quietly
+    destroys efficiency.</li>
+  <li><strong>Side draws, feeds, or heat exchange are needed at intermediate
+    points.</strong> Trays give natural, well-defined locations for them.</li>
+  <li><strong>Turndown matters.</strong> Trays generally hold their efficiency over a
+    wider range of throughput.</li>
+  <li><strong>The liquid rate is very high</strong>, or the design must be scaled
+    from data with high confidence — tray behaviour is more predictable.</li>
+</ul>
+
+<p>A reasonable summary: <em>packing buys low pressure drop and corrosion
+tolerance; trays buy robustness, predictability, and access.</em></p>
+
+<h2 id="verification">8. How the numbers were verified</h2>
+
+<p>Every formula above was checked numerically before it was written down, and the
+implementation is covered by a test suite that runs on Node's built-in test
+runner with no dependencies. Three checks carry most of the weight:</p>
+
+<ul>
+  <li><strong>The stepped staircase against Kremser.</strong> Two entirely
+    different algorithms — an iterative geometric construction and a closed-form
+    equation — must agree to within 10<sup>−12</sup>. This is the check that
+    catches a subtly wrong stage count.</li>
+  <li><strong>Numerical integration against Colburn.</strong> The transfer-unit
+    integral is evaluated by Simpson's rule and compared against the closed
+    form.</li>
+  <li><strong>The log-mean driving force against Colburn.</strong> An independent
+    algebraic route that never touches <em>A</em> at all.</li>
+</ul>
+
+<p>The most instructive failure found during development was in stage counting.
+The obvious way to handle a fractional last stage — step whole risers, then
+interpolate the last one linearly — is <strong>wrong</strong>, and wrong by an
+amount that looks like rounding: on the default preset it gives 2.375 stages
+where the correct answer is 2.459. The correct rule comes from the fact that the
+stepping recursion is geometric rather than arithmetic, so the fractional stage
+must be interpolated logarithmically. The test suite asserts the wrong answer
+explicitly, as a guard against the correct rule being quietly replaced.</p>
+
+<div class="note">
+  <span class="note__icon">&#8505;</span>
+  <div><strong>What the default numbers are.</strong> The equilibrium slopes,
+    <em>H_OG</em> values, tray efficiency and spacing are <strong>illustrative
+    typical figures</strong> — chosen so the demonstration is legible and every
+    result is checkable by hand, not transcribed from a particular source. Each
+    carries a typical range and a one-line basis in the code, collected in the
+    sourcing table in the project's decision log.
+    <br><br>
+    Two of them are worth knowing about specifically. The tray efficiency,
+    <em>E<sub>o</sub></em> = 0.70, sits at the <em>optimistic</em> end of the
+    band usually quoted for absorbers; it is kept because the worked examples
+    are built on it, not because it is a safe assumption. And the equilibrium
+    slopes are the softest numbers here — a Henry's-law slope depends on system,
+    temperature and pressure, so a single figure is an order-of-magnitude
+    illustration. The SO₂ preset carries an extra warning of its own, because
+    real SO₂–water equilibrium is distinctly curved even at low concentrations;
+    that preset is in the list precisely to show where the straight-line
+    assumption gives out.</div>
+</div>
+
+<h2 id="learned">9. What I learned, and what's next</h2>
+
+<p>Four things happened in this project that are worth reflecting on, because
+each one was a surprise at the time:</p>
+
+<ol>
+  <li><strong>Two different models produced bit-identical physics.</strong>
+    Across 4,837 operating points the two implementations returned the
+    <em>same doubles</em> — not close, identical. Where the specification was
+    prescriptive, all variation vanished; where it was silent, the two diverged
+    completely.</li>
+  <li><strong>The plan contained a physics error that the critique caught.</strong>
+    The fractional-stage rule gave 2.375 where the correct answer is 2.459432 —
+    wrong by an amount that looks like rounding. Both implementations then got it
+    right, because by then the plan explained it.</li>
+  <li><strong>The test suite was wrong, and the second implementation found it.</strong>
+    It had quietly come to depend on things only the first implementation had,
+    so it was really asking "is this the same code?" rather than "is this
+    correct?".</li>
+  <li><strong>Passing every test is not the same as working.</strong>
+    Implementation B once scored 60/61 on physics while its website was
+    completely dead.</li>
+</ol>
+
+<div class="fillin">
+  <p><strong>What I learned — your version.</strong> The four above are what the
+    record shows; what you took from them is yours. Questions worth answering:</p>
+  <ul>
+    <li>What surprised you about the <em>separations</em> once you could drag it?
+      The quantised tray height versus the continuous packed height is the
+      obvious candidate — did seeing it move change how you think about HETP?</li>
+    <li>Did the critique step change how much you trust a single model's output?
+      Note that the critic was itself confidently wrong twice, with correct
+      conclusions supported by faulty reasoning.</li>
+    <li>Three separate times in this project, an automated check disagreed with a
+      piece of work and <em>the check</em> turned out to be wrong. Does that
+      change how you would set up verification next time?</li>
+  </ul>
+</div>
+
+<div class="fillin">
+  <p><strong>What I want to learn next.</strong> The unbuilt features below are
+    the natural starting point — which of them actually interests you, and why?
+    Column diameter from flooding is the one that would most change the tool,
+    since it would make "same duty, different sizing" true in two dimensions
+    rather than one. Curved equilibrium is the one that would most change the
+    <em>physics</em>, because it retires the closed-form solutions entirely and
+    forces everything numerical.</p>
+</div>
+
+<h3>Features designed for but deliberately not built</h3>
+
+<p>The architecture was built with these in mind, so each could be added without
+restructuring what exists:</p>
+
+<ul>
+  <li><strong>Column diameter from flooding.</strong> Trays and packing have
+    different capacity limits, so "same flow rates, different sizing" would
+    extend to diameter as well as height.</li>
+  <li><strong>The operating envelope.</strong> Dragging the gas rate up to show
+    weeping, entrainment and flooding on trays against loading and flooding in
+    packing.</li>
+  <li><strong>A trays-or-packing scenario sorter</strong> — a drag-and-drop
+    exercise built from section 7.</li>
+  <li><strong>Curved equilibrium lines.</strong> The honest version of the SO₂ case.
+    All equilibrium evaluation in the code already goes through a single
+    function, deliberately left uninlined, so that a curve can replace the
+    straight line without touching the rest.</li>
+  <li><strong>Pressure drop comparison</strong>, and the operating-cost argument
+    that follows from it.</li>
+</ul>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    Static site &middot; no framework, no build step.
+    <a href="../compare.html">Compare with implementation B</a> &middot;
+    <a href="../overview.html">Project overview</a>
+  </div>
+</footer>
+
+<script type="module" src="js/site.js"></script>
+</body>
+</html>

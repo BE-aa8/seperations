@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tray vs. Packed — choose an implementation</title>
+<meta name="description" content="Two independent implementations of the same specification, built by different AI models.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='9' y='3' width='14' height='26' rx='3' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Cpath d='M12 11h8M12 16h8M12 21h8' stroke='%23eb6834' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="impl-a/css/theme.css">
+<link rel="stylesheet" href="impl-a/css/base.css">
+<style>
+  .chooser { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+             margin: 2rem 0; }
+  .chooser a { display: block; text-decoration: none; color: inherit;
+               background: var(--surface); border: 1px solid var(--hairline);
+               border-radius: var(--r-lg); padding: 1.25rem; }
+  .chooser a:hover { border-color: var(--tray); }
+  .chooser h2 { margin: 0 0 0.3rem; font-size: 1.1rem; }
+  .chooser p { margin: 0; color: var(--ink-2); font-size: 0.9rem; }
+  .chooser .tag { display: inline-block; font-size: 0.7rem; letter-spacing: 0.08em;
+                  font-weight: 700; color: var(--ink-muted); border: 1px solid var(--axis);
+                  border-radius: 999px; padding: 0.05rem 0.5rem; margin-bottom: 0.6rem; }
+  .compare-cta { display: block; text-decoration: none; color: inherit;
+                 background: var(--surface); border: 1px solid var(--hairline);
+                 border-left: 4px solid var(--tray); border-radius: var(--r-lg);
+                 padding: 1.25rem; margin: 2rem 0 0; }
+  .compare-cta:hover { border-color: var(--tray); }
+  .compare-cta h2 { margin: 0 0 0.3rem; font-size: 1.15rem; }
+  .compare-cta p { margin: 0; color: var(--ink-2); font-size: 0.9rem; max-width: 62ch; }
+  .compare-cta .tag { display: inline-block; font-size: 0.7rem; letter-spacing: 0.08em;
+                      font-weight: 700; color: var(--ink-muted);
+                      border: 1px solid var(--axis); border-radius: 999px;
+                      padding: 0.05rem 0.5rem; margin-bottom: 0.6rem; }
+</style>
+</head>
+<body>
+<main class="page" style="max-width:860px">
+  <h1 style="margin-top:2rem">One duty, two columns</h1>
+  <p class="prose" style="color:var(--ink-2)">
+    An interactive comparison of a <strong>tray column</strong> and a
+    <strong>packed column</strong> doing the same dilute gas absorption job.
+    Built for Separation Processes at the University of Cincinnati as an AI
+    project: the same specification was implemented independently by two
+    different AI models, and both must pass the same physics test suite.
+  </p>
+
+  <a href="compare.html" class="compare-cta">
+    <span class="tag">SIDE BY SIDE</span>
+    <h2>Compare both, live &rarr;</h2>
+    <p>Both implementations running next to each other, with blind mode and a
+      side-swap so position does not steer the judgement. The physics is
+      identical in both &mdash; this is an interface comparison.</p>
+  </a>
+
+  <div class="chooser">
+    <a href="impl-a/index.html">
+      <span class="tag">IMPLEMENTATION A &middot; CANONICAL</span>
+      <h2>Open implementation A &rarr;</h2>
+      <p><strong>The site.</strong> Chosen as the version to carry forward, on
+        interface preference &mdash; the physics is identical in both. This is
+        what the root URL now opens.</p>
+    </a>
+    <a href="impl-b/index.html" id="impl-b-link">
+      <span class="tag">IMPLEMENTATION B</span>
+      <h2>Open implementation B &rarr;</h2>
+      <p>ChatGPT's independent build from the same plan. Kept in full as the
+        evidence for the model comparison, not as a fallback.</p>
+    </a>
+  </div>
+
+  <div class="note">
+    <span class="note__icon">&#9432;</span>
+    <div>Both are written against the same frozen module interface and graded
+      by the same test suite &mdash; currently <strong>65 / 65 each</strong> &mdash;
+      and their physics agrees to the last digit across 4,837 operating points.
+      The specification they were built from is <code>docs/PLAN.md</code>; the
+      running decision log is <code>docs/DECISIONS.md</code>.</div>
+  </div>
+</main>
+
+</body>
+</html>
