@@ -9,7 +9,7 @@
  */
 
 import { h, clear } from './dom.js';
-import { SYSTEMS, PACKINGS, DEMO_PRESETS, UNVERIFIED_NOTE } from './presets.js';
+import { SYSTEMS, PACKINGS, DEMO_PRESETS, ILLUSTRATIVE_NOTE } from './presets.js';
 
 let warningEl;
 let fieldEls = {};
@@ -113,11 +113,13 @@ export function mount(root, wiring) {
     ]),
   );
 
-  // --- The standing, date-stamped verification caveat (D-32) ----------------
+  // --- The standing note on what these numbers are (D-52) -------------------
+  // Informational, not a warning: nothing here is wrong, but nobody should
+  // mistake a teaching default for a design figure.
   root.appendChild(
-    h('div', { class: 'note note--warning', style: 'margin-bottom:1rem' }, [
-      h('span', { class: 'note__icon', text: '⚠' }),
-      h('div', {}, [h('strong', { text: 'Defaults unverified. ' }), UNVERIFIED_NOTE]),
+    h('div', { class: 'note', style: 'margin-bottom:1rem' }, [
+      h('span', { class: 'note__icon', text: 'ℹ' }),
+      h('div', {}, [h('strong', { text: 'About these numbers. ' }), ILLUSTRATIVE_NOTE]),
     ]),
   );
 }

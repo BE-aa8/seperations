@@ -70,7 +70,7 @@ Fill in as the project proceeds. This table feeds `model-comparison.html`.
 | D-19 | Numerical-stability branches near `A = 1` are **prescribed in the plan**, not left to the implementer (`log1p` forms plus series expansions with stated thresholds). | Verified that the naive forms return `NaN` at exactly `A = 1`. Two independent implementations must behave identically here or the comparison is noise. | Model:Opus5 |
 | D-20 | Axis ranges autoscale per preset but **freeze for the duration of a drag**. | `m` spans 0.85→40 across presets, so fixed axes are impossible; but recomputing mid-drag makes the diagram creep under the cursor. `RISK-09`. | Model:Opus5 |
 | D-21 | The two columns' height axes are **not normalised** against each other in the probe/profile view. | They have different total heights — that difference is the entire point of the site. Hiding it would defeat the demo. | Model:Opus5 |
-| D-22 | Every default value carries a `VERIFY against Seader Ch. 6` flag, and the site shows a standing "defaults unverified" note until they are checked. | The owner asked to be able to check them against the textbook; unflagged plausible numbers are worse than obviously provisional ones. | Owner |
+| D-22 | **SUPERSEDED BY D-52.** Every default value carries a `VERIFY against Seader Ch. 6` flag, and the site shows a standing "defaults unverified" note until they are checked. | The owner asked to be able to check them against the textbook; unflagged plausible numbers are worse than obviously provisional ones. | Owner |
 | D-23 | A one-click **"Balanced (A = 1)"** preset ships alongside the four systems. | Puts the most error-prone special case one click away for a demo or a grader; it is Example B of PLAN §7, hand-checkable in a minute. | Model:Opus5 |
 | D-24 | `physics.js` exported signatures are **frozen** in PLAN §2.4. | Both implementations must be drop-in compatible with the same unmodified test suite, or the comparison is not like-for-like. | Model:Opus5 |
 | D-25 | A single injected `yStar(x)` seam is designed in from the start (currently `x => m*x`), and `ntuNumeric` is built in the MVP even though `ntuAnalytic` is exact. | These are the seams that let curved equilibrium (F-4) be added rather than retrofitted. Identified as the most important architectural decision in the plan. | Model:Opus5 |
@@ -85,7 +85,7 @@ Fill in as the project proceeds. This table feeds `model-comparison.html`.
 | D-29 | `impl-a` and `impl-b` **must** be built by different models; recorded in the definition of done. | The assignment's comparison requirement is unmeetable otherwise, and the omission was easy to miss because the intent was stated in prose but never in a checkable criterion. | Critic:MuseAI (C-07) |
 | D-30 | A four-step amendment protocol for the frozen §2.4 API: implementer logs → owner approves → version bump → **all** existing impls update and re-run the suite. | "Frozen" without an unfreeze procedure means the first real defect either strands an implementation or gets patched silently in one of them, which destroys the like-for-like comparison. | Critic:MuseAI (C-08) |
 | D-31 | A second demo button at `A = 1 − 5×10⁻⁷`, alongside the exact `A = 1` button. | The exact button tests the special case; only a near-value tests the branch *selection*. Value corrected from the critic's suggested `1 − 10⁻⁶`, which sits exactly on the `< 1e-6` threshold and so takes the other branch — verified numerically. | Critic:MuseAI (C-12) → corrected |
-| D-32 | The "defaults unverified" note carries the date the defaults were chosen. | Distinguishes a live caveat from an abandoned one, at the cost of one string. | Critic:MuseAI (C-14) |
+| D-32 | **SUPERSEDED BY D-52.** The "defaults unverified" note carries the date the defaults were chosen. | Distinguishes a live caveat from an abandoned one, at the cost of one string. | Critic:MuseAI (C-14) |
 | D-33 | The SO₂ straight-line-model warning appears **on screen** when that preset is active, not as documentation. | SO₂ is in the list *because* the model strains on it (D-04). A footnote risks reading as an oversight rather than a deliberate choice; an on-screen label makes it the teaching point it was meant to be, and models the habit of stating a model's domain of validity. | Critic:MuseAI (C-13) |
 
 ### Critique round — 2026-09-21 — Muse AI
@@ -241,6 +241,8 @@ not taken from the report:
 | D-49 | Browser verification stays a **manual** step and the plan now says so explicitly. | Automating it means a browser-automation dependency, and the site ships with none. Better to state the limit than imply the suite covers it. | Model:Opus5 |
 | D-50 | **Implementation A is the canonical site.** The root URL redirects to it; `impl-b/` is kept in full and `compare.html` stays live. | The owner chose it after viewing both side by side. Explicitly an interface preference, not a correctness judgement — the two agree to the last digit across 4,837 points and both pass 65/65. `impl-b` is retained as the model-comparison evidence, not as a fallback; deleting it would destroy the thing the assignment is about. | Owner |
 | D-51 | `impl-b`'s one remaining defect is **still not patched**. | It stays as the model produced it. Now that A is canonical the defect ships in nothing user-facing, and fixing it would retroactively edit the artifact the comparison rests on. | Owner |
+| D-52 | **The "verify against Seader Ch. 6" framing is retired.** Defaults become illustrative typical figures, each carrying a stated range and a one-line basis. Supersedes `D-22` and `D-32`. | The promise was never fulfillable by the party who wrote it: Claude has no access to the textbook, and copying values out of a copyrighted text into the repository would not be appropriate regardless. A caveat that cannot be discharged is worse than no caveat — it reads as an outstanding task forever. The honest replacement states what the numbers actually are. Seader stays cited for the Kremser and Colburn theory; only the validation promise goes. | Owner |
+| D-53 | **No numeric value changed** in the re-sourcing. | All three worked examples and all 65 tests are built on these figures. Where a value looks questionable under its new basis — `E_o = 0.70` is at the optimistic end for an absorber — that is now **stated on the page**, which serves a student better than a silent correction would. | Model:Opus5 |
 
 #### One defect remains in impl-b
 
@@ -317,21 +319,34 @@ teaching value, and the human was right.
 
 ---
 
-## 4. Verification ledger
+## 4. Sourcing of the default values
 
-Tick these off as you check the defaults against Seader, *Separation Process
-Principles*, Ch. 6. Until every row is done, the site keeps its
-"defaults unverified" note.
+These are **illustrative typical figures** — not design data, and not taken from
+any particular source. Each is given with the range general engineering practice
+usually quotes, plus a one-line basis. The values themselves are frozen: the
+worked examples and the test suite depend on them (`D-53`).
 
-| Value | Plan default | Textbook value | Checked? | Date |
-|---|---|---|---|---|
-| `E_o` overall tray efficiency | 0.70 | | ☐ | |
-| Tray spacing `S` | 0.60 m | | ☐ | |
-| `h_top` / `h_bot` | 1.0 m / 1.0 m | | ☐ | |
-| `H_OG`, ceramic Raschig 25 mm | 0.90 m | | ☐ | |
-| `H_OG`, metal Pall 38 mm | 0.60 m | | ☐ | |
-| `H_OG`, structured 250 m²/m³ | 0.40 m | | ☐ | |
-| `m`, NH₃–air–water @ 20 °C | 0.85 | | ☐ | |
-| `m`, acetone–air–water @ 25 °C | 1.80 | | ☐ | |
-| `m`, SO₂–air–water @ 25 °C | 40 | | ☐ | |
-| Tray height convention (D-15) | `N_act·S` | *n/a — a convention, not a textbook value* | ☑ decided by owner | 2026-09-21 |
+This section was previously a checklist of values "to verify against Seader
+Ch. 6". That promise is withdrawn — see `D-52`.
+
+| Value | Used | Typical range | Note |
+|---|---|---|---|
+| `E_o` overall tray efficiency | 0.70 | 0.3–0.7 for absorbers | **At the optimistic end.** Kept because the worked examples rest on it; stated on the page rather than quietly lowered. |
+| Tray spacing `S` | 0.60 m | 0.45–0.75 m | 0.6 m = 24 in, the usual default. Larger diameters tend to want more. |
+| `h_top` / `h_bot` | 1.0 m / 1.0 m | ~1 m each | Strongly design-dependent; the sump is set by holdup and residence time. |
+| `H_OG`, ceramic Raschig 25 mm | 0.90 m | 0.6–1.2 m | First-generation packing — tall transfer unit. |
+| `H_OG`, metal Pall 38 mm | 0.60 m | 0.4–0.8 m | Modern random packing, markedly better than rings of the same size. |
+| `H_OG`, structured 250 m²/m³ | 0.40 m | 0.3–0.6 m | Shortest transfer unit of the three, which is most of why it gets specified. |
+| `m`, generic solute | 1.0 | n/a | Not a real system. Puts equilibrium on the diagonal so the arithmetic is checkable by hand. |
+| `m`, NH₃–air–water | 0.85 | order 1 at ambient | Very soluble, so a small slope. Strongly temperature-dependent. |
+| `m`, acetone–air–water | 1.80 | order 1–2 at ambient | Moderately soluble; the best-behaved of the four for a straight-line model. |
+| `m`, SO₂–air–water | 40 | order 10¹–10² at ambient | Much less soluble — hence the enormous liquid rate this preset demands. **Real equilibrium is curved**, and it carries its own on-screen warning (`D-33`). |
+
+**The equilibrium slopes are the weakest numbers here.** A Henry's-law slope
+depends on the system, the temperature and the pressure, so a single figure is an
+order-of-magnitude illustration. For real sizing, look them up for the actual
+conditions.
+
+**Settled separately:** the tray-height convention `Z = N_act·S + h_top + h_bot`
+is a convention rather than a measurable value, and was decided by the owner on
+2026-09-21 (`D-15`).

@@ -44,8 +44,7 @@
 <h2>Technical sources</h2>
 
 <p>The physics implemented here is standard dilute-absorption theory. The
-primary reference for this course, and the one every default value in the demo
-is to be checked against:</p>
+primary reference for this course:</p>
 
 <ul>
   <li>Seader, Henley &amp; Roper, <em>Separation Process Principles</em> —
@@ -55,21 +54,25 @@ is to be checked against:</p>
 </ul>
 
 <div class="fillin">
-  <p>Add the edition and publisher you actually used, plus any other sources you
-    consulted — lecture notes, other textbooks (Treybal and Wankat are the usual
-    companions for this material), or vendor data for packing characteristics.
-    Cite them in whatever format the course requires.</p>
+  <p><strong>Complete the citation.</strong> Add the edition and publisher you
+    actually used, plus anything else you consulted — lecture notes, other
+    textbooks (Treybal and Wankat are the usual companions for this material), or
+    vendor data for packing characteristics. Use whatever citation format the
+    course requires.</p>
 </div>
 
-<div class="note note--warning">
-  <span class="note__icon">&#9888;</span>
-  <div><strong>Defaults still pending verification.</strong> The numeric defaults
-    in the demo — equilibrium slopes, transfer-unit heights, tray efficiency and
-    spacing — were chosen to be physically plausible and to make the
-    demonstration legible. They have <em>not</em> been checked against the
-    reference above. A verification ledger listing every value is kept in
-    <code>docs/DECISIONS.md</code>; tick the rows off as you check them, then
-    remove the standing caveat from the demo page.</div>
+<div class="note">
+  <span class="note__icon">&#8505;</span>
+  <div><strong>On the numbers in the demo.</strong> The equilibrium slopes,
+    transfer-unit heights, tray efficiency and spacing are <em>illustrative
+    typical figures</em>, chosen so the demonstration is legible and
+    hand-checkable. They are not transcribed from any particular source and they
+    are not design data. Each carries a typical range and a short basis in
+    <code>impl-a/js/presets.js</code>, collected in the sourcing table in
+    <code>docs/DECISIONS.md</code> §4. The equilibrium slopes are the softest of
+    them: a Henry's-law slope depends on system, temperature and pressure, so a
+    single number is an order-of-magnitude illustration. For real sizing, look
+    values up for your own conditions.</div>
 </div>
 
 <h2>Named equations</h2>
@@ -92,10 +95,37 @@ a footnote. A full account of which model did what is on the
 decision is logged with its rationale and attribution in
 <code>docs/DECISIONS.md</code>.</p>
 
+<table>
+  <thead><tr><th>Model</th><th>Role</th><th>When</th></tr></thead>
+  <tbody>
+    <tr><td>Claude Opus 5 (via Claude Code)</td>
+        <td>Wrote the specification; built implementation A; graded both
+            implementations against the shared suite</td>
+        <td>21–23 Sept 2026</td></tr>
+    <tr><td>Muse AI</td>
+        <td>Independently critiqued the specification — 14 findings</td>
+        <td>21 Sept 2026</td></tr>
+    <tr><td>ChatGPT</td>
+        <td>Built implementation B, independently, from the same specification</td>
+        <td>21–22 Sept 2026</td></tr>
+  </tbody>
+</table>
+
+<p>Work spans 68 commits on a single branch. Every prompt that was captured is
+kept verbatim in <code>docs/prompts/</code>; the critique prompt was sent outside
+the recorded session and is marked as missing rather than reconstructed.</p>
+
+<p>One environment difference is worth recording because it shaped the result:
+Claude Code ran with repository access, a shell and a browser, so it could
+execute the test suite and drive its own output. Implementation B reported having
+none of those, and could verify only by reasoning about the equations — which is
+why its first delivery combined correct physics with a website that did not run.</p>
+
 <div class="fillin">
-  <p>List the models and interfaces used, with dates. Note anything that affects
-    reproducibility — settings, versions, whether sessions were continued or
-    started fresh.</p>
+  <p><strong>Add the interface details you can supply.</strong> Which interface
+    you used for Muse AI and ChatGPT, whether sessions were continued or started
+    fresh, and any version or setting worth recording for reproducibility. Only
+    Claude Code's environment is known first-hand here.</p>
 </div>
 
 <h2>Software and standards</h2>
@@ -127,11 +157,15 @@ dark themes rather than chosen by eye.</p>
 
 <h2>Reuse</h2>
 
+<p>The repository's <code>package.json</code> currently declares <strong>MIT</strong>,
+which was a scaffolding default rather than a considered choice.</p>
+
 <div class="fillin">
-  <p>State how you want this to be reused, if at all. If you would like others to
-    be able to build on it, a permissive licence such as MIT is the
-    straightforward choice; the repository's <code>package.json</code> currently
-    declares MIT, so either confirm that or change it to match your intent.</p>
+  <p><strong>Confirm or change it.</strong> MIT lets anyone build on this,
+    including other students; if that is what you want, say so here and the
+    declaration already matches. If you would rather it were not reused, or want
+    attribution required, change both this note and
+    <code>package.json</code>.</p>
 </div>
 
 </div>

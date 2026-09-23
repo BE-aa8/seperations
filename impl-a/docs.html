@@ -104,25 +104,92 @@ page</a> reports what came out of that.</p>
 
 <h2 id="process">3. The process — models, tools, prompts</h2>
 
-<div class="fillin">
-  <p><strong>Which models, and in what role.</strong> Name the model that wrote the
-    plan, the one that critiqued it, and the two that implemented it. Note the
-    interface used for each (chat, IDE, CLI) and anything relevant about the
-    settings.</p>
-</div>
+<h3>The models, and what each one did</h3>
+
+<p>Four distinct roles, deliberately kept separate so that no model was asked to
+check its own work:</p>
+
+<table>
+  <thead>
+    <tr><th>Role</th><th>Model</th><th>Produced</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Planner</td><td>Claude Opus 5, via Claude Code</td>
+        <td>The specification — physics derivations, phases, worked examples,
+            a ranked list of where an implementation would likely go wrong</td></tr>
+    <tr><td>Critic</td><td>Muse AI</td>
+        <td>14 findings against the plan, sorted into errors, omissions and
+            preferences</td></tr>
+    <tr><td>Implementer A</td><td>Claude Opus 5, via Claude Code</td>
+        <td>This site</td></tr>
+    <tr><td>Implementer B</td><td>ChatGPT</td>
+        <td>An independent build from the same written specification</td></tr>
+  </tbody>
+</table>
+
+<p>Claude Code ran in a cloud container with repository access, so it could run
+the test suite and drive a real browser against its own output. That mattered
+more than it sounds: implementation B reported that its environment gave it
+<em>no</em> shell or browser, so it could verify its work only by reasoning about
+the equations. Its first delivery had correct physics and a website that did not
+run at all — three single-character syntax errors — and nothing in its own
+process could have caught that.</p>
 
 <div class="fillin">
-  <p><strong>Tools.</strong> Editor, version control, hosting, and anything else in
-    the loop. Worth noting that the site has no build step and no runtime
-    dependencies, so "deployment" is simply pushing files.</p>
+  <p><strong>Add the interface details for the other two.</strong> I can only
+    speak first-hand for Claude Code. Note how you drove Muse AI and ChatGPT —
+    which interface, whether sessions were continued or started fresh, and any
+    settings worth recording for reproducibility.</p>
 </div>
 
-<div class="fillin">
-  <p><strong>Prompts.</strong> The prompts used at each stage are kept verbatim in
-    the repository under <code>docs/prompts/</code>. Summarise here what each one
-    was trying to achieve, and link to them. The revisions matter more than the
-    final wording — they are the record of steering.</p>
-</div>
+<h3>Tools</h3>
+
+<ul>
+  <li><strong>Git and GitHub</strong> for version control — 68 commits, all
+    work on one branch, with the decision log updated alongside the code rather
+    than reconstructed afterwards.</li>
+  <li><strong>Node's built-in test runner</strong> for the 65-test physics
+    suite. No test framework was installed.</li>
+  <li><strong>Playwright</strong> for browser verification during development,
+    installed without saving so it never became a project dependency.</li>
+  <li><strong>Netlify</strong> for hosting.</li>
+</ul>
+
+<p>The site itself has <strong>no build step and no runtime dependencies</strong>,
+so deployment is nothing more than pushing files. That was a deliberate
+constraint: it keeps what is served identical to what is written, which matters
+when two models have to produce comparable work and a third party has to read
+both.</p>
+
+<h3>The prompts</h3>
+
+<p>Kept verbatim in the repository under <code>docs/prompts/</code>:</p>
+
+<table>
+  <thead><tr><th>Prompt</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>01-planning.md</code></td>
+        <td>The originating brief. States the concept, the physics as equations,
+            the no-sliders constraint <em>and the reason for it</em>, and asks to
+            be questioned before any work begins.</td></tr>
+    <tr><td><code>02-critique.md</code></td>
+        <td>Handing the plan to a second model to be attacked. The exact wording
+            was not captured — noted honestly rather than reconstructed.</td></tr>
+    <tr><td><code>03-impl-b-handoff.md</code></td>
+        <td>Briefing a second model to implement the same specification, with an
+            explicit instruction not to read the first implementation.</td></tr>
+    <tr><td><code>04-impl-b-round2.md</code></td>
+        <td>A defect report naming three syntax errors precisely, plus the
+            self-verification steps its first round had skipped.</td></tr>
+  </tbody>
+</table>
+
+<p>Two things about these are worth more than their wording. First, the planning
+prompt <em>asked to be questioned</em>, and the four clarifying questions that
+came back changed the design before a line was written. Second, the prompts get
+progressively more specific about <em>verification</em> rather than about
+features — which is the direction the project kept discovering it needed to
+move.</p>
 
 <h2 id="iteration">4. Planning and iteration</h2>
 
@@ -150,11 +217,46 @@ would surface early and cheaply:</p>
     screen.</li>
 </ol>
 
+<p>The decision log marks every point where a model's recommendation was
+overridden. These are the ones where the two of us actually disagreed:</p>
+
+<table>
+  <thead><tr><th>#</th><th>The model proposed</th><th>The decision</th></tr></thead>
+  <tbody>
+    <tr><td>D-03</td>
+        <td>Ship <em>one</em> generic chemical system, for implementation
+            simplicity and easier verification.</td>
+        <td>Require <strong>all four</strong> systems as a selector.</td></tr>
+    <tr><td>D-15</td>
+        <td>Flag the tray-height convention as an open question and defer it.</td>
+        <td>Settle it: <code>N_act·S</code> plus allowances.</td></tr>
+    <tr><td>D-45</td>
+        <td>(No proposal — the question was put open.)</td>
+        <td>Leave implementation B's minified, broken source <strong>exactly as
+            delivered</strong> rather than repairing it.</td></tr>
+    <tr><td>D-50</td>
+        <td>Decline to pick a winner, on the grounds of having built one of
+            them.</td>
+        <td>Choose implementation A, on interface grounds.</td></tr>
+    <tr><td>D-52</td>
+        <td>Keep flagging every default as pending a textbook check.</td>
+        <td>Retire the promise; state what the numbers actually are.</td></tr>
+  </tbody>
+</table>
+
 <div class="fillin">
-  <p><strong>Where I steered, and why.</strong> The decision log records each point
-    where the model's recommendation was overridden. Pick the two or three that
-    mattered most and explain the reasoning in your own words — what the model
-    optimised for, what you optimised for, and why you made the call you did.</p>
+  <p><strong>Your reasoning, in your own words.</strong> Pick the two or three
+    that mattered most and say what <em>you</em> were optimising for.</p>
+  <p>Worth drawing out on D-03 specifically: the model optimised for
+    implementation cleanliness — fewer presets, fewer defaults to defend, less
+    that could be wrong. You optimised for teaching value, and got the SO₂ case,
+    which is the one preset where the straight-line model visibly breaks and is
+    arguably the most instructive thing on the site. That is a real difference in
+    what the two of us were treating as the goal. Was that the reasoning at the
+    time, or is it only clear in hindsight?</p>
+  <p>D-45 is worth a sentence too: keeping a broken artifact unrepaired is an
+    unusual instinct, and it is the decision that made the model comparison mean
+    anything.</p>
 </div>
 
 <h2 id="physics">5. The physics</h2>
@@ -391,35 +493,75 @@ stepping recursion is geometric rather than arithmetic, so the fractional stage
 must be interpolated logarithmically. The test suite asserts the wrong answer
 explicitly, as a guard against the correct rule being quietly replaced.</p>
 
-<div class="note note--warning">
-  <span class="note__icon">&#9888;</span>
-  <div><strong>Default values are not yet verified.</strong> The numerical
-    defaults in the demo — equilibrium slopes, <em>H_OG</em> values, tray
-    efficiency and spacing — are physically plausible and internally consistent,
-    but they have not been checked against Seader's
-    <em>Separation Process Principles</em>, Chapter 6. They are illustrative of
-    the method, not design data. The SO₂ preset carries an additional warning of
-    its own, because real SO₂–water equilibrium is distinctly curved even at low
-    concentrations and the straight-line model strains there — that preset is in
-    the list precisely to show where the model's assumptions give out.</div>
+<div class="note">
+  <span class="note__icon">&#8505;</span>
+  <div><strong>What the default numbers are.</strong> The equilibrium slopes,
+    <em>H_OG</em> values, tray efficiency and spacing are <strong>illustrative
+    typical figures</strong> — chosen so the demonstration is legible and every
+    result is checkable by hand, not transcribed from a particular source. Each
+    carries a typical range and a one-line basis in the code, collected in the
+    sourcing table in the project's decision log.
+    <br><br>
+    Two of them are worth knowing about specifically. The tray efficiency,
+    <em>E<sub>o</sub></em> = 0.70, sits at the <em>optimistic</em> end of the
+    band usually quoted for absorbers; it is kept because the worked examples
+    are built on it, not because it is a safe assumption. And the equilibrium
+    slopes are the softest numbers here — a Henry's-law slope depends on system,
+    temperature and pressure, so a single figure is an order-of-magnitude
+    illustration. The SO₂ preset carries an extra warning of its own, because
+    real SO₂–water equilibrium is distinctly curved even at low concentrations;
+    that preset is in the list precisely to show where the straight-line
+    assumption gives out.</div>
 </div>
 
 <h2 id="learned">9. What I learned, and what's next</h2>
 
+<p>Four things happened in this project that are worth reflecting on, because
+each one was a surprise at the time:</p>
+
+<ol>
+  <li><strong>Two different models produced bit-identical physics.</strong>
+    Across 4,837 operating points the two implementations returned the
+    <em>same doubles</em> — not close, identical. Where the specification was
+    prescriptive, all variation vanished; where it was silent, the two diverged
+    completely.</li>
+  <li><strong>The plan contained a physics error that the critique caught.</strong>
+    The fractional-stage rule gave 2.375 where the correct answer is 2.459432 —
+    wrong by an amount that looks like rounding. Both implementations then got it
+    right, because by then the plan explained it.</li>
+  <li><strong>The test suite was wrong, and the second implementation found it.</strong>
+    It had quietly come to depend on things only the first implementation had,
+    so it was really asking "is this the same code?" rather than "is this
+    correct?".</li>
+  <li><strong>Passing every test is not the same as working.</strong>
+    Implementation B once scored 60/61 on physics while its website was
+    completely dead.</li>
+</ol>
+
 <div class="fillin">
-  <p><strong>What I learned.</strong> Both about separations and about working with
-    these models. Some prompts worth considering: What surprised you about the
-    physics once you could drag it around? What did the models get right
-    immediately, and what did they get confidently wrong? Did the critique step
-    change your view of how much to trust a single model's output?</p>
+  <p><strong>What I learned — your version.</strong> The four above are what the
+    record shows; what you took from them is yours. Questions worth answering:</p>
+  <ul>
+    <li>What surprised you about the <em>separations</em> once you could drag it?
+      The quantised tray height versus the continuous packed height is the
+      obvious candidate — did seeing it move change how you think about HETP?</li>
+    <li>Did the critique step change how much you trust a single model's output?
+      Note that the critic was itself confidently wrong twice, with correct
+      conclusions supported by faulty reasoning.</li>
+    <li>Three separate times in this project, an automated check disagreed with a
+      piece of work and <em>the check</em> turned out to be wrong. Does that
+      change how you would set up verification next time?</li>
+  </ul>
 </div>
 
 <div class="fillin">
-  <p><strong>What I want to learn next.</strong> The planned but unbuilt features
-    are a natural starting point: column diameter from flooding correlations,
-    the weeping/entrainment/flooding envelope, curved equilibrium with numerical
-    integration, and pressure-drop comparison. Which of these interests you, and
-    why?</p>
+  <p><strong>What I want to learn next.</strong> The unbuilt features below are
+    the natural starting point — which of them actually interests you, and why?
+    Column diameter from flooding is the one that would most change the tool,
+    since it would make "same duty, different sizing" true in two dimensions
+    rather than one. Curved equilibrium is the one that would most change the
+    <em>physics</em>, because it retires the closed-form solutions entirely and
+    forces everything numerical.</p>
 </div>
 
 <h3>Features designed for but deliberately not built</h3>

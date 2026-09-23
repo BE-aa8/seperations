@@ -147,9 +147,17 @@ wrong in the same breath. Checking it is part of the process, not a sign of
 distrust.</p>
 
 <div class="fillin">
-  <p><strong>Your reading of the critique round.</strong> Was the critique worth the
-    step? Did it find things you would have caught yourself? Did any finding
-    change how you think about relying on a single model's output?</p>
+  <p><strong>Your reading of the critique round.</strong> The record: 14 findings,
+    all accepted, two fixed differently from what was proposed, and two where the
+    critic's conclusion was right but its reasoning was wrong.</p>
+  <p>The sharpest question is whether the step paid for itself. One finding
+    (C-03) would otherwise have shipped an acceptance criterion that a
+    <em>correct</em> implementation fails — someone would have spent an afternoon
+    hunting a bug that did not exist. Another (C-04) would likely have produced a
+    guard that broke the tool's headline interaction. Against that: the critique
+    also produced findings that were mostly bookkeeping.</p>
+  <p>Would you run this step again? And does "the critic was confidently wrong
+    twice" change how you would use one?</p>
 </div>
 
 <h2>3. Implementation A versus B</h2>
@@ -336,8 +344,14 @@ tool on screen immediately.</p>
 
 <div class="fillin">
   <p><strong>Your reasons, in your own words.</strong> What actually decided it
-    when you had both in front of you? Anything B did better that you gave up by
-    choosing A?</p>
+    with both in front of you?</p>
+  <p>The visible design disagreement was the opening: B leads with a landing
+    section and a call to action, A puts the tool on screen immediately. For a
+    class demo where the audience already has the context, that is a real
+    trade-off rather than an obvious win either way.</p>
+  <p>Also worth saying plainly: is there anything B did <em>better</em> that you
+    gave up by choosing A? A comparison that finds nothing good in the option not
+    taken is usually a comparison that was not really made.</p>
 </div>
 
 <h3>Three lessons worth stating</h3>
@@ -356,20 +370,37 @@ tool on screen immediately.</p>
 </ol>
 
 <div class="fillin">
-  <p><strong>The comparison in prose.</strong> Numbers in a table do not make an
-    argument. Which implementation would you rather maintain, and why? Where did
-    the two diverge most — the physics, the interaction, or the code structure?
-    Did the detailed plan make them converge, or did they still differ
-    substantially despite it?</p>
+  <p><strong>The comparison in prose.</strong> The table above gives the numbers;
+    the argument is yours. The most striking fact to build around is that the
+    physics converged <em>exactly</em> while everything else diverged completely
+    — same duty, same equations, same doubles, and two entirely different
+    websites.</p>
+  <p>Worth addressing: which would you rather maintain six months from now? Did
+    the detailed specification make them converge, or did it only constrain the
+    part that was already easiest to specify? And is that a limit of this plan,
+    or a limit of specifications in general — that you can pin down a formula far
+    more tightly than you can pin down an interface?</p>
 </div>
 
 <h2>4. What the process suggests about these models</h2>
 
 <div class="fillin">
-  <p><strong>Your conclusions.</strong> Worth addressing directly: how much did
-    planning before coding help? Was the independent critique worth its cost?
-    Did the shared test suite change the outcome, or just measure it? Where did
-    you have to supply judgement that no model supplied?</p>
+  <p><strong>Your conclusions.</strong> Four questions worth answering directly,
+    each with evidence already on this page:</p>
+  <ul>
+    <li><strong>Did planning first help?</strong> The bit-identical physics says
+      yes for anything the plan specified precisely. The completely divergent
+      interfaces say it did nothing for anything it left open.</li>
+    <li><strong>Was the critique worth its cost?</strong> It caught a real physics
+      error and a real specification trap, and was also wrong twice.</li>
+    <li><strong>Did the shared suite change the outcome or just measure it?</strong>
+      It measured — and then turned out to be measuring the wrong thing until the
+      second implementation exposed it.</li>
+    <li><strong>Where did you supply judgement no model supplied?</strong> The
+      overrides are listed in the documentation page. The one worth dwelling on
+      is keeping a broken artifact unrepaired so that the comparison stayed
+      honest — no model suggested that.</li>
+  </ul>
 </div>
 
 <p>The full decision log, including every point where the project owner overrode

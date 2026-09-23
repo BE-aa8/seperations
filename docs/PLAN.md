@@ -3,7 +3,7 @@
 **Course:** Separation Processes, University of Cincinnati (Chemical Engineering)
 **Artifact type:** "AI Project" — an interactive educational website
 **Status:** PLAN ONLY. No implementation code exists yet.
-**Document version:** 1.2 — see §11 Changelog.
+**Document version:** 1.3 — see §11 Changelog.
 **Critique applied:** `docs/FEEDBACK.md` (Muse AI, 2026-09-21), findings C-01…C-14.
 
 ---
@@ -20,7 +20,7 @@ Three conventions are used throughout:
 
 | Marker | Meaning |
 |---|---|
-| `VERIFY` | A numeric default that must be checked against Seader, *Separation Process Principles*, Ch. 6 before the site is considered finished. It is illustrative until then. |
+| `VERIFY` | *(historical, v1.0–v1.2)* A numeric default awaiting a check against the course text. **Retired in v1.3** — see §11 and `D-52`. Defaults are now presented as illustrative typical figures carrying a stated range and basis, with no outstanding verification promise. |
 | `D-xx` | A choice with a defensible alternative, cross-referenced by its exact id in `docs/DECISIONS.md`. Recorded in `docs/DECISIONS.md`. A critic should feel free to argue with these. |
 | `RISK` | A place where an implementation is likely to go wrong. Cross-referenced in §8. |
 
@@ -815,21 +815,25 @@ handle moves.
 
 ## 4. Default values — every one requires verification
 
-> **Standing instruction:** every number in §4 is marked `VERIFY`. They are
-> physically plausible and internally consistent, chosen so the demo shows
-> interesting behaviour, but they have **not** been checked against Seader,
-> *Separation Process Principles*, Ch. 6. Until the project owner checks them, the
-> site must display a persistent, visible, **date-stamped** note reading:
+> **What these numbers are.** Every value in §4 is an **illustrative typical
+> figure**, chosen so the demonstration is legible and hand-checkable. None is
+> transcribed from a particular source, and none is design data.
 >
-> > *"Default parameter values are illustrative, chosen 2026-09-21, and pending
-> > verification against Seader Ch. 6."*
+> Each default carries, in `presets.js`, a **typical range** and a one-line
+> **basis** stated in terms of general engineering practice. Where a value sits
+> at the edge of its own range — `E_o = 0.70` is at the optimistic end for an
+> absorber — the note says so rather than quietly moving it. Values are frozen:
+> all three worked examples in §7 and all 65 tests depend on them.
 >
-> The date is not decoration: it tells a viewer whether the caveat is a week old
-> or a year old, which is the difference between "work in progress" and
-> "abandoned." It costs one hard-coded string. `D-32`
+> The four equilibrium slopes `m` are the weakest figures here and are marked
+> individually. A Henry's-law slope depends on system, temperature and pressure,
+> so a single number is an order-of-magnitude illustration. SO₂ carries an extra
+> on-screen warning because its real equilibrium is curved (`D-33`).
 >
-> Remove the note only after verification, and record the verification in
-> `docs/DECISIONS.md` §4.
+> **This replaces the earlier "verify against Seader Ch. 6" framing** (`D-22`,
+> `D-32`), which promised a check the project was not in a position to perform.
+> Seader remains cited for the Kremser and Colburn theory; what is gone is the
+> claim that every default was pending validation against it. See `D-52`.
 
 ### 4.1 Tray and packing defaults
 
@@ -1646,11 +1650,12 @@ thing that makes the future phases in §9 require a rewrite rather than an addit
 
 ### 8.2 Open questions for the project owner
 
-1. **All §4 defaults need checking against Seader Ch. 6.** Especially: `E_o` for
-   absorbers (the 0.70 default may be optimistic), the three `H_OG` values, and
-   `m` for all four systems — particularly SO₂, where the non-linearity means any
-   single `m` is a fit over a chosen range, and the choice of range should be
-   stated.
+1. ~~**All §4 defaults need checking against Seader Ch. 6.**~~
+   **RESOLVED 2026-09-23** — the verification framing is retired (`D-52`).
+   Defaults are presented as illustrative typical figures with a stated range
+   and basis. The caveats that mattered are now stated on the page itself: that
+   `E_o = 0.70` is optimistic for an absorber, and that the equilibrium slopes
+   are order-of-magnitude illustrations.
 2. ~~**Tray height convention** (`D-15`): `N_act·S` or `(N_act − 1)·S`?~~
    **RESOLVED 2026-09-21** — the owner chose `N_act·S`. See §3.4.
 3. ~~Should the SO₂ preset display an explicit on-screen warning?~~
@@ -1738,12 +1743,36 @@ abstraction is in the wrong place.
       nothing to compare and the assignment's comparison requirement is unmet.
       Record which model built which in `DECISIONS.md` §1.
 - [ ] `docs/DECISIONS.md` current, including the model-comparison table
-- [ ] Every §4 default either verified against Seader Ch. 6 or still flagged
-      on screen as unverified
+- [x] Every §4 default carries a stated typical range and basis, with the
+      illustrative-figures note shown on the demo page (`D-52`)
 
 ---
 
 ## 11. Changelog
+
+### v1.3 — 2026-09-23 — the verification promise is retired
+
+`D-52`. Every default carried a `VERIFY against Seader Ch. 6` flag and the demo
+showed a standing caveat promising that check. The promise could not be
+discharged by the party who made it: Claude has no access to the textbook, and
+copying values out of a copyrighted text into the repository would not have been
+appropriate in any case. A caveat nobody can close reads as a permanent
+outstanding task.
+
+Replaced with what the numbers actually are: **illustrative typical figures**,
+each carrying a stated range and a one-line basis in general engineering terms
+(§4, and the sourcing table in `DECISIONS.md` §4). Seader remains cited for the
+Kremser and Colburn theory — only the validation promise is gone.
+
+**No numeric value changed** (`D-53`). The worked examples in §7 and all 65 tests
+depend on these figures. Where a value is questionable under its new basis —
+`E_o = 0.70` sits at the optimistic end for an absorber — that is now stated on
+the page rather than silently corrected.
+
+Also in this round: the process and reference sections were written from the
+project record, the reflective sections became evidence-loaded prompts rather
+than blank boxes, and the planning prompt was archived verbatim to
+`docs/prompts/01-planning.md`.
 
 ### v1.2 — 2026-09-21 — one API amendment, found by the second implementation
 

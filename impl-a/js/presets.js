@@ -1,28 +1,57 @@
 /**
  * presets.js — pure data. No computation lives here (PLAN §2.2).
  *
- * ⚠️ EVERY numeric value in this file is flagged `verify: true` and is
- * ILLUSTRATIVE until checked against Seader, *Separation Process Principles*,
- * Ch. 6. See PLAN §4 and the verification ledger in DECISIONS.md §4.
+ * ON THESE NUMBERS. Every value below is an ILLUSTRATIVE TYPICAL FIGURE,
+ * chosen so the demonstration is legible and hand-checkable. None of it is
+ * design data, and none of it is transcribed from a specific source.
+ *
+ * Each entry carries a `typical` range and a `basis` line. Those ranges are
+ * general engineering practice — the kind of figure quoted across the standard
+ * separations literature — and are stated as such. Where a value sits at the
+ * edge of its own range, the note says so rather than quietly moving it.
+ *
+ * The equilibrium slopes `m` are the weakest numbers here and are marked
+ * individually: a Henry's-law slope depends on the system, the temperature and
+ * the pressure, so a single figure is an order-of-magnitude illustration and
+ * nothing more. For real design values, look them up for your actual
+ * conditions. See PLAN §4 and the sourcing table in DECISIONS.md §4.
  */
 
-/** The date the defaults were chosen, shown in the standing caveat (D-32). */
+/** When these figures were selected, shown in the standing on-screen note. */
 export const DEFAULTS_CHOSEN = '2026-09-21';
 
-export const UNVERIFIED_NOTE =
-  `Default parameter values are illustrative, chosen ${DEFAULTS_CHOSEN}, ` +
-  'and pending verification against Seader Ch. 6.';
+export const ILLUSTRATIVE_NOTE =
+  'Parameter values here are illustrative typical figures, chosen to make the ' +
+  'demonstration legible. They are not design data — equilibrium slopes in ' +
+  'particular depend on system, temperature and pressure. Look values up for ' +
+  'your own conditions before using any of this for real sizing.';
 
 // ---------------------------------------------------------------------------
 // Tray defaults (PLAN §4.1)
 // ---------------------------------------------------------------------------
 
 export const TRAY_DEFAULTS = {
-  Eo: 0.7, // VERIFY — absorber efficiencies often run 0.3–0.7, lower than distillation
-  traySpacing: 0.6, // VERIFY — 24 in, standard but diameter-dependent
-  hTop: 1.0, // VERIFY — top disengaging allowance
-  hBot: 1.0, // VERIFY — bottom sump allowance
-  verify: true,
+  // Overall efficiency. Absorbers generally run lower than distillation
+  // columns; figures in the 0.3–0.7 band are commonly quoted, and 0.7 sits at
+  // the OPTIMISTIC end of that. It is kept because the worked examples and the
+  // test suite are built on it, and because a round number is easier to check
+  // by hand — not because it is a conservative choice.
+  Eo: 0.7,
+  // Tray spacing. 0.6 m is 24 inches, the usual default; real columns run
+  // roughly 0.45–0.75 m and larger diameters tend to want more.
+  traySpacing: 0.6,
+  // Disengaging space above the top tray and sump below the bottom one.
+  // Both are strongly design-dependent; ~1 m each is a plausible allowance.
+  hTop: 1.0,
+  hBot: 1.0,
+
+  basis: {
+    Eo: { typical: '0.3–0.7 for absorbers', note: 'this value is at the optimistic end' },
+    traySpacing: { typical: '0.45–0.75 m', note: '0.6 m = 24 in, the common default' },
+    hTop: { typical: '~1 m', note: 'strongly design-dependent' },
+    hBot: { typical: '~1 m', note: 'sized by liquid holdup and residence time' },
+  },
+  illustrative: true,
 };
 
 // ---------------------------------------------------------------------------
@@ -33,23 +62,35 @@ export const PACKINGS = [
   {
     id: 'raschig',
     label: 'Ceramic Raschig rings, 25 mm',
-    HOG: 0.9, // VERIFY
+    HOG: 0.9,
     note: 'First-generation random packing. Low capacity, high HETP.',
-    verify: true,
+    typical: '0.6–1.2 m',
+    basis:
+      'Older random packings sit at the tall end of the transfer-unit range. ' +
+      'The actual figure depends on size, material, system and loading.',
+    illustrative: true,
   },
   {
     id: 'pall',
     label: 'Metal Pall rings, 38 mm',
-    HOG: 0.6, // VERIFY
+    HOG: 0.6,
     note: 'Third-generation random packing. The usual default choice.',
-    verify: true,
+    typical: '0.4–0.8 m',
+    basis:
+      'Modern random packings improve markedly on rings of the same size. ' +
+      'Mid-range figure for a 38 mm metal packing.',
+    illustrative: true,
   },
   {
     id: 'structured',
     label: 'Structured, 250 m²/m³',
-    HOG: 0.4, // VERIFY
+    HOG: 0.4,
     note: 'Ordered corrugated sheets. Lowest HETP and pressure drop, highest cost.',
-    verify: true,
+    typical: '0.3–0.6 m',
+    basis:
+      'Structured packings give the shortest transfer unit of the three, which ' +
+      'is most of why they are specified despite the cost.',
+    illustrative: true,
   },
 ];
 
@@ -63,7 +104,7 @@ export const SYSTEMS = [
   {
     id: 'generic',
     label: 'Generic solute A in air → water',
-    m: 1.0, // VERIFY
+    m: 1.0,
     V: 100, // kmol/h
     yIn: 0.02,
     xIn: 0.0,
@@ -75,12 +116,16 @@ export const SYSTEMS = [
       'This is Worked Example A in the project plan: N = 2.459, N_OG = 3.409, ' +
       'A = 2 exactly.',
     warning: null,
-    verify: true,
+    typical: 'n/a — a deliberately round teaching value',
+    basis:
+      'Not a real system. m = 1 puts the equilibrium line on the diagonal, ' +
+      'which makes every number on screen checkable by hand.',
+    illustrative: true,
   },
   {
     id: 'ammonia',
     label: 'Ammonia in air → water',
-    m: 0.85, // VERIFY — strongly temperature-dependent
+    m: 0.85,
     V: 100,
     yIn: 0.02,
     xIn: 0.0005,
@@ -92,13 +137,19 @@ export const SYSTEMS = [
       'water, so a modest liquid rate does the job.',
     warning:
       'm for ammonia–water is strongly temperature-dependent and moves ' +
-      'substantially over a 10 °C swing. The value here is for 20 °C.',
-    verify: true,
+      'substantially over a 10 °C swing. The value here is a round figure for ' +
+      'roughly 20 °C and 1 atm, and is illustrative rather than design data.',
+    typical: 'order 1 at ambient conditions',
+    basis:
+      'Ammonia is very soluble in water, so its equilibrium slope is small — ' +
+      'around one at ambient conditions, falling as temperature drops. The ' +
+      'exact figure depends on temperature and pressure; look it up for yours.',
+    illustrative: true,
   },
   {
     id: 'acetone',
     label: 'Acetone in air → water',
-    m: 1.8, // VERIFY
+    m: 1.8,
     V: 120,
     yIn: 0.015,
     xIn: 0.0,
@@ -109,12 +160,17 @@ export const SYSTEMS = [
       'Genuinely dilute at these compositions — the most defensible ' +
       'straight-line case of the four. Typical of solvent-vapour recovery.',
     warning: null,
-    verify: true,
+    typical: 'order 1–2 at ambient conditions',
+    basis:
+      'Moderately soluble, so the slope is a small multiple of one. Genuinely ' +
+      'dilute at these compositions, which is why this is the best-behaved of ' +
+      'the four for a straight-line model.',
+    illustrative: true,
   },
   {
     id: 'so2',
     label: 'Sulphur dioxide in air → water',
-    m: 40, // VERIFY — and see the warning: the real curve is markedly non-linear
+    m: 40,
     V: 100,
     yIn: 0.005,
     xIn: 0.0,
@@ -132,7 +188,13 @@ export const SYSTEMS = [
       'm = 40 is a fit over a narrow range, not a law. Treat the stage and ' +
       'height numbers on this preset as illustrative of the method, not as a ' +
       'design. This is the case that motivates curved-equilibrium support.',
-    verify: true,
+    typical: 'order 10¹–10² at ambient conditions',
+    basis:
+      'Much less soluble than ammonia, so the slope is far larger — which is ' +
+      'exactly why the liquid rate this preset demands is so enormous. Treat ' +
+      'the figure as an order of magnitude: the real relationship is curved, ' +
+      'so no single slope describes it over any useful range.',
+    illustrative: true,
   },
 ];
 
