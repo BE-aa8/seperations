@@ -6,11 +6,11 @@
  * Math.log appears in this file, and none should.
  */
 
-import { s, clear, pathFrom } from './dom.js';
-import { makeScale, ticks, formatTick } from './scale.js';
+import { s, clear, pathFrom, stext } from './dom.js';
+import { makeScale, ticks, formatTick, powerSuffix } from './scale.js';
 import { makeDraggable } from './drag.js';
 
-const BOX = { width: 430, height: 390, pad: { t: 16, r: 74, b: 42, l: 56 } };
+const BOX = { width: 430, height: 380, pad: { t: 18, r: 40, b: 48, l: 72 } };
 
 let svg;
 let layers = {};
@@ -37,8 +37,8 @@ export function mount(root, wiring) {
     svg.appendChild(layers[name]);
   }
 
-  handles.yOut = buildHandle('y_out', 'Treated gas composition');
-  handles.xOut = buildHandle('x_out', 'Liquid rate');
+  handles.yOut = buildHandle('y_out', 'Treated gas composition', ['y', 'out'], { dx: -16, dy: -10, anchor: 'end' });
+  handles.xOut = buildHandle('x_out', 'Liquid rate', ['x', 'out'], { dx: -16, dy: -14, anchor: 'end' });
   layers.handles.appendChild(handles.yOut.g);
   layers.handles.appendChild(handles.xOut.g);
 
@@ -69,18 +69,28 @@ export function mount(root, wiring) {
   root.appendChild(svg);
 }
 
-function buildHandle(id, label) {
+function buildHandle(id, label, [sym, sub], tagAt) {
   const g = s('g', {
     class: 'handle',
     'data-handle': id,
     'aria-label': label,
   });
   // Large transparent hit circle first, so it sits beneath the visible dot but
-  // captures the pointer. r = 22 user units ≈ 44 px at typical render scale.
-  g.appendChild(s('circle', { class: 'handle__hit', r: 22 }));
+  // captures the pointer. r = 22 user units ≈ 44 px at desktop render scale;
+  // CSS enlarges it for coarse pointers, where the SVG renders smaller.
+  g.appendChild(s('circle', { class: 'handle__hit handle__hit--dot', r: 22 }));
   g.appendChild(s('circle', { class: 'handle__ring', r: 13 }));
-  const dot = s('circle', { class: 'handle__dot', r: 7 });
+  const dot = s('circle', { class: 'handle__dot', r: 7.5 });
   g.appendChild(dot);
+  g.appendChild(s('circle', { class: 'handle__core', r: 3 }));
+  // An on-canvas name, so the handle is recognised rather than described.
+  const tag = s('text', {
+    class: 'handle__tag label-knock', x: tagAt.dx, y: tagAt.dy,
+    'text-anchor': tagAt.anchor ?? 'start', 'aria-hidden': 'true',
+  });
+  tag.appendChild(s('tspan', { 'font-style': 'italic', text: sym }));
+  tag.appendChild(s('tspan', { 'baseline-shift': 'sub', 'font-size': '10.5px', text: sub }));
+  g.appendChild(tag);
   return { g, dot };
 }
 
@@ -115,15 +125,17 @@ export function update(derived, state, eqY) {
   }
   layers.eq.appendChild(s('path', { class: 'eq-line', d: pathFrom(eqPts) }));
   const yEqEnd = eqY(xEqEnd);
-  layers.eq.appendChild(
-    s('text', {
-      class: 'mark-label',
-      fill: 'var(--ink-muted)',
-      x: sc.sx(xEqEnd) + 4,
-      y: sc.sy(yEqEnd) - 4,
-      text: 'y* = m·x',
-    }),
-  );
+  const eqLabel = s('text', {
+    class: 'mark-label label-knock',
+    fill: 'var(--ink-2)',
+    x: sc.sx(xEqEnd) - 4,
+    y: sc.sy(yEqEnd) - 8,
+    'text-anchor': 'end',
+  });
+  eqLabel.appendChild(s('tspan', { 'font-style': 'italic', text: 'y' }));
+  eqLabel.appendChild(s('tspan', { text: '* = ' }));
+  eqLabel.appendChild(s('tspan', { 'font-style': 'italic', text: 'mx' }));
+  layers.eq.appendChild(eqLabel);
 
   // --- Operating line.
   clear(layers.op);
@@ -132,15 +144,6 @@ export function update(derived, state, eqY) {
       class: 'op-line',
       x1: sc.sx(inp.xIn), y1: sc.sy(inp.yOut),
       x2: sc.sx(inp.xOut), y2: sc.sy(inp.yIn),
-    }),
-  );
-  layers.op.appendChild(
-    s('text', {
-      class: 'mark-label',
-      fill: 'var(--ink)',
-      x: sc.sx(inp.xOut) + 8,
-      y: sc.sy(inp.yIn) + 4,
-      text: 'operating',
     }),
   );
 
@@ -156,19 +159,30 @@ export function update(derived, state, eqY) {
       }),
     );
     if (!dense) {
-      // Number the complete risers. Selective labelling, not one per vertex.
-      for (let i = 0; i < derived.staircase.fullSteps; i++) {
+      // Number the complete risers. Selective labelling, not one per vertex:
+      // near the pinch the steps crowd together, so a label is skipped when it
+      // would sit within 18 px of the last one drawn.
+      let last = null;
+      const full = derived.staircase.fullSteps;
+      for (let i = 0; i < full; i++) {
         const v = derived.staircase.vertices[i * 2 + 1];
         if (!v) continue;
+        const px = sc.sx(v.x) - 10;
+        const py = sc.sy(v.y) - 6;
+        const isLast = i === full - 1;
+        if (last && Math.hypot(px - last.x, py - last.y) < 18 && !isLast) continue;
+        if (last && isLast && Math.hypot(px - last.x, py - last.y) < 18) continue;
         layers.stair.appendChild(
           s('text', {
-            class: 'mark-label',
-            fill: 'var(--tray)',
-            x: sc.sx(v.x) - 12,
-            y: sc.sy(v.y) - 5,
+            class: 'mark-label label-knock',
+            fill: 'var(--tray-ink)',
+            'text-anchor': 'end',
+            x: px,
+            y: py,
             text: String(i + 1),
           }),
         );
+        last = { x: px, y: py };
       }
     }
   }
@@ -187,14 +201,7 @@ export function update(derived, state, eqY) {
         x2: sc.plot.x + sc.plot.w, y2: sc.sy(inp.yOut),
       }),
     );
-    layers.flags.appendChild(
-      s('text', {
-        class: 'pinch-flag',
-        x: sc.plot.x + 6,
-        y: sc.sy(inp.yOut) - 7,
-        text: '▲ Pinched — purity limit',
-      }),
-    );
+    pinchFlag(sc.plot.x + sc.plot.w * 0.3, sc.sy(inp.yOut) - 9, 'Pinched: purity limit', 'start');
   } else if (pinched === 'bottom') {
     layers.flags.appendChild(
       s('line', {
@@ -203,20 +210,32 @@ export function update(derived, state, eqY) {
         x2: sc.sx(derived.xOutPinch), y2: sc.sy(inp.yIn),
       }),
     );
-    layers.flags.appendChild(
-      s('text', {
-        class: 'pinch-flag',
-        x: sc.sx(derived.xOutPinch) - 4,
-        y: sc.plot.y + 12,
-        'text-anchor': 'end',
-        text: '▲ Minimum L/V',
-      }),
-    );
+    pinchFlag(sc.sx(derived.xOutPinch) - 6, sc.plot.y + 14, 'Minimum L/V', 'end');
+  }
+
+  // The y_out handle carries its name just left of the axis; hide any tick
+  // label it would sit on, rather than printing one over the other.
+  const tagY = sc.sy(inp.yOut) - 14;
+  for (const t of layers.axes.querySelectorAll('[data-y]')) {
+    t.style.visibility = Math.abs(Number(t.dataset.y) - tagY) < 13 ? 'hidden' : '';
   }
 
   // --- Handle positions.
   handles.yOut.drag.update(inp.yOut, sc.sx(inp.xIn), sc.sy(inp.yOut));
   handles.xOut.drag.update(inp.xOut, sc.sx(inp.xOut), sc.sy(inp.yIn));
+}
+
+/** A limit flag: a drawn warning mark plus words, knocked out of the plot. */
+function pinchFlag(x, y, words, anchor) {
+  const text = s('text', { class: 'pinch-flag label-knock', x, y, 'text-anchor': anchor, text: words });
+  const markX = anchor === 'end' ? x - words.length * 7.4 - 14 : x;
+  const textX = anchor === 'end' ? x : x + 14;
+  text.setAttribute('x', textX);
+  layers.flags.appendChild(s('path', {
+    class: 'pinch-mark',
+    d: `M${markX} ${y} l5 -9 l5 9 z`,
+  }));
+  layers.flags.appendChild(text);
 }
 
 function drawGridAndAxes(sc) {
@@ -237,7 +256,7 @@ function drawGridAndAxes(sc) {
     layers.axes.appendChild(
       s('text', {
         class: 'tick-label',
-        x: sc.sx(t), y: sc.plot.y + sc.plot.h + 14,
+        x: sc.sx(t), y: sc.plot.y + sc.plot.h + 18,
         'text-anchor': 'middle',
         text: formatTick(t, sc.domain.xMax),
       }),
@@ -254,8 +273,9 @@ function drawGridAndAxes(sc) {
     layers.axes.appendChild(
       s('text', {
         class: 'tick-label',
-        x: sc.plot.x - 6, y: sc.sy(t) + 3,
+        x: sc.plot.x - 7, y: sc.sy(t) + 4,
         'text-anchor': 'end',
+        'data-y': sc.sy(t),
         text: formatTick(t, sc.domain.yMax),
       }),
     );
@@ -276,20 +296,18 @@ function drawGridAndAxes(sc) {
     }),
   );
   layers.axes.appendChild(
-    s('text', {
+    stext({
       class: 'axis-label',
-      x: sc.plot.x + sc.plot.w / 2, y: sc.plot.y + sc.plot.h + 34,
+      x: sc.plot.x + sc.plot.w / 2, y: sc.plot.y + sc.plot.h + 38,
       'text-anchor': 'middle',
-      text: 'x — solute mole fraction in liquid',
-    }),
+    }, [{ i: 'x' }, ', solute mole fraction in liquid', ...powerSuffix(sc.domain.xMax)]),
   );
   layers.axes.appendChild(
-    s('text', {
+    stext({
       class: 'axis-label',
       transform: `rotate(-90 14 ${sc.plot.y + sc.plot.h / 2})`,
       x: 14, y: sc.plot.y + sc.plot.h / 2,
       'text-anchor': 'middle',
-      text: 'y — solute mole fraction in gas',
-    }),
+    }, [{ i: 'y' }, ', solute mole fraction in gas', ...powerSuffix(sc.domain.yMax)]),
   );
 }

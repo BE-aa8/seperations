@@ -1,114 +1,172 @@
-/* theme.css — design tokens, light and dark.
+/* theme.css — design tokens, light and dark, and the self-hosted faces.
  *
- * Series colours come from a validated categorical palette. There are exactly
- * TWO series in this whole site — TRAY and PACKED — and each keeps its hue in
- * every plot (staircase, column drawing, NTU area, profile curve, summary
- * swatch). Colour follows the entity, never its rank or position.
+ * The visual grammar is a high-performance operator display (ISA-101): a
+ * neutral instrument field, white display wells, and colour spent ONLY on
+ * meaning. There are exactly three meanings on this site:
  *
- * Validated with the data-viz palette validator, all-pairs, both modes:
+ *   tray    — blue    every tray-column mark, in every plot
+ *   packed  — orange  every packed-column mark, in every plot
+ *   limit   — red     a thermodynamic pinch or an infeasible state
+ *
+ * plus one advisory colour, caution (amber), for a stated model limitation.
+ * Everything else is graded neutral ink. Colour follows the entity, never its
+ * rank or position (D-40).
+ *
+ * The two SERIES hues are unchanged from the validated categorical palette:
  *   light  #2a78d6 / #eb6834 — CVD ΔE 24.7, normal-vision ΔE 33.6, both ≥3:1
  *   dark   #3987e5 / #d95926 — CVD ΔE 26.8, normal-vision ΔE 31.8, both ≥3:1
- * (floors: CVD ≥8, normal-vision ≥15.) Do not substitute hues without re-running it.
- *
- * The equilibrium and operating lines deliberately use CHROME ink rather than
- * categorical hues: they are structural geometry, not series. That keeps blue
- * and orange meaning strictly "tray" and "packed".
+ * Do not substitute them without re-running the validator. They are used for
+ * LINES and FILLS, on the display wells only. Text set in a series colour uses
+ * the darker `-ink` variant, which clears 4.5:1 on the well.
  */
+
+@font-face {
+  font-family: "Barlow";
+  src: url("../fonts/barlow-400.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Barlow";
+  src: url("../fonts/barlow-400-italic.woff2") format("woff2");
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: "Barlow";
+  src: url("../fonts/barlow-500.woff2") format("woff2");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Barlow";
+  src: url("../fonts/barlow-600.woff2") format("woff2");
+  font-weight: 600 700; font-style: normal; font-display: swap;
+}
+/* Display mathematics. Uses an installed copy first (macOS and Windows ship
+ * one); the 400 kB file is fetched only where none exists, and only by pages
+ * that actually contain <math>. */
+@font-face {
+  font-family: "Site Math";
+  src: local("STIX Two Math"), local("STIXTwoMath-Regular"), local("Cambria Math"),
+       url("../fonts/stix-two-math.woff2") format("woff2");
+  font-display: swap;
+}
 
 :root {
   color-scheme: light;
 
-  --surface:        #fcfcfb;
-  --plane:          #f9f9f7;
-  --raised:         #ffffff;
+  /* Surfaces: field (the panel), well (a display surface), inset (recessed). */
+  --field:        #e8eaed;
+  --well:         #ffffff;
+  --inset:        #f3f4f6;
+  --rule:         #c4c9d0;
+  --rule-soft:    #e1e4e8;
 
-  --ink:            #0b0b0b;
-  --ink-2:          #52514e;
-  --ink-muted:      #898781;
+  /* Ink, three steps. --ink-3 still clears 4.5:1 on --field. */
+  --ink:          #14171b;
+  --ink-2:        #434952;
+  --ink-3:        #5f6670;
 
-  --grid:           #e1e0d9;
-  --axis:           #c3c2b7;
-  --hairline:       rgba(11, 11, 11, 0.10);
+  /* Chart structure. */
+  --grid:         #e6e8eb;
+  --axis:         #8a919b;
 
-  /* The two series. */
-  --tray:           #2a78d6;
-  --packed:         #eb6834;
-  --tray-wash:      rgba(42, 120, 214, 0.14);
-  --packed-wash:    rgba(235, 104, 52, 0.16);
+  /* The two series (validated — see header) and their text variants. */
+  --tray:         #2a78d6;
+  --packed:       #eb6834;
+  --tray-ink:     #1d5fb0;
+  --packed-ink:   #b3461a;
+  --tray-wash:    rgba(42, 120, 214, 0.12);
+  --packed-wash:  rgba(235, 104, 52, 0.15);
 
-  /* Status — reserved, never reused for a series. Always with icon + label. */
-  --critical:       #d03b3b;
-  --warning:        #fab219;
-  --good:           #0ca30c;
-  --critical-wash:  rgba(208, 59, 59, 0.10);
-  --warning-wash:   rgba(250, 178, 25, 0.12);
+  /* State. Always paired with an icon and a word, never colour alone. */
+  --limit:        #c62828;
+  --limit-ink:    #a61b1b;
+  --limit-wash:   #fbeaea;
+  --caution:      #d48a00;
+  --caution-ink:  #7a4d00;
+  --caution-wash: #fdf3dc;
 
-  --focus:          #2a78d6;
+  --focus:        #14171b;
+  --selection:    rgba(42, 120, 214, 0.22);
 
-  --font: system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /* Type. One family; tabular figures wherever a number is read. */
+  --font: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --math: "Site Math", math;
 
-  --r-sm: 4px;
-  --r-md: 8px;
-  --r-lg: 14px;
+  --t-xs:   0.75rem;    /* 12 — tags, tick labels in HTML */
+  --t-sm:   0.875rem;   /* 14 — secondary UI, captions */
+  --t-md:   1rem;       /* 16 — UI body */
+  --t-read: 1.0625rem;  /* 17 — long-form prose */
+  --t-lg:   1.25rem;    /* 20 — panel titles, h3 */
+  --t-xl:   1.625rem;   /* 26 — h2 */
+  --t-2xl:  2.25rem;    /* 36 — page titles, headline readouts */
+
+  /* Space, on a 4 px base. */
+  --s-1: 0.25rem;  --s-2: 0.5rem;  --s-3: 0.75rem; --s-4: 1rem;
+  --s-5: 1.5rem;   --s-6: 2rem;    --s-7: 3rem;    --s-8: 4.5rem;
+
+  /* Geometry. Regions are square; only controls are softened, slightly. */
+  --r-ctl: 3px;
+  --bar-h: 3.25rem;
+  --page-max: 90rem;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:where(:not([data-theme="light"])) {
+  :root:not([data-theme="light"]) {
     color-scheme: dark;
-
-    --surface:       #1a1a19;
-    --plane:         #0d0d0d;
-    --raised:        #232322;
-
-    --ink:           #ffffff;
-    --ink-2:         #c3c2b7;
-    --ink-muted:     #898781;
-
-    --grid:          #2c2c2a;
-    --axis:          #383835;
-    --hairline:      rgba(255, 255, 255, 0.10);
-
-    --tray:          #3987e5;
-    --packed:        #d95926;
-    --tray-wash:     rgba(57, 135, 229, 0.20);
-    --packed-wash:   rgba(217, 89, 38, 0.22);
-
-    --critical:      #d03b3b;
-    --warning:       #fab219;
-    --good:          #0ca30c;
-    --critical-wash: rgba(208, 59, 59, 0.18);
-    --warning-wash:  rgba(250, 178, 25, 0.16);
-
-    --focus:         #3987e5;
+    --field:        #121418;
+    --well:         #1b1e23;
+    --inset:        #23272d;
+    --rule:         #3a4048;
+    --rule-soft:    #2b3037;
+    --ink:          #eef0f3;
+    --ink-2:        #bcc2ca;
+    --ink-3:        #98a0aa;
+    --grid:         #2c3138;
+    --axis:         #6f7782;
+    --tray:         #3987e5;
+    --packed:       #d95926;
+    --tray-ink:     #86b6f2;
+    --packed-ink:   #f2956b;
+    --tray-wash:    rgba(57, 135, 229, 0.20);
+    --packed-wash:  rgba(217, 89, 38, 0.24);
+    --limit:        #ef5350;
+    --limit-ink:    #ff8a87;
+    --limit-wash:   #3a1a1b;
+    --caution:      #f0b429;
+    --caution-ink:  #f6cd6b;
+    --caution-wash: #33290f;
+    --focus:        #eef0f3;
+    --selection:    rgba(57, 135, 229, 0.35);
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-
-  --surface:       #1a1a19;
-  --plane:         #0d0d0d;
-  --raised:        #232322;
-
-  --ink:           #ffffff;
-  --ink-2:         #c3c2b7;
-  --ink-muted:     #898781;
-
-  --grid:          #2c2c2a;
-  --axis:          #383835;
-  --hairline:      rgba(255, 255, 255, 0.10);
-
-  --tray:          #3987e5;
-  --packed:        #d95926;
-  --tray-wash:     rgba(57, 135, 229, 0.20);
-  --packed-wash:   rgba(217, 89, 38, 0.22);
-
-  --critical:      #d03b3b;
-  --warning:       #fab219;
-  --good:          #0ca30c;
-  --critical-wash: rgba(208, 59, 59, 0.18);
-  --warning-wash:  rgba(250, 178, 25, 0.16);
-
-  --focus:         #3987e5;
+  --field:        #121418;
+  --well:         #1b1e23;
+  --inset:        #23272d;
+  --rule:         #3a4048;
+  --rule-soft:    #2b3037;
+  --ink:          #eef0f3;
+  --ink-2:        #bcc2ca;
+  --ink-3:        #98a0aa;
+  --grid:         #2c3138;
+  --axis:         #6f7782;
+  --tray:         #3987e5;
+  --packed:       #d95926;
+  --tray-ink:     #86b6f2;
+  --packed-ink:   #f2956b;
+  --tray-wash:    rgba(57, 135, 229, 0.20);
+  --packed-wash:  rgba(217, 89, 38, 0.24);
+  --limit:        #ef5350;
+  --limit-ink:    #ff8a87;
+  --limit-wash:   #3a1a1b;
+  --caution:      #f0b429;
+  --caution-ink:  #f6cd6b;
+  --caution-wash: #33290f;
+  --focus:        #eef0f3;
+  --selection:    rgba(57, 135, 229, 0.35);
 }

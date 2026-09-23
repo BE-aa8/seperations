@@ -5,19 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model comparison — Tray vs. Packed</title>
 <meta name="description" content="Which model planned, which critiqued, what was accepted or rejected, and how the two implementations compared.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='9' y='3' width='14' height='26' rx='3' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Cpath d='M12 11h8M12 16h8M12 21h8' stroke='%23eb6834' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='3' width='10' height='26' rx='2' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Cpath d='M7 10h4M7 16h4M7 22h4' stroke='%232a78d6' stroke-width='2' stroke-linecap='round'/%3E%3Crect x='18' y='3' width='10' height='26' rx='2' fill='none' stroke='%23eb6834' stroke-width='2.5'/%3E%3Crect x='21' y='9' width='4' height='14' fill='%23eb6834'/%3E%3C/svg%3E">
+<link rel="preload" href="fonts/barlow-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/theme.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/layout.css">
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
-<header class="site-header">
-  <div class="site-header__inner">
-    <div class="brand">Tray vs. Packed
-      <small>Separation Processes &middot; University of Cincinnati</small>
-    </div>
-    <nav class="nav" aria-label="Main">
+<header class="bar">
+  <div class="bar__inner">
+    <a class="brand" href="index.html">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="2.5" width="8" height="23" rx="1.5" fill="none" stroke="var(--tray)" stroke-width="2"/><path d="M6 9h3M6 14h3M6 19h3" stroke="var(--tray)" stroke-width="1.8" stroke-linecap="round"/><rect x="16.5" y="2.5" width="8" height="23" rx="1.5" fill="none" stroke="var(--packed)" stroke-width="2"/><rect x="18.8" y="8" width="3.4" height="12" fill="var(--packed)"/></svg>
+      <span class="brand__name">Tray vs. Packed</span>
+      <span class="brand__course">Separation Processes · University of Cincinnati</span>
+    </a>
+    <nav class="nav" id="site-nav" aria-label="Main">
       <a href="index.html">Demo</a>
       <a href="video.html">Video</a>
       <a href="transcript.html">Transcript</a>
@@ -25,22 +29,46 @@
       <a href="model-comparison.html">Model comparison</a>
       <a href="references.html">References</a>
     </nav>
-    <button class="theme-toggle" type="button" aria-label="Switch colour theme">&#9686; Auto</button>
+    <button class="iconbtn bar__menu" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <button class="iconbtn theme-toggle" type="button" aria-label="Colour theme: automatic">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg>
+    </button>
   </div>
 </header>
 
-<main class="page">
-<div class="prose">
-
-<h1>Model comparison</h1>
-
-<p>The project deliberately used several models in distinct roles: one to plan,
+<main class="page" id="main">
+<div class="doc">
+<aside class="doc__rail">
+  <details open>
+    <summary class="disclose">On this page</summary>
+    <nav aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#roles">1. Roles</a></li>
+        <li><a href="#the-critique-round">2. The critique round</a></li>
+        <li><a href="#implementation-a-versus-b">3. Implementation A versus B</a></li>
+        <li><a href="#what-the-process-suggests-about-these-models">4. What the process suggests about these models</a></li>
+      </ol>
+    </nav>
+  </details>
+</aside>
+<article class="doc__body prose">
+<header class="page-head">
+  <h1>Model comparison</h1>
+  <p>The project deliberately used several models in distinct roles: one to plan,
 a different one to critique the plan, and two more to implement the same
 specification independently. This page reports what happened.</p>
+</header>
+<dl class="findings wide" aria-label="The result at a glance">
+  <div><dt>Shared test suite</dt><dd><b>65 / 65</b> each, after round 2</dd></div>
+  <div><dt>Physics agreement</dt><dd><b>Bit-identical</b> across 4,837 operating points</dd></div>
+  <div><dt>Implementation B, round 1</dt><dd><b>Did not run</b>: three one-character syntax errors, all fixed in round 2</dd></div>
+</dl>
+<h2 id="roles"><span class="h-num">1</span>Roles</h2>
 
-<h2>1. Roles</h2>
-
-<table>
+<div class="table-wrap"><table>
   <thead>
     <tr><th>Role</th><th>Model</th><th>What it produced</th></tr>
   </thead>
@@ -54,17 +82,17 @@ specification independently. This page reports what happened.</p>
     <tr><td>Implementation B</td><td>ChatGPT</td>
         <td><code>impl-b/</code></td></tr>
   </tbody>
-</table>
+</table></div>
 
-<div class="note">
-  <span class="note__icon">&#9432;</span>
+<div class="notice">
+  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v5.5M12 7.6v.1"/></svg>
   <div>Implementations A and B must come from <strong>different</strong> models.
     If one model built both, there is nothing to compare and the exercise
     collapses. This is recorded as a condition in the project's definition of
     done.</div>
 </div>
 
-<h2>2. The critique round</h2>
+<h2 id="the-critique-round"><span class="h-num">2</span>The critique round</h2>
 
 <p>The plan was handed to a second model with explicit instructions to attack it
 and to sort its findings into <em>errors</em>, <em>omissions</em> and
@@ -79,13 +107,13 @@ interaction, and a systematic traceability failure between two documents.</p>
 
 <h3>The findings that mattered most</h3>
 
-<table>
+<div class="table-wrap"><table>
   <thead>
     <tr><th>ID</th><th>Finding</th><th>Outcome</th></tr>
   </thead>
   <tbody>
     <tr>
-      <td>C-03</td>
+      <td class="nowrap">C-03</td>
       <td>The plan said the worked example had "three complete risers, the third
         truncated" — which is self-contradictory. It has <strong>two</strong>
         complete risers plus a truncated third.</td>
@@ -95,7 +123,7 @@ interaction, and a systematic traceability failure between two documents.</p>
         someone hunting a bug that did not exist.</td>
     </tr>
     <tr>
-      <td>C-04</td>
+      <td class="nowrap">C-04</td>
       <td>The plan's wording implied that an absorption factor below 1 is
         infeasible.</td>
       <td><strong>Accepted, and the risk was larger than reported.</strong>
@@ -104,7 +132,7 @@ interaction, and a systematic traceability failure between two documents.</p>
         broken the exact regime the tool exists to demonstrate.</td>
     </tr>
     <tr>
-      <td>C-01</td>
+      <td class="nowrap">C-01</td>
       <td>Eight of ten cross-references between the plan and the decision log
         pointed at the wrong entry.</td>
       <td><strong>Accepted.</strong> An artefact of writing the two documents in
@@ -112,7 +140,7 @@ interaction, and a systematic traceability failure between two documents.</p>
         programmatically.</td>
     </tr>
     <tr>
-      <td>C-05</td>
+      <td class="nowrap">C-05</td>
       <td>The clamping functions returned inconsistent labels for which limit
         had been hit.</td>
       <td><strong>Accepted, fixed differently.</strong> The proposed
@@ -122,7 +150,7 @@ interaction, and a systematic traceability failure between two documents.</p>
         separately.</td>
     </tr>
     <tr>
-      <td>C-12</td>
+      <td class="nowrap">C-12</td>
       <td>Add a demonstration preset just off <em>A</em> = 1, to exercise the
         numerical branch selection rather than only the special case.</td>
       <td><strong>Accepted, value corrected.</strong> The suggested value sits
@@ -130,7 +158,7 @@ interaction, and a systematic traceability failure between two documents.</p>
         path — it would not have tested what it was meant to test.</td>
     </tr>
   </tbody>
-</table>
+</table></div>
 
 <h3>Where the critic was wrong, and how that was caught</h3>
 
@@ -160,14 +188,14 @@ distrust.</p>
     twice" change how you would use one?</p>
 </div>
 
-<h2>3. Implementation A versus B</h2>
+<h2 id="implementation-a-versus-b"><span class="h-num">3</span>Implementation A versus B</h2>
 
 <p>Both implementations were written against the same frozen module interface and
 graded by the same test suite, which runs against either one by pointing an
 environment variable at it.</p>
 
-<div class="note note--warning">
-  <span class="note__icon">&#9888;</span>
+<div class="notice notice--caution">
+  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 21.5 20h-19zM12 10v4.5M12 17.2v.1"/></svg>
   <div><strong>That claim needed correcting.</strong> This page originally said
     both implementations pass "the same suite, unmodified", and that was not
     true when it was written. The suite had been written alongside
@@ -183,7 +211,7 @@ environment variable at it.</p>
 <pre><code>npm test                                          # grades impl-a
 PHYSICS_PATH=../../impl-b/js/physics.js npm test  # grades impl-b</code></pre>
 
-<table>
+<div class="table-wrap"><table>
   <thead>
     <tr><th>Dimension</th><th>Implementation A</th><th>Implementation B</th></tr>
   </thead>
@@ -195,7 +223,7 @@ PHYSICS_PATH=../../impl-b/js/physics.js npm test  # grades impl-b</code></pre>
     <tr><td><strong>Shared suite, round 2</strong></td>
         <td><strong>65 / 65</strong></td><td><strong>65 / 65</strong></td></tr>
     <tr><td>Worked examples A, B, C</td><td>exact</td><td>exact</td></tr>
-    <tr><td>Agreement between the two</td><td colspan="2" style="text-align:center">
+    <tr><td>Agreement between the two</td><td colspan="2" class="c">
         <strong>bit-identical</strong> — 0.000e+0 worst relative difference in
         N, N<sub>OG</sub>, HETP and Z across 4,837 operating points</td></tr>
     <tr><td>The five documented traps</td><td>all correct</td><td>all correct</td></tr>
@@ -216,7 +244,7 @@ PHYSICS_PATH=../../impl-b/js/physics.js npm test  # grades impl-b</code></pre>
         <td>round 1 minified (one line per file); <strong>round 2 readable</strong></td></tr>
     <tr><td>Written report supplied</td><td>n/a</td><td><strong>none</strong></td></tr>
   </tbody>
-</table>
+</table></div>
 
 <h3>What the grading actually showed</h3>
 
@@ -236,7 +264,7 @@ over in implementation.</p>
 <p><strong>But implementation B's site does not run.</strong> Three of its twelve
 JavaScript modules fail to parse, each from a single-character typo:</p>
 
-<table>
+<div class="table-wrap"><table>
   <thead><tr><th>File</th><th>Cause</th></tr></thead>
   <tbody>
     <tr><td><code>js/drag.js</code></td>
@@ -245,7 +273,7 @@ JavaScript modules fail to parse, each from a single-character typo:</p>
     <tr><td><code>js/render-ntu.js</code></td><td>One extra <code>}</code></td></tr>
     <tr><td><code>js/render-profile.js</code></td><td>One extra <code>}</code></td></tr>
   </tbody>
-</table>
+</table></div>
 
 <p>Because <code>drag.js</code> never parses, no handle is wired: the demo
 renders no SVG and nothing can be dragged. All six pages still return HTTP 200,
@@ -262,8 +290,8 @@ as written — the suite encoded implementation A rather than the specification.
 Rewriting it to use only the published API took B from 44/61 to 60/61, and the
 single remaining failure is a field the specification genuinely omitted.</p>
 
-<div class="note">
-  <span class="note__icon">&#9432;</span>
+<div class="notice">
+  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v5.5M12 7.6v.1"/></svg>
   <div><strong>On fairness.</strong> That last failure is recorded as a
     specification gap at build time, not as a defect in implementation B. It was
     built against the contract as published, which did not contain the field.
@@ -293,8 +321,8 @@ throws before it finishes. It self-corrects the moment anything is dragged,
 which is exactly why it survives casual use — the page looks fine, and only the
 console knows.</p>
 
-<div class="note note--warning">
-  <span class="note__icon">&#9888;</span>
+<div class="notice notice--caution">
+  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 21.5 20h-19zM12 10v4.5M12 17.2v.1"/></svg>
   <div><strong>The comparison is not symmetric, and should not be read as
     though it were.</strong> Implementation B received a detailed defect report
     and a second attempt. Implementation A received neither — it was verified in
@@ -332,8 +360,8 @@ It was a preference between two defensible interface designs &mdash; most
 visibly, B opens with a landing section and a call to action, while A puts the
 tool on screen immediately.</p>
 
-<div class="note note--warning">
-  <span class="note__icon">&#9888;</span>
+<div class="notice notice--caution">
+  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 21.5 20h-19zM12 10v4.5M12 17.2v.1"/></svg>
   <div><strong>Two asymmetries the choice should be read against.</strong> B
     received a targeted defect report and a second attempt; A received neither,
     because it was verified in a browser as it was built. And A's supporting
@@ -382,7 +410,7 @@ tool on screen immediately.</p>
     more tightly than you can pin down an interface?</p>
 </div>
 
-<h2>4. What the process suggests about these models</h2>
+<h2 id="what-the-process-suggests-about-these-models"><span class="h-num">4</span>What the process suggests about these models</h2>
 
 <div class="fillin">
   <p><strong>Your conclusions.</strong> Four questions worth answering directly,
@@ -407,15 +435,22 @@ tool on screen immediately.</p>
 a model's recommendation, is kept in <code>docs/DECISIONS.md</code> in the
 repository. Entries marked as owner overrides are the direct record of human
 steering.</p>
-
+<nav class="pager" aria-label="Pages">
+  <a class="pager__prev" href="docs.html"><span>Previous</span><strong>Documentation</strong></a>
+  <a class="pager__next" href="references.html"><span>Next</span><strong>References</strong></a>
+</nav>
+</article>
 </div>
 </main>
 
-<footer class="site-footer">
-  <div class="site-footer__inner">
-    Static site &middot; no framework, no build step.
-    <a href="../compare.html">Compare with implementation B</a> &middot;
-    <a href="../overview.html">Project overview</a>
+<footer class="foot">
+  <div class="foot__inner">
+    <span>An AI project for Separation Processes, University of Cincinnati.</span>
+    <ul>
+      <li><a href="../overview.html">Project overview</a></li>
+      <li><a href="../compare.html">Compare with implementation B</a></li>
+      <li><a href="references.html">References</a></li>
+    </ul>
   </div>
 </footer>
 

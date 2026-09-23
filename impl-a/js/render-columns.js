@@ -9,7 +9,7 @@
  * Computes no physics.
  */
 
-import { s, clear, fmt } from './dom.js';
+import { s, clear } from './dom.js';
 import { makeDraggable } from './drag.js';
 
 const BOX = { width: 430, height: 430, pad: { t: 22, r: 16, b: 46, l: 46 } };
@@ -36,14 +36,14 @@ export function mount(root, wiring) {
   }
 
   probe = s('g', { class: 'handle', 'data-handle': 'probe', 'aria-label': 'Height probe' });
-  probe.appendChild(s('rect', { class: 'handle__hit', x: -200, y: -22, width: 400, height: 44 }));
+  // Spans the plot from the height axis to the grab tab (x = 46 … 404).
+  probe.appendChild(s('rect', { class: 'handle__hit', x: -160, y: -22, width: 364, height: 44 }));
   probe.appendChild(
-    s('line', { class: 'probe-line', x1: -200, y1: 0, x2: 200, y2: 0 }),
+    s('line', { class: 'probe-line', x1: -160, y1: 0, x2: 170, y2: 0 }),
   );
-  probe.appendChild(s('rect', { class: 'probe-tab', x: -206, y: -9, width: 34, height: 18, rx: 4 }));
-  probe.appendChild(
-    s('text', { class: 'probe-tab-text', x: -189, y: 4, 'text-anchor': 'middle', text: '↕' }),
-  );
+  // The grab tab sits at the right-hand end, clear of the height ticks.
+  probe.appendChild(s('rect', { class: 'probe-tab', x: 170, y: -12, width: 28, height: 24, rx: 3 }));
+  probe.appendChild(s('path', { class: 'probe-tab-mark', d: 'M179 -3l5 -5 5 5M179 3l5 5 5 -5' }));
   layers.probe.appendChild(probe);
 
   probe.drag = makeDraggable(probe, {
@@ -145,7 +145,7 @@ function drawTrayColumn(layer, x, derived, inp, zToPx) {
       class: 'col-shell',
       x, y: zToPx(H), width: COL_W,
       height: zToPx(0) - zToPx(H),
-      rx: 8,
+      rx: 6,
     }),
   );
 
@@ -182,31 +182,30 @@ function drawTrayColumn(layer, x, derived, inp, zToPx) {
         x2: x + COL_W - 4, y2: zToPx(midZ) + 5,
       }),
     );
+    // The count sits on its own ground between the two break marks, so the
+    // dashed lines never strike through it.
+    layer.appendChild(
+      s('rect', { class: 'col-break-bg', x: x + 3, y: zToPx(midZ) - 3.5, width: COL_W - 6, height: 7 }),
+    );
     layer.appendChild(
       s('text', {
-        class: 'col-label',
-        x: x + COL_W / 2, y: zToPx(midZ) + 2,
-        'text-anchor': 'middle',
-        fill: 'var(--tray)',
-        text: `${n - 16} more`,
+        class: 'col-label label-knock',
+        x: x + COL_W + 8, y: zToPx(midZ) + 4,
+        fill: 'var(--tray-ink)',
+        'font-weight': '600',
+        text: `+${n - 16} trays`,
       }),
     );
   }
 
   layer.appendChild(
     s('text', {
-      class: 'col-label', x: x + COL_W / 2, y: zToPx(H) - 18,
-      'text-anchor': 'middle', 'font-weight': '650', fill: 'var(--tray)',
+      class: 'col-name', x: x + COL_W / 2, y: zToPx(H) - 8,
+      'text-anchor': 'middle', fill: 'var(--tray-ink)',
       text: 'TRAY',
     }),
   );
-  layer.appendChild(
-    s('text', {
-      class: 'col-label', x: x + COL_W / 2, y: zToPx(H) - 6,
-      'text-anchor': 'middle',
-      text: `${n} trays · ${fmt(H, 2)} m`,
-    }),
-  );
+
 }
 
 function drawPackedColumn(layer, x, derived, inp, zToPx, shellH) {
@@ -218,7 +217,7 @@ function drawPackedColumn(layer, x, derived, inp, zToPx, shellH) {
     s('rect', {
       class: 'col-shell',
       x, y: zToPx(shellH), width: COL_W,
-      height: zToPx(0) - zToPx(shellH), rx: 8,
+      height: zToPx(0) - zToPx(shellH), rx: 6,
     }),
   );
   layer.appendChild(
@@ -236,24 +235,18 @@ function drawPackedColumn(layer, x, derived, inp, zToPx, shellH) {
     const yy = zToPx(bedTop) + (i * bedPx) / marks;
     layer.appendChild(
       s('line', {
+        class: 'col-hatch',
         x1: x + 8, y1: yy, x2: x + COL_W - 8, y2: yy,
-        stroke: 'var(--packed)', 'stroke-width': 1, opacity: 0.45,
       }),
     );
   }
 
   layer.appendChild(
     s('text', {
-      class: 'col-label', x: x + COL_W / 2, y: zToPx(shellH) - 18,
-      'text-anchor': 'middle', 'font-weight': '650', fill: 'var(--packed)',
+      class: 'col-name', x: x + COL_W / 2, y: zToPx(shellH) - 8,
+      'text-anchor': 'middle', fill: 'var(--packed-ink)',
       text: 'PACKED',
     }),
   );
-  layer.appendChild(
-    s('text', {
-      class: 'col-label', x: x + COL_W / 2, y: zToPx(shellH) - 6,
-      'text-anchor': 'middle',
-      text: `Z = ${fmt(derived.Z, 2)} m bed`,
-    }),
-  );
+
 }

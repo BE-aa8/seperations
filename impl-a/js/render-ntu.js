@@ -7,10 +7,10 @@
  * logarithm appears in this file.
  */
 
-import { s, clear, pathFrom, fmt } from './dom.js';
-import { makeScale, ticks, formatTick } from './scale.js';
+import { s, clear, pathFrom, fmt, stext } from './dom.js';
+import { makeScale, ticks, formatTick, powerSuffix } from './scale.js';
 
-const BOX = { width: 430, height: 210, pad: { t: 14, r: 16, b: 38, l: 58 } };
+const BOX = { width: 430, height: 220, pad: { t: 14, r: 16, b: 44, l: 60 } };
 
 let svg;
 let layers = {};
@@ -67,7 +67,7 @@ export function update(derived, state, invDriving) {
     );
     layers.axes.appendChild(
       s('text', {
-        class: 'tick-label', x: sc.sx(t), y: sc.plot.y + sc.plot.h + 13,
+        class: 'tick-label', x: sc.sx(t), y: sc.plot.y + sc.plot.h + 17,
         'text-anchor': 'middle', text: formatTick(t, sc.domain.xMax),
       }),
     );
@@ -95,19 +95,19 @@ export function update(derived, state, invDriving) {
     }),
   );
   layers.axes.appendChild(
-    s('text', {
+    stext({
       class: 'axis-label',
-      x: sc.plot.x + sc.plot.w / 2, y: sc.plot.y + sc.plot.h + 31,
-      'text-anchor': 'middle', text: 'y — gas composition',
-    }),
+      x: sc.plot.x + sc.plot.w / 2, y: sc.plot.y + sc.plot.h + 37,
+      'text-anchor': 'middle',
+    }, [{ i: 'y' }, ', solute mole fraction in gas', ...powerSuffix(sc.domain.xMax)]),
   );
   layers.axes.appendChild(
-    s('text', {
+    stext({
       class: 'axis-label',
       transform: `rotate(-90 13 ${sc.plot.y + sc.plot.h / 2})`,
       x: 13, y: sc.plot.y + sc.plot.h / 2,
-      'text-anchor': 'middle', text: '1 / (y − y*)',
-    }),
+      'text-anchor': 'middle',
+    }, ['1 / (', { i: 'y' }, ' − ', { i: 'y' }, '*)']),
   );
 
   // Shaded area = N_OG.
@@ -127,10 +127,9 @@ export function update(derived, state, invDriving) {
   // Direct label on the area — it is the whole point of the plot.
   const midY = (yOut + yIn) / 2;
   layers.labels.appendChild(
-    s('text', {
-      class: 'mark-label', fill: 'var(--packed)',
+    stext({
+      class: 'mark-label label-knock', fill: 'var(--packed-ink)',
       x: sc.sx(midY), y: sc.sy(0) - 14, 'text-anchor': 'middle',
-      text: `area = N_OG = ${fmt(derived.NOG, 3)}`,
-    }),
+    }, ['area = ', { i: 'N' }, { sub: 'OG' }, ` = ${fmt(derived.NOG, 3)}`]),
   );
 }

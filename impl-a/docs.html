@@ -5,19 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Documentation — Tray vs. Packed</title>
 <meta name="description" content="What this tool shows, the physics behind it, and how it was built with AI models.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='9' y='3' width='14' height='26' rx='3' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Cpath d='M12 11h8M12 16h8M12 21h8' stroke='%23eb6834' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='3' width='10' height='26' rx='2' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Cpath d='M7 10h4M7 16h4M7 22h4' stroke='%232a78d6' stroke-width='2' stroke-linecap='round'/%3E%3Crect x='18' y='3' width='10' height='26' rx='2' fill='none' stroke='%23eb6834' stroke-width='2.5'/%3E%3Crect x='21' y='9' width='4' height='14' fill='%23eb6834'/%3E%3C/svg%3E">
+<link rel="preload" href="fonts/barlow-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/theme.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/layout.css">
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
-<header class="site-header">
-  <div class="site-header__inner">
-    <div class="brand">Tray vs. Packed
-      <small>Separation Processes &middot; University of Cincinnati</small>
-    </div>
-    <nav class="nav" aria-label="Main">
+<header class="bar">
+  <div class="bar__inner">
+    <a class="brand" href="index.html">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="2.5" width="8" height="23" rx="1.5" fill="none" stroke="var(--tray)" stroke-width="2"/><path d="M6 9h3M6 14h3M6 19h3" stroke="var(--tray)" stroke-width="1.8" stroke-linecap="round"/><rect x="16.5" y="2.5" width="8" height="23" rx="1.5" fill="none" stroke="var(--packed)" stroke-width="2"/><rect x="18.8" y="8" width="3.4" height="12" fill="var(--packed)"/></svg>
+      <span class="brand__name">Tray vs. Packed</span>
+      <span class="brand__course">Separation Processes · University of Cincinnati</span>
+    </a>
+    <nav class="nav" id="site-nav" aria-label="Main">
       <a href="index.html">Demo</a>
       <a href="video.html">Video</a>
       <a href="transcript.html">Transcript</a>
@@ -25,30 +29,42 @@
       <a href="model-comparison.html">Model comparison</a>
       <a href="references.html">References</a>
     </nav>
-    <button class="theme-toggle" type="button" aria-label="Switch colour theme">&#9686; Auto</button>
+    <button class="iconbtn bar__menu" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <button class="iconbtn theme-toggle" type="button" aria-label="Colour theme: automatic">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg>
+    </button>
   </div>
 </header>
 
-<main class="page">
-<div class="prose">
-
-<h1>Documentation</h1>
-
-<nav aria-label="On this page" style="margin-bottom:2rem">
-  <ol>
-    <li><a href="#overview">Overview</a></li>
-    <li><a href="#ai-project">Framing: this is an AI project</a></li>
-    <li><a href="#process">The process — models, tools, prompts</a></li>
-    <li><a href="#iteration">Planning and iteration</a></li>
-    <li><a href="#physics">The physics</a></li>
-    <li><a href="#staged">Staged versus continuous contacting</a></li>
-    <li><a href="#choosing">Choosing trays or packing</a></li>
-    <li><a href="#verification">How the numbers were verified</a></li>
-    <li><a href="#learned">What I learned, and what's next</a></li>
-  </ol>
-</nav>
-
-<h2 id="overview">1. Overview</h2>
+<main class="page" id="main">
+<div class="doc">
+<aside class="doc__rail">
+  <details open>
+    <summary class="disclose">On this page</summary>
+    <nav aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">1. Overview</a></li>
+        <li><a href="#ai-project">2. Framing: this is an AI project</a></li>
+        <li><a href="#process">3. The process — models, tools, prompts</a></li>
+        <li><a href="#iteration">4. Planning and iteration</a></li>
+        <li><a href="#physics">5. The physics</a></li>
+        <li><a href="#staged">6. Staged versus continuous contacting</a></li>
+        <li><a href="#choosing">7. Choosing trays or packing</a></li>
+        <li><a href="#verification">8. How the numbers were verified</a></li>
+        <li><a href="#learned">9. What I learned, and what's next</a></li>
+      </ol>
+    </nav>
+  </details>
+</aside>
+<article class="doc__body prose">
+<header class="page-head">
+  <h1>Documentation</h1>
+  <p>How the explorer works, the physics behind every number on it, and how it was built and checked.</p>
+</header>
+<h2 id="overview"><span class="h-num">1</span>Overview</h2>
 
 <p>This site puts a <strong>tray column</strong> and a <strong>packed column</strong>
 side by side doing the <em>same</em> dilute gas absorption job: the same solute,
@@ -73,7 +89,7 @@ sliders. There are three things you can grab:</p>
 the tray count, the packed height, the transfer-unit area, the composition
 profiles and the comparison table all recompute on every pointer move.</p>
 
-<h2 id="ai-project">2. Framing: this is an AI project</h2>
+<h2 id="ai-project"><span class="h-num">2</span>Framing: this is an AI project</h2>
 
 <p>This is an <strong>AI project</strong> for the Separation Processes course, and
 the process is as much the artefact as the website. The brief was not "build a
@@ -102,14 +118,14 @@ page</a> reports what came out of that.</p>
     delegated.</li>
 </ul>
 
-<h2 id="process">3. The process — models, tools, prompts</h2>
+<h2 id="process"><span class="h-num">3</span>The process — models, tools, prompts</h2>
 
 <h3>The models, and what each one did</h3>
 
 <p>Four distinct roles, deliberately kept separate so that no model was asked to
 check its own work:</p>
 
-<table>
+<div class="table-wrap"><table>
   <thead>
     <tr><th>Role</th><th>Model</th><th>Produced</th></tr>
   </thead>
@@ -125,7 +141,7 @@ check its own work:</p>
     <tr><td>Implementer B</td><td>ChatGPT</td>
         <td>An independent build from the same written specification</td></tr>
   </tbody>
-</table>
+</table></div>
 
 <p>Claude Code ran in a cloud container with repository access, so it could run
 the test suite and drive a real browser against its own output. That mattered
@@ -165,7 +181,7 @@ both.</p>
 
 <p>Kept verbatim in the repository under <code>docs/prompts/</code>:</p>
 
-<table>
+<div class="table-wrap"><table>
   <thead><tr><th>Prompt</th><th>Purpose</th></tr></thead>
   <tbody>
     <tr><td><code>01-planning.md</code></td>
@@ -182,7 +198,7 @@ both.</p>
         <td>A defect report naming three syntax errors precisely, plus the
             self-verification steps its first round had skipped.</td></tr>
   </tbody>
-</table>
+</table></div>
 
 <p>Two things about these are worth more than their wording. First, the planning
 prompt <em>asked to be questioned</em>, and the four clarifying questions that
@@ -191,7 +207,7 @@ progressively more specific about <em>verification</em> rather than about
 features — which is the direction the project kept discovering it needed to
 move.</p>
 
-<h2 id="iteration">4. Planning and iteration</h2>
+<h2 id="iteration"><span class="h-num">4</span>Planning and iteration</h2>
 
 <p>The project ran in four passes, and the structure was chosen so that mistakes
 would surface early and cheaply:</p>
@@ -220,29 +236,29 @@ would surface early and cheaply:</p>
 <p>The decision log marks every point where a model's recommendation was
 overridden. These are the ones where the two of us actually disagreed:</p>
 
-<table>
+<div class="table-wrap"><table>
   <thead><tr><th>#</th><th>The model proposed</th><th>The decision</th></tr></thead>
   <tbody>
-    <tr><td>D-03</td>
+    <tr><td class="nowrap">D-03</td>
         <td>Ship <em>one</em> generic chemical system, for implementation
             simplicity and easier verification.</td>
         <td>Require <strong>all four</strong> systems as a selector.</td></tr>
-    <tr><td>D-15</td>
+    <tr><td class="nowrap">D-15</td>
         <td>Flag the tray-height convention as an open question and defer it.</td>
-        <td>Settle it: <code>N_act·S</code> plus allowances.</td></tr>
-    <tr><td>D-45</td>
+        <td>Settle it: <i>N</i><sub>act</sub><i>S</i> plus allowances.</td></tr>
+    <tr><td class="nowrap">D-45</td>
         <td>(No proposal — the question was put open.)</td>
         <td>Leave implementation B's minified, broken source <strong>exactly as
             delivered</strong> rather than repairing it.</td></tr>
-    <tr><td>D-50</td>
+    <tr><td class="nowrap">D-50</td>
         <td>Decline to pick a winner, on the grounds of having built one of
             them.</td>
         <td>Choose implementation A, on interface grounds.</td></tr>
-    <tr><td>D-52</td>
+    <tr><td class="nowrap">D-52</td>
         <td>Keep flagging every default as pending a textbook check.</td>
         <td>Retire the promise; state what the numbers actually are.</td></tr>
   </tbody>
-</table>
+</table></div>
 
 <div class="fillin">
   <p><strong>Your reasoning, in your own words.</strong> Pick the two or three
@@ -259,7 +275,7 @@ overridden. These are the ones where the two of us actually disagreed:</p>
     anything.</p>
 </div>
 
-<h2 id="physics">5. The physics</h2>
+<h2 id="physics"><span class="h-num">5</span>The physics</h2>
 
 <p>The model is deliberately the simplest one that is still honest for this duty:
 <strong>dilute</strong> solute, <strong>isothermal</strong> and
@@ -273,13 +289,13 @@ checkable by hand.</p>
 
 <p>An overall solute balance around the whole column gives</p>
 
-<pre><code>V·(y_in − y_out) = L·(x_out − x_in)</code></pre>
+<div class="eq"><div class="eq__stack"><math display="block" aria-label="V times (y in minus y out) equals L times (x out minus x in)"><mrow><mi>V</mi><mo>(</mo><msub><mi>y</mi><mtext>in</mtext></msub><mo>−</mo><msub><mi>y</mi><mtext>out</mtext></msub><mo>)</mo><mo>=</mo><mi>L</mi><mo>(</mo><msub><mi>x</mi><mtext>out</mtext></msub><mo>−</mo><msub><mi>x</mi><mtext>in</mtext></msub><mo>)</mo></mrow></math></div></div>
 
 <p>so the operating line is straight, runs between the two column terminals
-(<em>x_in</em>, <em>y_out</em>) at the top and (<em>x_out</em>, <em>y_in</em>) at
+(<i>x</i><sub>in</sub>, <i>y</i><sub>out</sub>) at the top and (<i>x</i><sub>out</sub>, <i>y</i><sub>in</sub>) at
 the bottom, and has slope</p>
 
-<pre><code>L/V = (y_in − y_out) / (x_out − x_in)</code></pre>
+<div class="eq"><div class="eq__stack"><math display="block" aria-label="L over V equals (y in minus y out) over (x out minus x in)"><mrow><mfrac><mrow><mi>L</mi></mrow><mrow><mi>V</mi></mrow></mfrac><mo>=</mo><mfrac><mrow><msub><mi>y</mi><mtext>in</mtext></msub><mo>−</mo><msub><mi>y</mi><mtext>out</mtext></msub></mrow><mrow><msub><mi>x</mi><mtext>out</mtext></msub><mo>−</mo><msub><mi>x</mi><mtext>in</mtext></msub></mrow></mfrac></mrow></math></div></div>
 
 <p>This is why the tool has you drag <em>two endpoints</em> rather than type in a
 liquid rate. With the feed conditions fixed, those two endpoints carry exactly
@@ -290,7 +306,7 @@ outlet compositions implies. Dragging the bottom endpoint to the right
 
 <h3>The absorption factor</h3>
 
-<pre><code>A = L / (m·V) = (L/V) / m</code></pre>
+<div class="eq"><div class="eq__stack"><math display="block" aria-label="A equals L over m V"><mrow><mi>A</mi><mo>=</mo><mfrac><mrow><mi>L</mi></mrow><mrow><mi>m</mi><mi>V</mi></mrow></mfrac><mo>=</mo><mfrac><mrow><mi>L</mi><mo>/</mo><mi>V</mi></mrow><mrow><mi>m</mi></mrow></mfrac></mrow></math></div></div>
 
 <p>A single dimensionless group does most of the work here. It compares the
 liquid's capacity to carry solute against the gas's tendency to hold on to it.
@@ -311,15 +327,13 @@ you drag toward the minimum liquid rate.</p>
 <p>Stepping off equilibrium stages on the y–x diagram produces a staircase, and
 for straight lines that staircase has a closed form — the Kremser equation:</p>
 
-<pre><code>N = ln[ (1 − 1/A)·R + 1/A ] / ln A        where R = (y_in − m·x_in)/(y_out − m·x_in)
-N = R − 1                                  when A = 1</code></pre>
+<div class="eq"><div class="eq__stack"><math display="block" aria-label="Kremser equation"><mrow><mi>N</mi><mo>=</mo><mfrac><mrow><mi>ln</mi><mo>[</mo><mo>(</mo><mn>1</mn><mo>−</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>A</mi></mrow></mfrac><mo>)</mo><mi>R</mi><mo>+</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>A</mi></mrow></mfrac><mo>]</mo></mrow><mrow><mi>ln</mi><mi>A</mi></mrow></mfrac><mspace width="1em"/><mtext>where</mtext><mspace width="0.4em"/><mi>R</mi><mo>=</mo><mfrac><mrow><msub><mi>y</mi><mtext>in</mtext></msub><mo>−</mo><mi>m</mi><msub><mi>x</mi><mtext>in</mtext></msub></mrow><mrow><msub><mi>y</mi><mtext>out</mtext></msub><mo>−</mo><mi>m</mi><msub><mi>x</mi><mtext>in</mtext></msub></mrow></mfrac></mrow></math><math display="block" aria-label="N equals R minus 1 when A equals 1"><mrow><mi>N</mi><mo>=</mo><mi>R</mi><mo>−</mo><mn>1</mn><mspace width="1em"/><mtext>when</mtext><mspace width="0.4em"/><mi>A</mi><mo>=</mo><mn>1</mn></mrow></math></div></div>
 
 <p><em>N</em> is the number of <strong>theoretical</strong> stages, and it is
 generally fractional. Real trays do not reach equilibrium, so an overall
 efficiency converts it to hardware:</p>
 
-<pre><code>N_actual = ceil( N / E_o )
-Z_tray   = N_actual · (tray spacing) + top allowance + bottom allowance</code></pre>
+<div class="eq"><div class="eq__stack"><math display="block" aria-label="N actual equals the ceiling of N over E o"><mrow><msub><mi>N</mi><mtext>act</mtext></msub><mo>=</mo><mo>⌈</mo><mfrac><mrow><mi>N</mi></mrow><mrow><msub><mi>E</mi><mtext>o</mtext></msub></mrow></mfrac><mo>⌉</mo></mrow></math><math display="block" aria-label="Z tray equals N actual times S plus h top plus h bot"><mrow><msub><mi>Z</mi><mtext>tray</mtext></msub><mo>=</mo><msub><mi>N</mi><mtext>act</mtext></msub><mi>S</mi><mo>+</mo><msub><mi>h</mi><mtext>top</mtext></msub><mo>+</mo><msub><mi>h</mi><mtext>bot</mtext></msub></mrow></math></div></div>
 
 <p>The <code>ceil</code> is the whole reason a tray column's height is
 <em>quantised</em>: you cannot install 3.5 trays. Drag the specification slowly
@@ -330,19 +344,17 @@ and you will see the tray count sit still and then jump.</p>
 <p>A packed column has no stages. Mass transfer happens continuously up the bed,
 so instead of counting stages you integrate the driving force:</p>
 
-<pre><code>N_OG = ∫ dy / (y − y*)     from y_out to y_in
-Z    = H_OG · N_OG</code></pre>
+<div class="eq"><div class="eq__stack"><math display="block" aria-label="N O G equals the integral from y out to y in of d y over (y minus y star)"><mrow><msub><mi>N</mi><mtext>OG</mtext></msub><mo>=</mo><msubsup><mo>∫</mo><mrow><msub><mi>y</mi><mtext>out</mtext></msub></mrow><mrow><msub><mi>y</mi><mtext>in</mtext></msub></mrow></msubsup><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>y</mi><mo>−</mo><msup><mi>y</mi><mo>*</mo></msup></mrow></mfrac></mrow></math><math display="block" aria-label="Z equals H O G times N O G"><mrow><mi>Z</mi><mo>=</mo><msub><mi>H</mi><mtext>OG</mtext></msub><msub><mi>N</mi><mtext>OG</mtext></msub></mrow></math></div></div>
 
-<p><em>N_OG</em> is the number of <strong>overall gas-phase transfer units</strong> —
-a measure of how hard the separation is. <em>H_OG</em> is the <strong>height of a
+<p><i>N</i><sub>OG</sub> is the number of <strong>overall gas-phase transfer units</strong> —
+a measure of how hard the separation is. <i>H</i><sub>OG</sub> is the <strong>height of a
 transfer unit</strong> — a measure of how good the hardware is. The separation
 duty and the hardware quality are cleanly separated, which is why changing the
-packing in the demo moves the height but leaves <em>N_OG</em> untouched.</p>
+packing in the demo moves the height but leaves <i>N</i><sub>OG</sub> untouched.</p>
 
 <p>For straight lines the integral has a closed form, the Colburn equation:</p>
 
-<pre><code>N_OG = ln[ (1 − 1/A)·R + 1/A ] / (1 − 1/A)
-N_OG = R − 1                                when A = 1</code></pre>
+<div class="eq"><div class="eq__stack"><math display="block" aria-label="Colburn equation"><mrow><msub><mi>N</mi><mtext>OG</mtext></msub><mo>=</mo><mfrac><mrow><mi>ln</mi><mo>[</mo><mo>(</mo><mn>1</mn><mo>−</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>A</mi></mrow></mfrac><mo>)</mo><mi>R</mi><mo>+</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>A</mi></mrow></mfrac><mo>]</mo></mrow><mrow><mn>1</mn><mo>−</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>A</mi></mrow></mfrac></mrow></mfrac></mrow></math><math display="block" aria-label="N O G equals R minus 1 when A equals 1"><mrow><msub><mi>N</mi><mtext>OG</mtext></msub><mo>=</mo><mi>R</mi><mo>−</mo><mn>1</mn><mspace width="1em"/><mtext>when</mtext><mspace width="0.4em"/><mi>A</mi><mo>=</mo><mn>1</mn></mrow></math></div></div>
 
 <p>Notice that the <strong>numerator is identical to Kremser's</strong>. That is not
 a coincidence; it is the structural reason the two column types are so tightly
@@ -350,7 +362,7 @@ linked.</p>
 
 <p>There is also a third, equivalent route that is worth knowing because it is the
 one most often used by hand: for straight lines,
-<code>N_OG = (y_in − y_out) / Δ_lm</code>, where Δ_lm is the
+<i>N</i><sub>OG</sub> = (<i>y</i><sub>in</sub> − <i>y</i><sub>out</sub>) / Δ<sub>lm</sub>, where Δ<sub>lm</sub> is the
 <strong>log-mean</strong> of the driving forces at the two ends of the column.</p>
 
 <h3>The link between them: HETP</h3>
@@ -358,18 +370,17 @@ one most often used by hand: for straight lines,
 <p>Dividing Colburn by Kremser, the shared numerator cancels and leaves a pure
 function of <em>A</em>:</p>
 
-<pre><code>N_OG / N = A·ln A / (A − 1) ≡ g(A),     g(1) = 1
-HETP = Z / N = H_OG · g(A)</code></pre>
+<div class="eq"><div class="eq__stack"><math display="block" aria-label="N O G over N equals A ln A over (A minus 1), called g of A"><mrow><mfrac><mrow><msub><mi>N</mi><mtext>OG</mtext></msub></mrow><mrow><mi>N</mi></mrow></mfrac><mo>=</mo><mfrac><mrow><mi>A</mi><mi>ln</mi><mi>A</mi></mrow><mrow><mi>A</mi><mo>−</mo><mn>1</mn></mrow></mfrac><mo>≡</mo><mi>g</mi><mo>(</mo><mi>A</mi><mo>)</mo><mo>,</mo><mspace width="1em"/><mi>g</mi><mo>(</mo><mn>1</mn><mo>)</mo><mo>=</mo><mn>1</mn></mrow></math><math display="block" aria-label="HETP equals Z over N equals H O G times g of A"><mrow><mtext>HETP</mtext><mo>=</mo><mfrac><mrow><mi>Z</mi></mrow><mrow><mi>N</mi></mrow></mfrac><mo>=</mo><msub><mi>H</mi><mtext>OG</mtext></msub><mi>g</mi><mo>(</mo><mi>A</mi><mo>)</mo></mrow></math></div></div>
 
 <p>HETP — the <strong>height equivalent to a theoretical plate</strong> — is the
 translation between the two languages: the depth of packing that does the job of
-one equilibrium stage. When <em>A</em> = 1, HETP is exactly <em>H_OG</em>; away
+one equilibrium stage. When <em>A</em> = 1, HETP is exactly <i>H</i><sub>OG</sub>; away
 from 1 they differ by <em>g</em>(<em>A</em>).</p>
 
 <p>It is worth being clear about what this identity does and does not prove. The
 demo shows the check <em>N</em> × HETP = <em>Z</em>, and it always passes — but it
 passes <em>by construction</em>, because HETP is defined as
-<em>H_OG</em>·<em>N_OG</em>/<em>N</em>. It is a useful consistency check (it would
+<i>H</i><sub>OG</sub>·<i>N</i><sub>OG</sub>/<em>N</em>. It is a useful consistency check (it would
 catch an inverted <em>g</em>(<em>A</em>)), but it is not independent evidence that
 the physics is right. The checks that are independent are described in
 <a href="#verification">section 8</a>.</p>
@@ -382,8 +393,7 @@ wrong way. Because both lines are straight, their difference is linear in
 <em>x</em>, so its minimum is at one end or the other. The whole constraint
 therefore reduces to two conditions, one per end:</p>
 
-<pre><code>y_out &gt; m·x_in     (top pinch — a purity limit)
-y_in  &gt; m·x_out    (bottom pinch — the minimum liquid rate)</code></pre>
+<div class="eq"><div class="eq__stack"><math display="block" aria-label="y out greater than m x in, the top pinch"><mrow><msub><mi>y</mi><mtext>out</mtext></msub><mo>&gt;</mo><mi>m</mi><msub><mi>x</mi><mtext>in</mtext></msub><mspace width="1em"/><mtext>top pinch: a purity limit</mtext></mrow></math><math display="block" aria-label="y in greater than m x out, the bottom pinch"><mrow><msub><mi>y</mi><mtext>in</mtext></msub><mo>&gt;</mo><mi>m</mi><msub><mi>x</mi><mtext>out</mtext></msub><mspace width="1em"/><mtext>bottom pinch: the minimum liquid rate</mtext></mrow></math></div></div>
 
 <p>Each is governed by exactly one of the two drag handles, which is why the tool
 can enforce them with two independent limits rather than a constraint solver.
@@ -391,13 +401,13 @@ The top condition is a <em>thermodynamic</em> limit: no column of any height,
 with any liquid rate, can produce gas leaner than equilibrium with the entering
 liquid. The bottom condition gives the classical minimum liquid rate,</p>
 
-<pre><code>(L/V)_min = (y_in − y_out) / (y_in/m − x_in)</code></pre>
+<div class="eq"><div class="eq__stack"><math display="block" aria-label="minimum L over V"><mrow><msub><mrow><mo>(</mo><mi>L</mi><mo>/</mo><mi>V</mi><mo>)</mo></mrow><mtext>min</mtext></msub><mo>=</mo><mfrac><mrow><msub><mi>y</mi><mtext>in</mtext></msub><mo>−</mo><msub><mi>y</mi><mtext>out</mtext></msub></mrow><mrow><mfrac><mrow><msub><mi>y</mi><mtext>in</mtext></msub></mrow><mrow><mi>m</mi></mrow></mfrac><mo>−</mo><msub><mi>x</mi><mtext>in</mtext></msub></mrow></mfrac></mrow></math></div></div>
 
 <p>at which the required height goes to infinity. Real designs run at some
 multiple of it — the demo reports that multiple, because it is the number a
 designer actually cares about.</p>
 
-<h2 id="staged">6. Staged versus continuous contacting</h2>
+<h2 id="staged"><span class="h-num">6</span>Staged versus continuous contacting</h2>
 
 <p>This is the conceptual heart of the comparison, and the composition-against-height
 plot is where it becomes visible.</p>
@@ -428,7 +438,7 @@ height moves in steps of one tray spacing divided by the efficiency; a packed be
 can be built to any depth. In the demo, the packed height moves continuously as
 you drag while the tray height sits still and then jumps.</p>
 
-<h2 id="choosing">7. Choosing trays or packing</h2>
+<h2 id="choosing"><span class="h-num">7</span>Choosing trays or packing</h2>
 
 <p>The sizing calculation does not, on its own, decide the hardware. In practice
 the choice is driven by service characteristics. The usual reasoning:</p>
@@ -466,7 +476,7 @@ the choice is driven by service characteristics. The usual reasoning:</p>
 <p>A reasonable summary: <em>packing buys low pressure drop and corrosion
 tolerance; trays buy robustness, predictability, and access.</em></p>
 
-<h2 id="verification">8. How the numbers were verified</h2>
+<h2 id="verification"><span class="h-num">8</span>How the numbers were verified</h2>
 
 <p>Every formula above was checked numerically before it was written down, and the
 implementation is covered by a test suite that runs on Node's built-in test
@@ -493,10 +503,10 @@ stepping recursion is geometric rather than arithmetic, so the fractional stage
 must be interpolated logarithmically. The test suite asserts the wrong answer
 explicitly, as a guard against the correct rule being quietly replaced.</p>
 
-<div class="note">
-  <span class="note__icon">&#8505;</span>
+<div class="notice">
+  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v5.5M12 7.6v.1"/></svg>
   <div><strong>What the default numbers are.</strong> The equilibrium slopes,
-    <em>H_OG</em> values, tray efficiency and spacing are <strong>illustrative
+    <i>H</i><sub>OG</sub> values, tray efficiency and spacing are <strong>illustrative
     typical figures</strong> — chosen so the demonstration is legible and every
     result is checkable by hand, not transcribed from a particular source. Each
     carries a typical range and a one-line basis in the code, collected in the
@@ -514,7 +524,7 @@ explicitly, as a guard against the correct rule being quietly replaced.</p>
     assumption gives out.</div>
 </div>
 
-<h2 id="learned">9. What I learned, and what's next</h2>
+<h2 id="learned"><span class="h-num">9</span>What I learned, and what's next</h2>
 
 <p>Four things happened in this project that are worth reflecting on, because
 each one was a surprise at the time:</p>
@@ -585,15 +595,22 @@ restructuring what exists:</p>
   <li><strong>Pressure drop comparison</strong>, and the operating-cost argument
     that follows from it.</li>
 </ul>
-
+<nav class="pager" aria-label="Pages">
+  <a class="pager__prev" href="transcript.html"><span>Previous</span><strong>Transcript</strong></a>
+  <a class="pager__next" href="model-comparison.html"><span>Next</span><strong>Model comparison</strong></a>
+</nav>
+</article>
 </div>
 </main>
 
-<footer class="site-footer">
-  <div class="site-footer__inner">
-    Static site &middot; no framework, no build step.
-    <a href="../compare.html">Compare with implementation B</a> &middot;
-    <a href="../overview.html">Project overview</a>
+<footer class="foot">
+  <div class="foot__inner">
+    <span>An AI project for Separation Processes, University of Cincinnati.</span>
+    <ul>
+      <li><a href="../overview.html">Project overview</a></li>
+      <li><a href="../compare.html">Compare with implementation B</a></li>
+      <li><a href="references.html">References</a></li>
+    </ul>
   </div>
 </footer>
 

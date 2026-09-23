@@ -24,7 +24,17 @@ function boot() {
     onDemo: state.setDemoPreset,
     onParam: state.setParam,
     onResetTray: state.resetTrayDefaults,
+    onReset: state.reset,
   });
+  controls.mountNote(el('illustrative-note'));
+  controls.mountTry(document.querySelector('.try'), {
+    onTry: (id) => {
+      if (id === 'pinch') state.setXOut(Number.POSITIVE_INFINITY); // clamps to the pinch
+      else if (id === 'balanced') state.setDemoPreset('balanced');
+      else if (id === 'structured') state.setPacking('structured');
+      else if (id === 'so2') state.setSystem('so2');
+    },
+  }, el('explorer'));
 
   yx.mount(el('yx-diagram'), {
     onDragYOut: state.setYOut,
@@ -45,7 +55,12 @@ function boot() {
   ntu.mount(el('ntu-plot'));
   profile.mount(el('profile-plot'));
   profile.mountReadout(el('probe-readout'));
-  summary.mount(el('summary'));
+  summary.mount({
+    headline: el('headline'),
+    conditions: el('conditions'),
+    sheet: el('sheet'),
+    live: el('live-summary'),
+  });
 
   state.subscribe((derived, st) => {
     const inp = st.inp;

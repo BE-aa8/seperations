@@ -1,6 +1,7 @@
 /**
  * controls.js — the non-drag inputs: preset selection, the A ≈ 1 demo buttons,
- * numeric fields for secondary parameters, and the standing caveats.
+ * numeric fields for secondary parameters, the standing caveats, and the
+ * "What to try" shortcuts.
  *
  * There is deliberately no `<input type="range">` anywhere in this file. The
  * core interactions are direct manipulation (D-01); sliders are excluded from
@@ -8,97 +9,113 @@
  * parameters are expressly allowed.
  */
 
-import { h, clear } from './dom.js';
+import { h, clear, icon, notation, fmt } from './dom.js';
 import { SYSTEMS, PACKINGS, DEMO_PRESETS, ILLUSTRATIVE_NOTE } from './presets.js';
 
-let warningEl;
+let alarmEl;
+let digestEl;
+let systemHint;
+let packingHint;
 let fieldEls = {};
+let demoButtons = [];
+
+// Secondary parameters: key, label (as nodes), unit, min, step.
+const PARAMS = [
+  ['m', ['Equilibrium slope ', h('i', { text: 'm' })], '', 0.01, 'any'],
+  ['V', ['Gas flow ', h('i', { text: 'V' })], 'kmol/h', 0.1, 'any'],
+  ['yIn', ['Gas in ', h('i', { text: 'y' }), h('sub', { text: 'in' })], 'mole fraction', 0, 'any'],
+  ['xIn', ['Liquid in ', h('i', { text: 'x' }), h('sub', { text: 'in' })], 'mole fraction', 0, 'any'],
+  ['Eo', ['Tray efficiency ', h('i', { text: 'E' }), h('sub', { text: 'o' })], '0 to 1', 0.01, '0.01'],
+  ['traySpacing', ['Tray spacing ', h('i', { text: 'S' })], 'm', 0.05, '0.05'],
+  ['hTop', ['Top allowance'], 'm', 0, '0.1'],
+  ['hBot', ['Bottom allowance'], 'm', 0, '0.1'],
+];
 
 export function mount(root, wiring) {
-  // --- Preset row -----------------------------------------------------------
-  const systemSel = h('select', {
-    id: 'sys-select',
-    onchange: (e) => wiring.onSystem(e.target.value),
-  }, SYSTEMS.map((s) => h('option', { value: s.id, text: s.label })));
+  // --- Toolbar --------------------------------------------------------------
+  const systemSel = h(
+    'select',
+    { id: 'sys-select', 'aria-describedby': 'sys-hint', onchange: (e) => wiring.onSystem(e.target.value) },
+    [
+      ...SYSTEMS.map((s) => h('option', { value: s.id, text: s.label })),
+      h('option', { value: 'demo', text: 'Demonstration case (A ≈ 1)', disabled: '' }),
+    ],
+  );
+  const packingSel = h(
+    'select',
+    { id: 'pack-select', 'aria-describedby': 'pack-hint', onchange: (e) => wiring.onPacking(e.target.value) },
+    PACKINGS.map((p) => h('option', { value: p.id, text: p.label })),
+  );
+  systemHint = h('span', { class: 'field__hint', id: 'sys-hint' });
+  packingHint = h('span', { class: 'field__hint', id: 'pack-hint' });
 
-  const packingSel = h('select', {
-    id: 'pack-select',
-    onchange: (e) => wiring.onPacking(e.target.value),
-  }, PACKINGS.map((p) => h('option', { value: p.id, text: `${p.label} — H_OG ${p.HOG} m` })));
-
-  const demoButtons = h(
-    'div',
-    { class: 'controls__group' },
-    DEMO_PRESETS.map((d) =>
-      h('button', {
-        type: 'button',
-        class: 'btn',
-        title: d.note,
-        onclick: () => wiring.onDemo(d.id),
-        text: d.label,
-      }),
-    ),
+  demoButtons = DEMO_PRESETS.map((d) =>
+    h('button', {
+      type: 'button',
+      class: 'btn',
+      title: d.note,
+      'aria-pressed': 'false',
+      'data-demo': d.id,
+      onclick: () => wiring.onDemo(d.id),
+      html: d.id === 'balanced' ? '<span><i>A</i> = 1</span>' : '<span><i>A</i> = 1 − 5×10<sup>−7</sup></span>',
+    }),
   );
 
   root.appendChild(
-    h('div', { class: 'controls' }, [
-      h('div', { class: 'field' }, [
-        h('label', { for: 'sys-select', text: 'Chemical system' }),
+    h('div', { class: 'toolbar', role: 'group', 'aria-label': 'Duty and hardware' }, [
+      h('div', { class: 'field field--system' }, [
+        h('label', { class: 'field__label', for: 'sys-select', text: 'Chemical system' }),
         systemSel,
+        systemHint,
       ]),
-      h('div', { class: 'field' }, [
-        h('label', { for: 'pack-select', text: 'Packing' }),
+      h('div', { class: 'field field--packing' }, [
+        h('label', { class: 'field__label', for: 'pack-select', text: 'Packing' }),
         packingSel,
+        packingHint,
       ]),
-      h('div', { class: 'field' }, [
-        h('label', { text: 'Demonstration presets' }),
-        demoButtons,
+      h('div', { class: 'field', role: 'group', 'aria-labelledby': 'demo-label' }, [
+        h('span', { class: 'field__label', id: 'demo-label', text: 'Balanced cases' }),
+        h('div', { class: 'seg' }, demoButtons),
+        h('span', { class: 'field__hint', text: 'Hand-checkable special case' }),
+      ]),
+      h('div', { class: 'toolbar__end' }, [
+        h('button', {
+          type: 'button',
+          class: 'btn btn--quiet',
+          title: 'Put both drag handles back where this system starts',
+          onclick: wiring.onReset,
+        }, [icon('reset'), 'Reset']),
       ]),
     ]),
   );
 
-  // --- The SO₂-style per-preset warning (D-33) ------------------------------
-  warningEl = h('div', { style: 'display:none' });
-  root.appendChild(warningEl);
-
-  // --- Settings drawer ------------------------------------------------------
-  const params = [
-    ['m', 'Equilibrium slope m', 'y* = m·x', 0.01, 'any'],
-    ['V', 'Gas flow V, kmol/h', '', 0.1, 'any'],
-    ['yIn', 'Entering gas y_in', 'mole fraction', 0, 'any'],
-    ['xIn', 'Entering liquid x_in', 'mole fraction', 0, 'any'],
-    ['Eo', 'Tray efficiency E_o', '0 < E_o ≤ 1', 0.01, '0.01'],
-    ['traySpacing', 'Tray spacing, m', '', 0.05, '0.05'],
-    ['hTop', 'Top allowance, m', '', 0, '0.1'],
-    ['hBot', 'Bottom allowance, m', '', 0, '0.1'],
-  ];
-
-  const body = h('div', { class: 'drawer__body' });
-  for (const [key, label, hint, min, step] of params) {
+  // --- Parameters panel -----------------------------------------------------
+  const body = h('div', { class: 'params__body' });
+  for (const [key, label, unit, min, step] of PARAMS) {
     const input = h('input', {
       type: 'number',
       id: `p-${key}`,
       min: String(min),
       step,
+      inputmode: 'decimal',
+      'aria-describedby': `e-${key}`,
       oninput: (e) => {
         const err = wiring.onParam(key, Number(e.target.value));
         setFieldError(key, err);
       },
     });
-    const err = h('div', { class: 'field__error', id: `e-${key}` });
+    const err = h('div', { class: 'field__error', id: `e-${key}`, role: 'status' });
     fieldEls[key] = { input, err };
     body.appendChild(
       h('div', { class: 'field' }, [
-        h('label', { for: `p-${key}`, text: label }),
+        h('label', { class: 'field__label', for: `p-${key}` }, [...label, unit ? `, ${unit}` : '']),
         input,
-        hint ? h('div', { class: 'field__hint', text: hint }) : null,
         err,
       ]),
     );
   }
   body.appendChild(
-    h('div', { class: 'field' }, [
-      h('label', { text: ' ' }),
+    h('div', { class: 'params__actions' }, [
       h('button', {
         type: 'button', class: 'btn', text: 'Reset tray defaults',
         onclick: wiring.onResetTray,
@@ -106,22 +123,42 @@ export function mount(root, wiring) {
     ]),
   );
 
+  digestEl = h('span', { class: 'params__digest' });
   root.appendChild(
-    h('details', { class: 'drawer' }, [
-      h('summary', { text: 'Parameters (m, flows, tray geometry)' }),
+    h('details', { class: 'params' }, [
+      h('summary', {}, [
+        h('span', { class: 'params__title' }, [icon('chevron'), 'Parameters']),
+        digestEl,
+      ]),
       body,
     ]),
   );
 
-  // --- The standing note on what these numbers are (D-52) -------------------
-  // Informational, not a warning: nothing here is wrong, but nobody should
-  // mistake a teaching default for a design figure.
-  root.appendChild(
-    h('div', { class: 'note', style: 'margin-bottom:1rem' }, [
-      h('span', { class: 'note__icon', text: 'ℹ' }),
-      h('div', {}, [h('strong', { text: 'About these numbers. ' }), ILLUSTRATIVE_NOTE]),
-    ]),
-  );
+  // --- Per-preset caution (D-33) ---------------------------------------------
+  alarmEl = h('div', { class: 'alarm-slot', role: 'status' });
+  root.appendChild(alarmEl);
+}
+
+/** The standing note on what these numbers are (D-52). Quiet, but always on. */
+export function mountNote(el) {
+  if (!el) return;
+  el.append(icon('info'), h('span', {}, [h('strong', { text: 'About these numbers. ' }), ILLUSTRATIVE_NOTE]));
+}
+
+/**
+ * Wire the "What to try" buttons. Each applies a state, then brings the
+ * console into view so the effect is seen rather than scrolled past.
+ */
+export function mountTry(root, wiring, target) {
+  if (!root) return;
+  for (const btn of root.querySelectorAll('[data-try]')) {
+    btn.addEventListener('click', () => {
+      wiring.onTry(btn.dataset.try);
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      target?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+      target?.focus({ preventScroll: true });
+    });
+  }
 }
 
 function setFieldError(key, err) {
@@ -141,26 +178,45 @@ export function update(derived, state) {
     if (v !== undefined) f.input.value = String(Number(v.toPrecision(10)));
   }
 
+  const inp = state.inp;
+  const isDemo = state.systemId.startsWith('demo:');
   const sel = document.getElementById('sys-select');
-  if (sel && !state.systemId.startsWith('demo:')) sel.value = state.systemId;
+  if (sel) sel.value = isDemo ? 'demo' : state.systemId;
   const psel = document.getElementById('pack-select');
   if (psel) psel.value = state.packingId;
 
+  for (const b of demoButtons) {
+    b.setAttribute('aria-pressed', String(state.systemId === `demo:${b.dataset.demo}`));
+  }
+
+  const sys = SYSTEMS.find((s) => s.id === state.systemId);
+  clear(systemHint).append(
+    h('i', { text: 'm' }), ` = ${fmt(inp.m, 2)}`,
+    sys && sys.conditions && sys.conditions !== '—' ? ` · ${sys.conditions}` : '',
+  );
+  const pack = PACKINGS.find((p) => p.id === state.packingId);
+  clear(packingHint).append(h('i', { text: 'H' }), h('sub', { text: 'OG' }), ` = ${fmt(inp.HOG, 2)} m`,
+    pack ? ` · ${pack.note.split('.')[0]}` : '');
+
+  clear(digestEl).append(
+    ...[
+      [h('i', { text: 'm' }), fmt(inp.m, 2)],
+      [h('i', { text: 'V' }), `${fmt(inp.V, 0)} kmol/h`],
+      [[h('i', { text: 'E' }), h('sub', { text: 'o' })], fmt(inp.Eo, 2)],
+      [h('i', { text: 'S' }), `${fmt(inp.traySpacing, 2)} m`],
+      [[h('i', { text: 'h' }), h('sub', { text: 'top' })], `${fmt(inp.hTop, 1)} m`],
+      [[h('i', { text: 'h' }), h('sub', { text: 'bot' })], `${fmt(inp.hBot, 1)} m`],
+    ].map(([k, v]) => h('span', {}, [].concat(k, ' ', h('b', { text: v })))),
+  );
+
   if (state.warning) {
-    clear(warningEl);
-    warningEl.style.display = '';
-    warningEl.className = '';
-    warningEl.appendChild(
-      h('div', { class: 'note note--critical', style: 'margin-bottom:1rem' }, [
-        h('span', { class: 'note__icon', text: '⚠' }),
-        h('div', {}, [
-          h('strong', { text: 'Model limitation. ' }),
-          state.warning,
-        ]),
+    clear(alarmEl).appendChild(
+      h('div', { class: 'notice notice--caution' }, [
+        icon('caution'),
+        h('p', {}, [h('strong', { text: 'Caution on this system. ' }), ...notation(state.warning)]),
       ]),
     );
   } else {
-    warningEl.style.display = 'none';
-    clear(warningEl);
+    clear(alarmEl);
   }
 }

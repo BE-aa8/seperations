@@ -13,10 +13,10 @@
  * Computes no physics; profile values arrive as callbacks from main.js.
  */
 
-import { s, h, clear, pathFrom, fmt } from './dom.js';
-import { makeScale, ticks, formatTick } from './scale.js';
+import { s, h, clear, pathFrom, fmt, stext, glyph } from './dom.js';
+import { makeScale, ticks, formatTick, powerSuffix } from './scale.js';
 
-const BOX = { width: 430, height: 300, pad: { t: 16, r: 18, b: 40, l: 56 } };
+const BOX = { width: 430, height: 310, pad: { t: 16, r: 18, b: 46, l: 56 } };
 
 let svg;
 let layers = {};
@@ -58,7 +58,7 @@ export function update(derived, state, trayY, packedY) {
                   x2: sc.sx(t), y2: sc.plot.y + sc.plot.h }),
     );
     layers.axes.appendChild(
-      s('text', { class: 'tick-label', x: sc.sx(t), y: sc.plot.y + sc.plot.h + 13,
+      s('text', { class: 'tick-label', x: sc.sx(t), y: sc.plot.y + sc.plot.h + 17,
                   'text-anchor': 'middle', text: formatTick(t, sc.domain.xMax) }),
     );
   }
@@ -73,9 +73,9 @@ export function update(derived, state, trayY, packedY) {
     );
   }
   layers.axes.appendChild(
-    s('text', { class: 'axis-label', x: sc.plot.x + sc.plot.w / 2,
-                y: sc.plot.y + sc.plot.h + 31, 'text-anchor': 'middle',
-                text: 'y — gas composition' }),
+    stext({ class: 'axis-label', x: sc.plot.x + sc.plot.w / 2,
+            y: sc.plot.y + sc.plot.h + 38, 'text-anchor': 'middle' },
+          [{ i: 'y' }, ', solute mole fraction in gas', ...powerSuffix(sc.domain.xMax)]),
   );
   layers.axes.appendChild(
     s('text', { class: 'axis-label',
@@ -131,12 +131,12 @@ export function update(derived, state, trayY, packedY) {
 
   // --- direct labels (≤4 series are direct-labelled as well as legended)
   layers.labels.appendChild(
-    s('text', { class: 'mark-label', fill: 'var(--tray)',
+    s('text', { class: 'mark-label label-knock', fill: 'var(--tray-ink)',
                 x: sc.sx(inp.yOut) + 6, y: sc.sy(derived.ZTray) + 2,
                 text: `tray · ${fmt(derived.ZTray, 2)} m` }),
   );
   layers.labels.appendChild(
-    s('text', { class: 'mark-label', fill: 'var(--packed)',
+    s('text', { class: 'mark-label label-knock', fill: 'var(--packed-ink)',
                 x: sc.sx(inp.yOut) + 6, y: sc.sy(bedTop) - 5,
                 text: `packed · ${fmt(derived.Z, 2)} m bed` }),
   );
@@ -199,27 +199,21 @@ export function updateReadout(derived, state, trayY, packedY) {
     packDetail = `${fmt(bedTop - z, 2)} m below the bed top`;
   }
 
-  const row = (label, value, detail, cls) =>
-    h('div', { class: 'readout__row' }, [
-      h('span', { class: 'readout__label' }, [
-        h('span', {
-          class: `legend__swatch legend__swatch--${cls}`,
-          style: 'display:inline-block;margin-right:6px;vertical-align:middle',
-        }),
-        label,
-        h('div', { class: 'field__hint', text: detail }),
-      ]),
-      h('span', { class: 'readout__value', text: value }),
+  const row = (series, label, value, detail) =>
+    h('div', { class: 'row' }, [
+      h('span', { class: 'row__label' }, [glyph(series), label]),
+      h('span', { class: 'row__value', text: value }),
+      h('span', { class: 'row__detail', text: detail }),
     ]);
 
   readoutRoot.appendChild(
-    h('div', { class: 'readout' }, [
-      h('div', { class: 'readout__row' }, [
-        h('span', { class: 'readout__label', text: 'Probe height' }),
-        h('span', { class: 'readout__value', text: `${fmt(z, 2)} m` }),
+    h('div', { class: 'rows' }, [
+      h('div', { class: 'row' }, [
+        h('span', { class: 'row__label', text: 'Probe height' }),
+        h('span', { class: 'row__value' }, [fmt(z, 2), h('span', { class: 'unit', text: 'm' })]),
       ]),
-      row('Tray column y', trayText, trayDetail, 'tray'),
-      row('Packed column y', packText, packDetail, 'packed'),
+      row('tray', 'Tray column, gas mole fraction', trayText, trayDetail),
+      row('packed', 'Packed column, gas mole fraction', packText, packDetail),
     ]),
   );
 }

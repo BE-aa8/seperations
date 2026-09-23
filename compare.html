@@ -6,32 +6,16 @@
 <title>Side by side — Tray vs. Packed</title>
 <meta name="description" content="Compare the two implementations of the same specification, running live, side by side.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='5' width='11' height='22' rx='2.5' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Crect x='18' y='5' width='11' height='22' rx='2.5' fill='none' stroke='%23eb6834' stroke-width='2.5'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="impl-a/css/theme.css">
 <style>
+  /* Tokens come from impl-a/css/theme.css; these aliases keep this page's own
+   * names. A and B are deliberately NEUTRAL: blue and orange mean tray and
+   * packed everywhere else on the site, never an implementation. */
   :root {
-    color-scheme: light;
-    --surface: #fcfcfb;
-    --plane: #f9f9f7;
-    --raised: #ffffff;
-    --ink: #0b0b0b;
-    --ink-2: #52514e;
-    --ink-muted: #898781;
-    --hairline: rgba(11, 11, 11, 0.10);
-    --axis: #c3c2b7;
-    --a: #2a78d6;
-    --b: #eb6834;
-    --warning: #fab219;
-    --warning-wash: rgba(250, 178, 25, 0.12);
-    --font: system-ui, -apple-system, "Segoe UI", sans-serif;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:where(:not([data-theme="light"])) {
-      color-scheme: dark;
-      --surface: #1a1a19; --plane: #0d0d0d; --raised: #232322;
-      --ink: #ffffff; --ink-2: #c3c2b7; --ink-muted: #898781;
-      --hairline: rgba(255, 255, 255, 0.10); --axis: #383835;
-      --a: #3987e5; --b: #d95926;
-      --warning-wash: rgba(250, 178, 25, 0.16);
-    }
+    --surface: var(--well); --plane: var(--field); --raised: var(--well);
+    --ink-muted: var(--ink-3); --hairline: var(--rule);
+    --a: var(--ink); --b: var(--ink-2);
+    --warning: var(--caution); --warning-wash: var(--caution-wash);
   }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
@@ -52,7 +36,7 @@
   button, .linkbtn {
     font: inherit; font-size: 0.85rem; cursor: pointer; text-decoration: none;
     background: var(--raised); color: var(--ink);
-    border: 1px solid var(--axis); border-radius: 5px; padding: 0.35rem 0.65rem;
+    border: 1px solid var(--axis); border-radius: 3px; padding: 0.35rem 0.65rem;
   }
   button:hover, .linkbtn:hover { border-color: var(--ink-muted); }
   button[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
@@ -61,8 +45,8 @@
 
   .note {
     margin: 0.6rem 1rem 0; padding: 0.55rem 0.8rem; font-size: 0.83rem;
-    border: 1px solid var(--hairline); border-left: 3px solid var(--warning);
-    background: var(--warning-wash); border-radius: 6px; color: var(--ink-2);
+    border: 1px solid var(--hairline); 
+    background: var(--warning-wash); border-color: var(--warning); color: var(--ink-2);
   }
   .note strong { color: var(--ink); }
   .note[hidden] { display: none; }
@@ -74,7 +58,7 @@
   main[data-view="b"] .panel[data-impl="a"] { display: none; }
 
   .panel { display: flex; flex-direction: column; min-width: 0; min-height: 0;
-           background: var(--surface); border: 1px solid var(--hairline); border-radius: 10px;
+           background: var(--surface); border: 1px solid var(--hairline); 
            overflow: hidden; }
   .panel__head { display: flex; align-items: center; gap: 0.6rem;
                  padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--hairline);

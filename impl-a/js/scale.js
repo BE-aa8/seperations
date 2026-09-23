@@ -89,10 +89,26 @@ export function ticks(max, count = 5) {
   return out;
 }
 
-/** Format a mole fraction for an axis tick, switching to exponential when small. */
+/**
+ * The power of ten factored out of an axis whose values are very small, so
+ * ticks read "0.5, 1.0" and the axis title carries "×10⁻⁴" — scientific
+ * notation, not "5.0e-5". Returns 0 when no factor is needed.
+ */
+export function axisPower(max) {
+  return max > 0 && max < 1e-3 ? Math.floor(Math.log10(max)) : 0;
+}
+
+/** Format a mole fraction for an axis tick (scaled by axisPower when small). */
 export function formatTick(v, max) {
   if (v === 0) return '0';
-  if (max < 1e-3) return v.toExponential(1);
+  const p = axisPower(max);
+  if (p) return (v / 10 ** p).toFixed(1);
   if (max < 1e-2) return v.toFixed(4);
   return v.toFixed(3);
+}
+
+/** Title parts for stext(): the factored power, if any, as a real superscript. */
+export function powerSuffix(max) {
+  const p = axisPower(max);
+  return p ? [' (×10', { sup: `−${Math.abs(p)}` }, ')'] : [];
 }

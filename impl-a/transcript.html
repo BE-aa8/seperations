@@ -5,19 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Transcript — Tray vs. Packed</title>
 <meta name="description" content="Verbatim auto-generated transcript of the project presentation.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='9' y='3' width='14' height='26' rx='3' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Cpath d='M12 11h8M12 16h8M12 21h8' stroke='%23eb6834' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='3' width='10' height='26' rx='2' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Cpath d='M7 10h4M7 16h4M7 22h4' stroke='%232a78d6' stroke-width='2' stroke-linecap='round'/%3E%3Crect x='18' y='3' width='10' height='26' rx='2' fill='none' stroke='%23eb6834' stroke-width='2.5'/%3E%3Crect x='21' y='9' width='4' height='14' fill='%23eb6834'/%3E%3C/svg%3E">
+<link rel="preload" href="fonts/barlow-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/theme.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/layout.css">
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
-<header class="site-header">
-  <div class="site-header__inner">
-    <div class="brand">Tray vs. Packed
-      <small>Separation Processes &middot; University of Cincinnati</small>
-    </div>
-    <nav class="nav" aria-label="Main">
+<header class="bar">
+  <div class="bar__inner">
+    <a class="brand" href="index.html">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="2.5" width="8" height="23" rx="1.5" fill="none" stroke="var(--tray)" stroke-width="2"/><path d="M6 9h3M6 14h3M6 19h3" stroke="var(--tray)" stroke-width="1.8" stroke-linecap="round"/><rect x="16.5" y="2.5" width="8" height="23" rx="1.5" fill="none" stroke="var(--packed)" stroke-width="2"/><rect x="18.8" y="8" width="3.4" height="12" fill="var(--packed)"/></svg>
+      <span class="brand__name">Tray vs. Packed</span>
+      <span class="brand__course">Separation Processes · University of Cincinnati</span>
+    </a>
+    <nav class="nav" id="site-nav" aria-label="Main">
       <a href="index.html">Demo</a>
       <a href="video.html">Video</a>
       <a href="transcript.html">Transcript</a>
@@ -25,27 +29,28 @@
       <a href="model-comparison.html">Model comparison</a>
       <a href="references.html">References</a>
     </nav>
-    <button class="theme-toggle" type="button" aria-label="Switch colour theme">&#9686; Auto</button>
+    <button class="iconbtn bar__menu" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <button class="iconbtn theme-toggle" type="button" aria-label="Colour theme: automatic">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg>
+    </button>
   </div>
 </header>
 
-<main class="page">
+<main class="page" id="main">
+<div class="doc doc--single">
+<article class="doc__body prose">
+<header class="page-head">
   <h1>Transcript</h1>
-
-  <div class="prose">
-    <p>The <strong>verbatim auto-generated transcript</strong> of the
-      <a href="video.html">presentation video</a>, reproduced unedited —
-      including the transcription errors that automatic captioning produces.
-      It is presented as plain selectable text so it can be searched with the
-      browser's own find (Ctrl/&#8984;+F) and copied.</p>
-  </div>
-
-  <div style="display:flex; gap:0.5rem; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap">
+  <p>The <strong>verbatim auto-generated transcript</strong> of the <a href="video.html">presentation video</a>, reproduced unedited — including the transcription errors that automatic captioning produces. It is presented as plain selectable text so it can be searched with the browser's own find (Ctrl/&#8984;+F) and copied.</p>
+</header>
+<div class="transcript-tools wide">
     <button class="btn" type="button" id="copy-btn">Copy transcript</button>
     <span class="field__hint" id="copy-status" role="status" aria-live="polite"></span>
   </div>
 
-  <div class="transcript" id="transcript" tabindex="0" role="region"
+  <div class="transcript wide" id="transcript" tabindex="0" role="region"
        aria-label="Presentation transcript">[FILL IN]
 
 Paste the full auto-generated transcript here, exactly as YouTube produces it,
@@ -60,22 +65,30 @@ cleaned-up version — the transcription mistakes are part of what is being show
 If you want to annotate it, add a separate commentary section below rather than
 editing the transcript itself.</div>
 
-  <div class="prose" style="margin-top:1.75rem">
-    <h2>Notes on the transcript</h2>
+  
+    <h2 id="notes-on-the-transcript">Notes on the transcript</h2>
     <div class="fillin">
       <p>Optional. If the auto-captioning mangled any technical terms worth
         flagging — "Kremser", "Colburn", "HETP", "packed" and "backed", and so on
         are common casualties — note the corrections here, leaving the transcript
         above untouched.</p>
     </div>
-  </div>
+<nav class="pager" aria-label="Pages">
+  <a class="pager__prev" href="video.html"><span>Previous</span><strong>Video</strong></a>
+  <a class="pager__next" href="docs.html"><span>Next</span><strong>Documentation</strong></a>
+</nav>
+</article>
+</div>
 </main>
 
-<footer class="site-footer">
-  <div class="site-footer__inner">
-    Static site &middot; no framework, no build step.
-    <a href="../compare.html">Compare with implementation B</a> &middot;
-    <a href="../overview.html">Project overview</a>
+<footer class="foot">
+  <div class="foot__inner">
+    <span>An AI project for Separation Processes, University of Cincinnati.</span>
+    <ul>
+      <li><a href="../overview.html">Project overview</a></li>
+      <li><a href="../compare.html">Compare with implementation B</a></li>
+      <li><a href="references.html">References</a></li>
+    </ul>
   </div>
 </footer>
 

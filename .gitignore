@@ -6,3 +6,7 @@ node_modules/
 # transient local tooling
 smoke-tmp.mjs
 shots/
+
+# Impeccable design-skill session artefacts (screenshots, live-mode state)
+.impeccable/review/
+.impeccable/live/

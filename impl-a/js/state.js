@@ -32,8 +32,8 @@ const state = {
   pinch: null,
   /** Axis domain held fixed for the duration of a drag gesture (RISK-09). */
   axesFrozen: null,
-  /** Height probe position, metres from the bottom. */
-  probeZ: 0,
+  /** Height probe position, metres from the bottom. `null` = place automatically. */
+  probeZ: null,
   warning: SYSTEMS.find((s) => s.id === DEFAULT_SYSTEM_ID)?.warning ?? null,
 };
 
@@ -48,6 +48,11 @@ function notify() {
   derived = physics.solve(state.inp);
   // The axis domain a renderer should use: frozen during a drag, live otherwise.
   derived.axes = state.axesFrozen ?? derived.axes;
+  // A fresh preset puts the probe halfway up the packed bed, where it reads a
+  // composition inside BOTH columns, rather than at the base below them.
+  if (state.probeZ === null) {
+    state.probeZ = derived.feasible ? state.inp.hBot + derived.Z / 2 : 0;
+  }
   for (const fn of listeners) fn(derived, state);
 }
 
@@ -241,7 +246,16 @@ function reclampBoth() {
   const rx = physics.clampXOut(state.inp, state.inp.xOut);
   state.inp = { ...state.inp, xOut: rx.value };
   state.pinch = ry.pinch ?? rx.pinch;
-  state.probeZ = 0;
+  state.probeZ = null;
+}
+
+/**
+ * Put both handles back where the current system starts. A demonstration
+ * preset has no "system" to return to, so it returns to the default one.
+ */
+export function reset() {
+  const id = state.systemId.startsWith('demo:') ? DEFAULT_SYSTEM_ID : state.systemId;
+  setSystem(id);
 }
 
 /** Kick the first render. */

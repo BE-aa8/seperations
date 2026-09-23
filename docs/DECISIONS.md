@@ -281,6 +281,35 @@ rather than observed — was driven in a browser for the first time. At both
 clamps (70 actual trays, 44.00 m) it renders 16 trays, two break marks and a
 "54 more" label, with the staircase in its thinned mode and no console errors.
 
+
+### Interface redesign — 2026-09-23 — `impl-a/`
+
+A dedicated design pass on the canonical site, run with the Impeccable design
+skill (`/impeccable init`, `critique`, `audit`, the new-work direction flow,
+`detect`, and a fresh-context finish review). **No physics changed**:
+`physics.js` is untouched, the 65-test suite passes unchanged, and `impl-b/`
+is not modified (`D-45`, `D-51`).
+
+Before: the critique scored the interface 25/40 on Nielsen's heuristics and
+the technical audit 15/20. The main findings were a headline height readout
+set small in the narrowest column, equations set as monospace code
+(`N_OG`, `y_in`), label collisions at the pinch (the moment the demo exists
+for), `--ink-muted` text at 3.4:1 in light mode, and a 27 px sideways scroll
+on model comparison on phones.
+
+| ID | Decision | Rationale | Driver |
+|---|---|---|---|
+| D-54 | Visual grammar: a **high-performance operator display (ISA-101)** set for a lecture hall. A neutral instrument field, white display wells separated by 1 px rules, square regions, and colour spent only on meaning (tray, packed, limit, caution). | The two-hue rule of `D-40` already *was* ISA-101's discipline; the redesign extends it to the whole interface instead of wrapping it in generic rounded cards. | Model:Opus5 |
+| D-55 | Primary viewer is the **instructor at a projector, then grading on a laptop**; secondary is students on phones. | Sets the priorities: legibility at distance, both primary figures above the fold at 1440×900, a story that reads in one pass. | Owner |
+| D-56 | One self-hosted face, **Barlow** (four weights, ~90 kB), with tabular figures on every number; **STIX Two Math** for display equations, fetched only where no system math font exists. No CDN. | A system font stack cannot carry a consistent identity or tabular data; self-hosting keeps `D-27` (no build, no runtime dependency). | Owner |
+| D-57 | Display equations are **native MathML**, not `<pre>` text. Inline notation everywhere uses true subscripts (*N*<sub>OG</sub>, *y*<sub>in</sub>), including preset strings, SVG labels and the parameter fields. | Engineering notation set as code reads as source code, and it is what a grader reads first. MathML renders natively in all current browsers, so it adds no dependency. | Critic:Impeccable critique |
+| D-58 | The two heights are the **headline readout**, set large beside the column drawing, with the equal-allowance shell difference as a third figure. | "Their height difference is the headline" (PRODUCT.md) was the weakest-rendered fact on the old page. | Critic:Impeccable critique |
+| D-59 | A **calculation sheet** under the console shows the duty → Kremser / Colburn → heights → comparison, with the same live values. The `N × HETP = Z` identity note moves into a disclosure there. | Makes Inputs → Method → Result scannable. The honesty text is kept verbatim in substance, just no longer an always-open 90-word block. | Model:Opus5 |
+| D-60 | The SO₂ and ammonia preset notes render as **caution (amber)**, not critical (red). Red is reserved for pinch and infeasible states. | A deliberate teaching limitation is not an error, and colour must keep one meaning (`D-40`). | Critic:Impeccable critique |
+| D-61 | Series text uses darker **`-ink` variants** of the two validated hues; the validated hues themselves are unchanged and still used for every line and fill. | Orange text was 3.1:1 on white. The ink variants clear 4.5:1 without re-running the categorical validator on new hues. | Model:Opus5 |
+| D-62 | Small interaction additions, all UI-state only: a **Reset** control, **pressed state** on the A ≈ 1 buttons (the system select now says "Demonstration case"), "What to try" **buttons** that apply each experiment, the probe **starts inside both columns**, a debounced **`aria-live` result summary**, a **skip link**, and larger handle hit areas on coarse pointers. | Each closes a finding from the critique or the audit. State changes still go through the existing clamped setters in `state.js` (`D-13`). | Critic:Impeccable critique/audit |
+| D-63 | `compare.html` now uses the shared tokens, and implementations A and B are labelled in **neutral ink** rather than blue and orange. | Blue and orange mean tray and packed everywhere else; using them for "A" and "B" contradicted `D-40` on the one page built for comparison. | Model:Opus5 |
+
 ---
 
 ## 3. Model comparison notes
