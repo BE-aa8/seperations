@@ -57,7 +57,9 @@ export function mount(root, wiring) {
       'aria-pressed': 'false',
       'data-demo': d.id,
       onclick: () => wiring.onDemo(d.id),
-      html: d.id === 'balanced' ? '<span><i>A</i> = 1</span>' : '<span><i>A</i> = 1 − 5×10<sup>−7</sup></span>',
+      // The second case is a numerical stress test of the A → 1 limit, not an
+      // operating point anyone would design to, so it is labelled as one.
+      html: d.id === 'balanced' ? '<span><i>A</i> = 1</span>' : '<span>Near-1 stress test</span>',
     }),
   );
 
@@ -76,7 +78,7 @@ export function mount(root, wiring) {
       h('div', { class: 'field', role: 'group', 'aria-labelledby': 'demo-label' }, [
         h('span', { class: 'field__label', id: 'demo-label', text: 'Balanced cases' }),
         h('div', { class: 'seg' }, demoButtons),
-        h('span', { class: 'field__hint', text: 'Hand-checkable special case' }),
+        h('span', { class: 'field__hint', text: 'Round numbers you can check by hand' }),
       ]),
       h('div', { class: 'toolbar__end' }, [
         h('button', {
@@ -127,7 +129,7 @@ export function mount(root, wiring) {
   root.appendChild(
     h('details', { class: 'params' }, [
       h('summary', {}, [
-        h('span', { class: 'params__title' }, [icon('chevron'), 'Parameters']),
+        h('span', { class: 'params__title' }, [icon('chevron'), 'Edit parameters']),
         digestEl,
       ]),
       body,
@@ -151,12 +153,27 @@ export function mountNote(el) {
  */
 export function mountTry(root, wiring, target) {
   if (!root) return;
+  // Which control each experiment changes, so it can be pointed out: the
+  // buttons are shortcuts to the toolbar, not separate operations.
+  const changes = {
+    pinch: '[data-handle="x_out"]',
+    balanced: '[data-demo="balanced"]',
+    structured: '#pack-select',
+    so2: '#sys-select',
+  };
   for (const btn of root.querySelectorAll('[data-try]')) {
     btn.addEventListener('click', () => {
       wiring.onTry(btn.dataset.try);
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       target?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
       target?.focus({ preventScroll: true });
+      const el = document.querySelector(changes[btn.dataset.try]);
+      if (el) {
+        el.classList.remove('is-changed');
+        void el.getBoundingClientRect(); // restart the highlight if clicked twice
+        el.classList.add('is-changed');
+        setTimeout(() => el.classList.remove('is-changed'), 2400);
+      }
     });
   }
 }

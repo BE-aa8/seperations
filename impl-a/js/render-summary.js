@@ -18,12 +18,29 @@ import { PACKINGS } from './presets.js';
 
 let roots = {};
 let liveTimer = null;
+let last = null; // the most recent bundle, for "copy results"
 
-export function mount({ headline, conditions, sheet, live }) {
+export function mount({ headline, conditions, sheet, live, copy, copyStatus }) {
   roots = { headline, conditions, sheet, live };
+  copy?.addEventListener('click', async () => {
+    const text = resultsText();
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(text);
+      ok = true;
+    } catch {
+      /* clipboard blocked (insecure origin or permissions): fall through */
+    }
+    if (copyStatus) {
+      copyStatus.textContent = ok
+        ? 'Copied. Paste it into your notes or a spreadsheet.'
+        : 'Copying was blocked by the browser. Select the calculation text instead.';
+    }
+  });
 }
 
 export function update(derived, state) {
+  last = { derived, state };
   renderHeadline(derived, state);
   renderConditions(derived, state);
   renderSheet(derived, state);
@@ -108,6 +125,7 @@ function renderConditions(derived, state) {
   const inp = state.inp;
 
   const rows = h('div', { class: 'rows' });
+  root.appendChild(h('p', { class: 'readout-note', text: 'Readouts. They follow the two ends you drag; they cannot be dragged themselves.' }));
 
   if (derived.feasible) {
     rows.appendChild(
@@ -122,8 +140,14 @@ function renderConditions(derived, state) {
       ]),
     );
   }
+  // A = L/(mV). With m = 1 it takes the same value as L/V, which otherwise
+  // looks like the same number printed twice by mistake.
+  const aNote = Math.abs(inp.m - 1) < 1e-12
+    ? ['With ', h('i', { text: 'm' }), ' = 1, ', h('i', { text: 'A' }), ' = ', h('i', { text: 'L' }), '/(', h('i', { text: 'mV' }), ') equals ', h('i', { text: 'L' }), '/', h('i', { text: 'V' }), '.']
+    : [h('i', { text: 'A' }), ' = ', h('i', { text: 'L' }), '/(', h('i', { text: 'mV' }), ') = (', h('i', { text: 'L' }), '/', h('i', { text: 'V' }), `) / ${fmt(inp.m, 2)}`];
   rows.appendChild(
     row([h('span', {}, ['Absorption factor ', h('i', { text: 'A' })])], fmt(derived.A, 3), [
+      h('span', { class: 'row__detail' }, aNote),
       h('div', { class: 'row__bar' }, [
         gauge({
           value: derived.A, lo: 0.5, hi: 20, ref: 1,
@@ -220,4 +244,34 @@ function announce(derived, state) {
       `Tray column ${fmt(derived.ZTray, 2)} metres, ${derived.nActual} trays. ` +
       `Packed bed ${fmt(derived.Z, 2)} metres. Absorption factor ${fmt(derived.A, 2)}.${pinch}`;
   }, 700);
+}
+
+// --- Plain-text results, for "copy results" -------------------------------------
+
+function resultsText() {
+  if (!last) return '';
+  const { derived: d, state: st } = last;
+  const inp = st.inp;
+  const lines = [
+    'Tray vs. Packed — dilute absorption, one duty',
+    `System: ${document.getElementById('sys-select')?.selectedOptions[0]?.text ?? st.systemId}`,
+    `Packing: ${document.getElementById('pack-select')?.selectedOptions[0]?.text ?? st.packingId}`,
+    '',
+    `y_in = ${fmt(inp.yIn, 5)}   y_out = ${fmt(inp.yOut, 5)}   x_in = ${fmt(inp.xIn, 5)}   x_out = ${fmt(inp.xOut, 5)}`,
+    `m = ${fmt(inp.m, 3)}   V = ${fmt(inp.V, 1)} kmol/h   L = ${fmt(d.L, 1)} kmol/h   L/V = ${fmt(d.LoV, 4)}   A = ${fmt(d.A, 4)}`,
+  ];
+  if (d.feasible) {
+    lines.push(
+      `(L/V)min = ${fmt(d.LoVmin, 4)}   L/V ÷ (L/V)min = ${fmt(d.LoVratio, 3)}`,
+      '',
+      `Tray:   N = ${fmt(d.N, 4)} theoretical stages   E_o = ${fmt(inp.Eo, 2)}   N_act = ${d.nActual} trays   S = ${fmt(inp.traySpacing, 2)} m   Z_tray = ${fmt(d.ZTray, 3)} m`,
+      `Packed: N_OG = ${fmt(d.NOG, 4)}   H_OG = ${fmt(d.HOG, 3)} m   Z = ${fmt(d.Z, 3)} m bed   HETP = ${fmt(d.HETP, 4)} m`,
+      `Shells with equal allowances (h_top = ${fmt(inp.hTop, 2)} m, h_bot = ${fmt(inp.hBot, 2)} m): tray ${fmt(d.ZTray, 3)} m, packed ${fmt(d.Z + inp.hTop + inp.hBot, 3)} m`,
+      '',
+      'Illustrative teaching values, not design data.',
+    );
+  } else {
+    lines.push('', `Infeasible: ${d.reason}`);
+  }
+  return lines.join('\n');
 }

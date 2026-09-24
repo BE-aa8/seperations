@@ -77,10 +77,10 @@ size themselves differently, live, as you change the duty.</p>
 sliders. There are three things you can grab:</p>
 
 <ul>
-  <li>the <strong>top of the operating line</strong>, dragged vertically, which sets
-    how clean the treated gas must be;</li>
-  <li>the <strong>bottom of the operating line</strong>, dragged horizontally, which
-    sets the liquid rate;</li>
+  <li>the <strong>lower-left end of the operating line</strong>, <i>y</i><sub>out</sub>,
+    dragged vertically, which sets how clean the treated gas must be;</li>
+  <li>the <strong>upper-right end of the operating line</strong>, <i>x</i><sub>out</sub>,
+    dragged horizontally, which sets the liquid rate;</li>
   <li>a <strong>height probe</strong>, dragged up and down the two columns, which
     reads the local gas composition in each.</li>
 </ul>
@@ -88,6 +88,13 @@ sliders. There are three things you can grab:</p>
 <p>Everything else on the page is a consequence of those three. The stage count,
 the tray count, the packed height, the transfer-unit area, the composition
 profiles and the comparison table all recompute on every pointer move.</p>
+
+<p>On the diagram the column appears upside down, which is worth saying once. The
+<strong>lower-left</strong> end of the operating line, (<i>x</i><sub>in</sub>, <i>y</i><sub>out</sub>),
+is the <strong>top of the column</strong>: fresh liquid enters there and the treated gas leaves.
+The <strong>upper-right</strong> end, (<i>x</i><sub>out</sub>, <i>y</i><sub>in</sub>), is the
+<strong>bottom of the column</strong>: the feed gas enters and the rich liquid leaves. The
+diagram is ordered by composition, not by height.</p>
 
 <h2 id="ai-project"><span class="h-num">2</span>Framing: this is an AI project</h2>
 
@@ -301,7 +308,7 @@ the bottom, and has slope</p>
 liquid rate. With the feed conditions fixed, those two endpoints carry exactly
 two degrees of freedom, and the mass balance then <em>determines</em> L/V. The
 liquid rate is not something you set independently; it is what your choice of
-outlet compositions implies. Dragging the bottom endpoint to the right
+outlet compositions implies. Dragging the upper-right endpoint, <i>x</i><sub>out</sub>, to the right
 <em>is</em> the act of choosing a smaller liquid rate.</p>
 
 <h3>The absorption factor</h3>
@@ -607,8 +614,7 @@ restructuring what exists:</p>
   <div class="foot__inner">
     <span>An AI project for Separation Processes, University of Cincinnati.</span>
     <ul>
-      <li><a href="../overview.html">Project overview</a></li>
-      <li><a href="../compare.html">Compare with implementation B</a></li>
+      <li><a href="docs.html">How it was built</a></li>
       <li><a href="references.html">References</a></li>
     </ul>
   </div>

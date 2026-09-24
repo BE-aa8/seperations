@@ -67,6 +67,41 @@ export function mount(root, wiring) {
   });
 
   root.appendChild(svg);
+  firstDragHint(root);
+}
+
+/**
+ * The first drag is the whole product, so a first-time visitor is told once,
+ * next to the diagram, that the line can be grabbed. The hint goes away for
+ * good on the first drag or keyboard nudge, or when dismissed.
+ */
+function firstDragHint(root) {
+  const KEY = 'tvp-dragged';
+  const hint = root.querySelector('#first-drag');
+  if (!hint) return;
+  let seen = false;
+  try {
+    seen = localStorage.getItem(KEY) === '1';
+  } catch {
+    /* storage blocked: show the hint for this page view */
+  }
+  if (seen) return;
+  hint.hidden = false;
+  svg.classList.add('is-inviting');
+  const done = () => {
+    hint.hidden = true;
+    svg.classList.remove('is-inviting');
+    try {
+      localStorage.setItem(KEY, '1');
+    } catch {
+      /* nothing to remember it in */
+    }
+  };
+  for (const hd of [handles.yOut.g, handles.xOut.g]) {
+    hd.addEventListener('pointerdown', done, { once: true });
+    hd.addEventListener('keydown', done, { once: true });
+  }
+  root.querySelector('#first-drag-close')?.addEventListener('click', done);
 }
 
 function buildHandle(id, label, [sym, sub], tagAt) {
@@ -88,8 +123,8 @@ function buildHandle(id, label, [sym, sub], tagAt) {
     class: 'handle__tag label-knock', x: tagAt.dx, y: tagAt.dy,
     'text-anchor': tagAt.anchor ?? 'start', 'aria-hidden': 'true',
   });
-  tag.appendChild(s('tspan', { 'font-style': 'italic', text: sym }));
-  tag.appendChild(s('tspan', { 'baseline-shift': 'sub', 'font-size': '10.5px', text: sub }));
+  tag.appendChild(s('tspan', { 'font-style': 'italic', 'font-weight': '500', text: sym }));
+  tag.appendChild(s('tspan', { 'baseline-shift': 'sub', 'font-size': '11.5px', text: sub }));
   g.appendChild(tag);
   return { g, dot };
 }

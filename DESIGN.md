@@ -231,8 +231,14 @@ An 8px inset track with a fill to the value, a 3px ink marker, a red limit tick 
 ### Calculation sheet
 Four ruled columns: Duty → Tray → Packed → Compare. Each step shows a small label, the typeset expression, and the value right-aligned. Each column's answer is double-underlined, the engineering-paper convention.
 
-### Fill-in region
-A dashed axis-colour border on the inset colour, with a "To fill in" label notched into the top edge. It marks text only the site owner can supply.
+### Fill-in region (draft only)
+A dashed axis-colour border on the inset colour, with a "To fill in" label notched into the top edge. It exists **only in draft mode** (local serving or `?draft`). The public site never shows author instructions. A section left with nothing else in it disappears along with its contents entry.
+
+### Readouts versus controls
+Controls have affordances: a border, hover, focus ring and pointer cursor. Readouts have none: the gauges are 4 px flat scales with a 2 px needle and no thumb, captioned as readouts and never focusable.
+
+### First-drag hint
+A single ink strip beside the y–x diagram: "Drag either end of the operating line…". It sits under the equilibrium line on wide screens and below the plot on narrow ones. It is dismissed for good by the first drag, a keyboard nudge, or its close button. It is not a modal and not a tour.
 
 ## Do's and Don'ts
 
@@ -249,3 +255,5 @@ A dashed axis-colour border on the inset colour, with a "To fill in" label notch
 - **Don't** use red for a model limitation. That is amber.
 - **Don't** use Unicode glyphs (▲ ⚠ ↕ ℹ) as icons. Draw them in the 1.6-stroke icon set in `js/dom.js`.
 - **Don't** add a slider to the primary interaction path (D-01).
+- **Don't** describe a drag handle by its place in the column; name its place on screen and its symbol (D-64).
+- **Don't** ship author instructions; put them in a draft-only fill-in region (D-65).

@@ -60,6 +60,8 @@ function boot() {
     conditions: el('conditions'),
     sheet: el('sheet'),
     live: el('live-summary'),
+    copy: el('copy-results'),
+    copyStatus: el('copy-results-status'),
   });
 
   state.subscribe((derived, st) => {

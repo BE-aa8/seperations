@@ -310,6 +310,28 @@ on model comparison on phones.
 | D-62 | Small interaction additions, all UI-state only: a **Reset** control, **pressed state** on the A ≈ 1 buttons (the system select now says "Demonstration case"), "What to try" **buttons** that apply each experiment, the probe **starts inside both columns**, a debounced **`aria-live` result summary**, a **skip link**, and larger handle hit areas on coarse pointers. | Each closes a finding from the critique or the audit. State changes still go through the existing clamped setters in `state.js` (`D-13`). | Critic:Impeccable critique/audit |
 | D-63 | `compare.html` now uses the shared tokens, and implementations A and B are labelled in **neutral ink** rather than blue and orange. | Blue and orange mean tray and packed everywhere else; using them for "A" and "B" contradicted `D-40` on the one page built for comparison. | Model:Opus5 |
 
+
+### External review response — 2026-09-24 — `impl-a/`
+
+A live review of the deployed redesign was run by an independent reviewer. Its
+headline finding was correct and is the most important entry here: **the drag
+instructions described the handles by their position in the column, while the
+reader sees them in the diagram**, where the column is upside down. "Top end"
+meant the column top, *y*<sub>out</sub>, which sits at the diagram's lower left.
+No physics or test changed; the suite still passes 65/65.
+
+| ID | Decision | Rationale | Driver |
+|---|---|---|---|
+| D-64 | Drag instructions name each handle by its **position on screen and its symbol** ("lower-left end, *y*<sub>out</sub>"; "upper-right end, *x*<sub>out</sub>"). Docs gain one paragraph explaining that the diagram is ordered by composition, so the column appears upside down. | The old wording was true of the column and false of the picture, which is what a student is looking at. | Critic:External review |
+| D-65 | "To fill in" regions and unpublished pages are shown only in **draft mode** (served locally, or with `?draft`). Video and Transcript leave the navigation until `PUBLISHED` in `js/site.js` is flipped. Developer instructions ("Set YOUTUBE_ID…") moved out of the public empty states. | Supersedes the earlier "keep them visibly marked" choice for the *public* site only: the owner still sees every placeholder while editing, but a grader never sees author notes. | Critic:External review→Owner |
+| D-66 | The comparison pages (`overview`, `compare`, model comparison) are kept as the **project's record**, each stating the comparison is complete (`D-50`). The product footer no longer links to them. `compare.html` embeds A without its own header (`?embed`). | The experiment is concluded; the product should not invite every student into it, but the record is graded. | Critic:External review |
+| D-67 | "What to try" buttons name the control they change ("Packing → structured") and highlight it; the A ≈ 1 stress case is labelled **"Near-1 stress test"**. | They were shortcuts that looked like separate operations; the stress case read as a design point. | Critic:External review |
+| D-68 | Operating-point gauges are restyled as **read-only needles** and captioned as readouts; the *A* row states why *A* equals *L*/*V* when *m* = 1. | Slider-like tracks invited dragging; identical values looked like a bug. | Critic:External review |
+| D-69 | A one-time **first-drag hint** beside the diagram (dismissed by the first drag or a click, remembered locally); figure panels link to their calculation column; the calculation sheet can **copy its results as text**; HETP is written with explicit parentheses. | The first drag is the product; the calculation is the credibility; students need the numbers in their notes. | Critic:External review |
+| D-70 | The nav marks the current page when the host serves URLs without `.html`. | Netlify's pretty URLs (`/impl-a/video`) broke the previous exact-filename match, so no page was marked on the live site. | Critic:External review |
+| D-71 | **Declined:** a range bar for the two heights. | The column drawing already shows both heights on one shared metre scale; a second bar would repeat it. | Model:Opus5 |
+| D-72 | **Not actionable in code:** the misspelt Netlify subdomain (`seperations`). | A site-name change in the Netlify dashboard, plus a redirect; left to the owner. | Owner |
+
 ---
 
 ## 3. Model comparison notes

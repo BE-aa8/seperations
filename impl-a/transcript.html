@@ -45,25 +45,20 @@
   <h1>Transcript</h1>
   <p>The <strong>verbatim auto-generated transcript</strong> of the <a href="video.html">presentation video</a>, reproduced unedited — including the transcription errors that automatic captioning produces. It is presented as plain selectable text so it can be searched with the browser's own find (Ctrl/&#8984;+F) and copied.</p>
 </header>
+<div class="fillin wide">
+  <p><strong>Paste the transcript.</strong> Open the video on YouTube, choose “Show transcript” from the
+    “…” menu below the player, select the whole transcript panel and copy it. Paste it, verbatim,
+    inside the element with <code>id="transcript"</code> in <code>transcript.html</code>, replacing the
+    empty-state paragraph. Then set <code>'transcript.html': true</code> in <code>js/site.js</code> so the
+    page appears in the navigation. Keep it verbatim: the assignment asks for the auto-generated
+    transcript, and its mistakes are part of what is being shown.</p>
+</div>
 <div class="transcript-tools wide">
     <button class="btn" type="button" id="copy-btn">Copy transcript</button>
     <span class="field__hint" id="copy-status" role="status" aria-live="polite"></span>
   </div>
-
   <div class="transcript wide" id="transcript" tabindex="0" role="region"
-       aria-label="Presentation transcript">[FILL IN]
-
-Paste the full auto-generated transcript here, exactly as YouTube produces it,
-replacing this placeholder text.
-
-To get it: open the video on YouTube, use the "..." menu below the player and
-choose "Show transcript", then select all of the transcript panel and copy it.
-Paste it between the tags of the element with id="transcript" in this file.
-
-Keep it verbatim. The assignment asks for the auto-generated transcript, not a
-cleaned-up version — the transcription mistakes are part of what is being shown.
-If you want to annotate it, add a separate commentary section below rather than
-editing the transcript itself.</div>
+       aria-label="Presentation transcript"><p class="transcript__empty">The transcript will appear here once the presentation video is published.</p></div>
 
   
     <h2 id="notes-on-the-transcript">Notes on the transcript</h2>
@@ -85,8 +80,7 @@ editing the transcript itself.</div>
   <div class="foot__inner">
     <span>An AI project for Separation Processes, University of Cincinnati.</span>
     <ul>
-      <li><a href="../overview.html">Project overview</a></li>
-      <li><a href="../compare.html">Compare with implementation B</a></li>
+      <li><a href="docs.html">How it was built</a></li>
       <li><a href="references.html">References</a></li>
     </ul>
   </div>

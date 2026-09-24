@@ -57,10 +57,19 @@
       <section class="panel panel--yx" aria-labelledby="yx-title">
         <header class="panel__head">
           <h2 class="panel__title" id="yx-title">Equilibrium and operating lines</h2>
-          <p class="panel__sub">Drag the top end of the operating line up or down to set how clean
-            the treated gas must be. Drag the bottom end sideways to set the liquid rate.</p>
+          <p class="panel__sub">Drag the <strong>lower-left end</strong> of the operating line,
+            <i>y</i><sub>out</sub>, up or down to set how clean the treated gas must be. Drag the
+            <strong>upper-right end</strong>, <i>x</i><sub>out</sub>, sideways to set the liquid rate.
+            <a href="docs.html#overview">Which end is which in the column?</a></p>
         </header>
-        <div class="panel__plot" id="yx-diagram"></div>
+        <div class="panel__plot panel__plot--hint" id="yx-diagram">
+          <p class="first-drag" id="first-drag" hidden>
+            <span>Drag either end of the operating line. Every number on the page follows it.</span>
+            <button class="iconbtn" type="button" id="first-drag-close" aria-label="Dismiss hint">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+          </p>
+        </div>
         <footer class="panel__foot">
           <div class="legend">
             <span class="legend__item"><span class="legend__line legend__line--op"></span>Operating line</span>
@@ -68,6 +77,7 @@
             <span class="legend__item"><span class="legend__line legend__line--tray"></span>Theoretical stages</span>
           </div>
           <p class="panel__hint">Keyboard: Tab to an end, then use the arrow keys. Shift moves ten times further.</p>
+          <a class="panel__link" href="#calc-duty">How <i>L</i>/<i>V</i> and <i>A</i> are computed</a>
         </footer>
       </section>
 
@@ -82,6 +92,7 @@
         </div>
         <footer class="panel__foot">
           <p class="panel__hint">Drag the dashed probe up and down the columns to read the local gas composition.</p>
+          <a class="panel__link" href="#calc-compare">How the two heights are computed</a>
         </footer>
       </section>
 
@@ -105,6 +116,9 @@
             is uniform and the area becomes a rectangle.</p>
         </header>
         <div class="panel__plot" id="ntu-plot"></div>
+        <footer class="panel__foot">
+          <a class="panel__link" href="#calc-packed">How <i>N</i><sub>OG</sub> becomes a bed height</a>
+        </footer>
       </section>
 
       <section class="panel panel--cond" aria-labelledby="cond-title">
@@ -125,11 +139,14 @@
   <section class="sheet" id="sheet" aria-labelledby="sheet-title">
     <header class="sheet__head">
       <h2 id="sheet-title">The calculation</h2>
-      <p>The same numbers as the figures above, worked from the duty through each method to a height.</p>
+      <p>The same numbers as the figures above, worked from the duty through each method to a height.
+        <a href="#explorer">Back to the figures</a></p>
+      <button class="btn" type="button" id="copy-results"><span>Copy results as text</span></button>
+      <span class="field__hint" id="copy-results-status" role="status"></span>
     </header>
 
     <div class="sheet__grid">
-      <div class="sheet__col">
+      <div class="sheet__col" id="calc-duty">
         <h3><span class="step">1</span>Duty and mass balance</h3>
         <dl class="given">
           <div><dt>Gas in, <i>y</i><sub>in</sub></dt><dd><span data-slot="yIn"></span><span class="src">feed</span></dd></div>
@@ -156,7 +173,7 @@
         </div>
       </div>
 
-      <div class="sheet__col" data-series="tray">
+      <div class="sheet__col" data-series="tray" id="calc-tray">
         <h3><span class="step">2</span>Tray column</h3>
         <div class="calc">
           <span class="calc__what">Theoretical stages · Kremser</span>
@@ -175,7 +192,7 @@
         </div>
       </div>
 
-      <div class="sheet__col" data-series="packed">
+      <div class="sheet__col" data-series="packed" id="calc-packed">
         <h3><span class="step">3</span>Packed column</h3>
         <div class="calc">
           <span class="calc__what">Overall gas-phase transfer units · Colburn</span>
@@ -194,11 +211,11 @@
         </div>
       </div>
 
-      <div class="sheet__col">
+      <div class="sheet__col" id="calc-compare">
         <h3><span class="step">4</span>Compare</h3>
         <div class="calc">
           <span class="calc__what">Packing that does one stage's work</span>
-          <span class="calc__expr">HETP = <i>Z</i> / <i>N</i> = <i>H</i><sub>OG</sub> · <i>A</i> ln <i>A</i> / (<i>A</i> − 1)</span>
+          <span class="calc__expr">HETP = <i>Z</i> / <i>N</i> = <i>H</i><sub>OG</sub> · (<i>A</i> ln <i>A</i>) / (<i>A</i> − 1)</span>
           <span class="calc__res"><span></span><output data-slot="HETP"></output></span>
         </div>
         <div class="calc">
@@ -224,33 +241,35 @@
 
   <section class="try" aria-labelledby="try-title">
     <h2 id="try-title">What to try</h2>
+    <p class="try__lede">Each button sets the explorer up for one experiment, using the same controls
+      as the toolbar above, and highlights the control it changed.</p>
     <ol>
       <li>
         <h3>Starve the column of liquid</h3>
-        <p>Drag the bottom end of the operating line to the right until the minimum-<i>L</i>/<i>V</i>
-          flag appears. The stage count runs away. <i>A</i> drops below 1 on the way; that is
-          normal, not an error.</p>
-        <button class="btn" type="button" data-try="pinch"><span>Go to minimum <i>L</i>/<i>V</i></span></button>
+        <p>Drag the upper-right end of the operating line, <i>x</i><sub>out</sub>, to the right. The
+          liquid rate falls until the line meets equilibrium, a red <strong>Minimum <i>L</i>/<i>V</i></strong>
+          flag appears on the diagram, and the stage count runs away. <i>A</i> drops below 1 on the way;
+          that is normal, not an error.</p>
+        <button class="btn" type="button" data-try="pinch"><span>Liquid rate → minimum</span></button>
       </li>
       <li>
         <h3>Balance the lines</h3>
         <p>At <i>A</i> = 1 the transfer-unit area becomes a rectangle, the packed profile a
-          straight line, and <i>N</i> = <i>N</i><sub>OG</sub> = 4 exactly. The near-balanced case
-          should read the same.</p>
-        <button class="btn" type="button" data-try="balanced"><span>Set <i>A</i> = 1</span></button>
+          straight line, and <i>N</i> = <i>N</i><sub>OG</sub> = 4 exactly. The near-1 stress test beside it checks the <i>A</i> → 1 limit and should read the same.</p>
+        <button class="btn" type="button" data-try="balanced"><span>Balanced case → <i>A</i> = 1</span></button>
       </li>
       <li>
         <h3>Change only the packing</h3>
         <p>Switch from Pall rings to structured packing. <i>N</i><sub>OG</sub> does not move; only
           the height does. That is <em>how much separation is needed</em> against <em>how well
           the hardware delivers it</em>.</p>
-        <button class="btn" type="button" data-try="structured"><span>Use structured packing</span></button>
+        <button class="btn" type="button" data-try="structured"><span>Packing → structured</span></button>
       </li>
       <li>
         <h3>Break the model on purpose</h3>
         <p>Sulphur dioxide is in the list because the straight-line model strains there. Read the
           caution it raises, and look at the liquid rate it demands.</p>
-        <button class="btn" type="button" data-try="so2"><span>Load SO<sub>2</sub> in water</span></button>
+        <button class="btn" type="button" data-try="so2"><span>System → SO<sub>2</sub> in water</span></button>
       </li>
     </ol>
   </section>
@@ -261,8 +280,7 @@
   <div class="foot__inner">
     <span>An AI project for Separation Processes, University of Cincinnati.</span>
     <ul>
-      <li><a href="../overview.html">Project overview</a></li>
-      <li><a href="../compare.html">Compare with implementation B</a></li>
+      <li><a href="docs.html">How it was built</a></li>
       <li><a href="references.html">References</a></li>
     </ul>
   </div>

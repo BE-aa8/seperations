@@ -68,11 +68,11 @@
 .panel__head { display: grid; gap: var(--s-1); }
 .panel__title { font-size: var(--t-lg); font-weight: 600; letter-spacing: -0.005em; }
 .panel__sub { margin: 0; font-size: var(--t-sm); color: var(--ink-2); max-width: 58ch; }
-.panel__plot svg { display: block; width: 100%; height: auto; overflow: visible; margin: 0 auto; }
+.panel__plot > svg { display: block; width: 100%; height: auto; overflow: visible; margin: 0 auto; }
 /* The two primary figures share the first viewport with the toolbar; their
  * height tracks the viewport so both stay above the fold on a projector. */
 @media (min-width: 801px) {
-  .panel--yx .panel__plot svg, .panel--cols .panel__plot svg { max-height: max(20rem, calc(100vh - 27rem)); }
+  .panel--yx .panel__plot > svg, .panel--cols .panel__plot > svg { max-height: max(20rem, calc(100vh - 27rem)); }
 }
 .panel__foot { margin-top: auto; display: grid; gap: var(--s-2); }
 .panel__hint { display: flex; align-items: center; gap: var(--s-2); font-size: var(--t-xs); color: var(--ink-3); margin: 0; }
@@ -325,4 +325,62 @@
   max-height: 65vh; overflow-y: auto; background: var(--inset);
   border: 1px solid var(--rule-soft); padding: var(--s-4) var(--s-5);
   font-size: var(--t-read); line-height: 1.7; white-space: pre-wrap; user-select: text;
+}
+
+/* --- Round-two review additions ------------------------------------------ */
+
+/* First-drag hint: one line, anchored to the diagram, gone after the first
+ * drag. Not a modal and not a tour. */
+.panel__plot--hint { position: relative; }
+.first-drag {
+  /* Lower right: the region under the equilibrium line, which no handle,
+   * line or label ever occupies. */
+  position: absolute; right: 0; bottom: 4.5rem; z-index: 2; margin: 0; max-width: 17rem;
+  display: flex; align-items: center; gap: var(--s-2);
+  padding: var(--s-2) var(--s-2) var(--s-2) var(--s-3);
+  background: var(--ink); color: var(--well); font-size: var(--t-sm); font-weight: 500; line-height: 1.35;
+}
+.first-drag .iconbtn { color: var(--well); min-width: 2rem; height: 2rem; flex: none; }
+.first-drag .iconbtn:hover { border-color: currentColor; }
+@media (prefers-reduced-motion: no-preference) {
+  .is-inviting .handle__ring { animation: invite 1.6s var(--ease) 0.6s 3; transform-origin: center; transform-box: fill-box; }
+}
+@keyframes invite { 0%, 100% { opacity: 0.3; transform: scale(1); } 45% { opacity: 1; transform: scale(1.35); } }
+
+/* Figure → calculation cross-links. */
+.panel__link { font-size: var(--t-sm); color: var(--ink-2); justify-self: start; }
+.sheet__col { scroll-margin-top: calc(var(--bar-h) + var(--s-4)); }
+.sheet__col:target { box-shadow: inset 0 3px 0 var(--ink); }
+
+/* The control a "What to try" button just changed. */
+.is-changed { outline: 2px solid var(--ink); outline-offset: 3px; }
+@media (prefers-reduced-motion: no-preference) {
+  .is-changed { animation: changed 2.4s var(--ease) forwards; }
+}
+@keyframes changed { 0%, 70% { outline-color: var(--ink); } 100% { outline-color: transparent; } }
+.handle.is-changed { outline: none; }
+.handle.is-changed .handle__ring { opacity: 1; stroke-width: 3; }
+
+.try__lede { margin: -0.5rem 0 var(--s-5); color: var(--ink-2); font-size: var(--t-sm); max-width: 70ch; }
+
+/* Readouts are read-only: a thin needle on a flat scale, no thumb, no pointer. */
+.readout-note { margin: 0 0 var(--s-2); font-size: var(--t-xs); color: var(--ink-3); }
+.gauge { cursor: default; }
+.gauge__track { height: 4px; background: var(--rule-soft); box-shadow: none; margin-top: 6px; }
+.gauge__fill { background: var(--ink-3); opacity: 0.45; }
+.gauge__mark { width: 2px; margin-left: -1px; top: -6px; bottom: -6px; background: var(--ink); }
+
+.params__title { text-decoration: underline; text-decoration-color: var(--axis); text-underline-offset: 0.2em; }
+.params > summary:hover .params__title { text-decoration-color: var(--ink); }
+
+.sheet__head .btn { margin-left: auto; }
+.sheet__head #copy-results-status { flex-basis: 100%; text-align: right; }
+.sheet__head #copy-results-status:empty { display: none; }
+
+.transcript__empty { margin: 0; color: var(--ink-3); white-space: normal; }
+.transcript-tools:has(+ .transcript .transcript__empty) { display: none; }
+@media (max-width: 800px) {
+  /* The plot is too small to overlay; the hint sits under it instead. */
+  .panel__plot--hint { display: flex; flex-direction: column-reverse; gap: var(--s-2); }
+  .first-drag { position: static; max-width: none; }
 }
