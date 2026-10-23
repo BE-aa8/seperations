@@ -1,0 +1,129 @@
+{
+ "meta": {
+  "tolerance_rel": 0.005,
+  "generated_by": "verification/handcalc.py",
+  "note": "Expected outputs for both builds. Units: kg/h, kW, kJ/kg, kWh/t, $/t, ppm, C, K."
+ },
+ "inputs": {
+  "F_kgh": 10000,
+  "xF": 0.06,
+  "TF_C": 80,
+  "P1_kPa": 101.325,
+  "phi": 0.8,
+  "dT_heater_K": 6,
+  "eta": 0.75,
+  "k": 1.33,
+  "cp_feed": 3.9,
+  "purge_frac": 0.05,
+  "epsilon": 0.05,
+  "Na_ppm": 100,
+  "K_ppm": 30,
+  "p_el": 0.0612,
+  "p_gas_Mcf": 3.72
+ },
+ "outputs": {
+  "T_boil_C": 105.997618,
+  "BPE_K": 6.023246,
+  "x_sat": 0.149493,
+  "C_kgh": 920.235592,
+  "V_kgh": 8579.764408,
+  "yield_Li": 0.875423,
+  "Q_kW": 5628.774645,
+  "E1": 0.932408,
+  "CR": 1.512611,
+  "ws_kJkg": 76.260154,
+  "w_kJkg": 101.680205,
+  "W_kW": 242.331168,
+  "e_kWh_per_t_water": 28.244501,
+  "Q_avail_kW": 5528.944301,
+  "makeup_steam_kgh": 163.199253,
+  "COP": 22.815655,
+  "heater_area_m2": 469.064554,
+  "Na_product_ppm": 91.573116,
+  "cost_MVR_per_t_water": 1.899404
+ },
+ "effects": {
+  "1": {
+   "E_N": 0.932408,
+   "sum_BPE_K": 5.455592,
+   "dT_per_effect_K": 64.544408,
+   "feasible": true
+  },
+  "2": {
+   "E_N": 1.864816,
+   "sum_BPE_K": 9.087147,
+   "dT_per_effect_K": 30.456426,
+   "feasible": true
+  },
+  "3": {
+   "E_N": 2.797223,
+   "sum_BPE_K": 12.737955,
+   "dT_per_effect_K": 19.087348,
+   "feasible": true
+  },
+  "4": {
+   "E_N": 3.729631,
+   "sum_BPE_K": 16.393591,
+   "dT_per_effect_K": 13.401602,
+   "feasible": true
+  },
+  "5": {
+   "E_N": 4.662039,
+   "sum_BPE_K": 20.05116,
+   "dT_per_effect_K": 9.989768,
+   "feasible": true
+  },
+  "6": {
+   "E_N": 5.594447,
+   "sum_BPE_K": 23.709695,
+   "dT_per_effect_K": 7.715051,
+   "feasible": true
+  }
+ },
+ "extra": {
+  "T_sat_C": 99.974371,
+  "m_molkg": 7.338994,
+  "Kb": 0.512949,
+  "iterations": 3,
+  "purge_kgh": 500.0,
+  "T_cond_C": 111.997618,
+  "P2_kPa": 153.265344,
+  "lift_K": 12.023246,
+  "h_v1_kJkg": 2688.044173,
+  "h_out_kJkg": 2789.724378,
+  "superheat_delivered_kJkg": 95.633976,
+  "makeup_pct_of_V": 1.902141,
+  "COP_carnot": 64.19127,
+  "suction_m3s": 4.052344,
+  "Q_preheat_kW": 281.640858,
+  "Q_cryst_pct_of_Q": 0.389628,
+  "e_kWh_per_t_product": 263.336009,
+  "cool_water_left_kgh": 3413.572671,
+  "cool_hydrate_kgh": 301.830534,
+  "cool_yield": 0.287132,
+  "Na_ML_ppm": 1831.462319,
+  "K_ML_ppm": 549.438696,
+  "K_product_ppm": 27.471935,
+  "p_steam_per_t": 8.981506,
+  "lambda_s": 2202.15,
+  "S1_kgh": 9201.729546,
+  "purge_for_Na_spec": 0.096001,
+  "yield_at_Na_spec": 0.760809
+ },
+ "cost_N_per_t_water": {
+  "1": 9.632594,
+  "2": 4.816297,
+  "3": 3.210865,
+  "4": 2.408149,
+  "5": 1.926519,
+  "6": 1.605432
+ },
+ "steam_table_check": {
+  "h1_kJkg": 2687.9689,
+  "h2s_kJkg": 2763.0196,
+  "ws_table_kJkg": 75.0507,
+  "ws_ideal_gas_kJkg": 76.2602,
+  "pct_diff": 1.6116,
+  "h_v1_table_vs_cp_estimate_kJkg": -0.0753
+ }
+}

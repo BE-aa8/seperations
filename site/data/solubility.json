@@ -1,0 +1,26 @@
+{
+ "meta": {
+  "description": "Solubility of LiOH (solid phase LiOH.H2O) in pure water",
+  "selected_basis": "g LiOH (anhydrous) per 100 g water",
+  "conversion": "x_sat = s/(100+s) [kg LiOH/kg solution]; per-kg-water s/100. From g hydrate/100 g water H: s = 100*0.5708*H/(100+0.4292*H)",
+  "interpolation": "linear in T between selected points; flagged as extrapolation above 115.6 C",
+  "decision_100C": "17.5 g/100 g water (x_sat = 0.149) selected. ChemicalBook states it per 100 g water and Battelle BMI-1329 (from Seidell) gives 17.7 g/100 g at 240 F with a solubility maximum near 210 F, consistent with ~17.5 at 100 C. Parchem's 15.0 is treated as an outlier. Wikipedia's per-100 mL label is probably a mislabel. Muse's critique value is therefore accepted; Claude's earlier dispute was wrong.",
+  "shape_warning": "Between 25 C and 100 C only end points are sourced; the linear interpolation is an estimate (real curve is probably flatter at low T and steeper near 100 C). Replace with Monnin & Dubois (2005) or CRC table when obtained."
+ },
+ "observations": [
+  {"T_C": 0, "value": 12.7, "basis": "g/100 g water (stated per 100 mL on Wikipedia)", "source_id": "chemicalbook_lioh", "used": true},
+  {"T_C": 20, "value": 12.8, "basis": "g/100 g water", "source_id": "chemicalbook_lioh", "used": false, "note": "Conflicts slightly with the 25 C measurement; not used"},
+  {"T_C": 25, "value": 12.53, "basis": "g/100 g water, measured +/- 0.09", "source_id": "pccp2026", "used": true, "note": "CRC gives 12.5 (as quoted in pccp2026)"},
+  {"T_C": 100, "value": 17.5, "basis": "g/100 g water", "source_id": "chemicalbook_lioh", "used": true},
+  {"T_C": 100, "value": 15.0, "basis": "g/100 g water (derived by supplier from 29.6 g hydrate/100 g water)", "source_id": "parchem_lioh", "used": false, "note": "Outlier"},
+  {"T_C": 115.6, "value": 17.7, "basis": "g/100 g water", "source_id": "battelle_bmi1329", "used": true, "note": "240 F; curve maximum reported near 210 F"}
+ ],
+ "selected": [
+  {"T_C": 0, "s_g_per_100g_water": 12.7},
+  {"T_C": 25, "s_g_per_100g_water": 12.53},
+  {"T_C": 100, "s_g_per_100g_water": 17.5},
+  {"T_C": 115.6, "s_g_per_100g_water": 17.7}
+ ],
+ "is_estimate": false,
+ "interpolated_region_is_estimate": true
+}

@@ -83,3 +83,31 @@ Entry template:
 **Problems hit:** I can't yet verify several of Muse's cited facts: the battery-grade spec numbers, a "2026 PCCP" solubility measurement, and the GEA kWh/t range. They are marked to-verify, not used.
 
 **Next step:** Phase 1. Source the data (solubility first), generate `steam.json`, recompute and freeze the hand-calc, and meet the Day 4 gate.
+
+---
+
+## 2026-10-23 — Claude Code (Opus 5.5) — Phase 1: data sourcing and frozen hand-calc
+
+**Prompts (key ones, verbatim):**
+1. "go ahead with Phase 1!"
+
+**What the AI produced:**
+- `site/data/` holds `sources.json`, `solubility.json`, `properties.json`, `equipment.json`, `prices.json`, `process.json`, and `steam.json`. Every value carries a `source_id` and an `is_estimate` flag.
+- `scripts/make_steam_table.py` builds `steam.json` (IAPWS-IF97 via the `iapws` package, 1 °C spacing, 40–150 °C). Spot checks against textbook steam tables agree within 0.021 %.
+- `verification/handcalc.py` is an independent Python reference calculation that neither build imports. It writes `handcalc.json` (the case both builds must match within 0.5 %) and `vectors.json` (6 extra what-if cases).
+- `verification/handcalc.md` is the worked case: equation, numbers with units, and a "how does that make sense?" line for every step.
+- `verification/data-status.md` is the Day 4 gate report: passed with declared fallbacks.
+
+**Key results:** BPE 6.0 K, T_boil 106 °C, 920 kg/h crystals (87.5 % Li yield), CR 1.51, **28.2 kWh/t water** (compressor only), 163 kg/h make-up steam, COP 23 vs. Carnot 64. With Texas gas prices, MVR ($1.90/t) only just beats 5 effects ($1.93/t). Meeting a 50 ppm Na spec needs a 9.6 % purge, which drops the yield to 76 %.
+
+**What I accepted / changed / rejected, and why:**
+- **Solubility dispute reversed: Muse was right.** Sources stated per 100 g water (ChemicalBook; Battelle BMI-1329, which draws on Seidell) put the value at about 17.5 g/100 g at 100 °C. The Parchem sheet I had trusted is the outlier. Muse's "2026 PCCP" citation (12.53 g/100 g at 25 °C) also turned out to be real. `critique-response.md` row 1a is updated. Good presentation point: check sources, not models.
+- The test vectors come from the independent reference script rather than Build A, so neither build is graded against itself.
+- Multi-effect model simplified to the AIChE rule E_N = e·N with no extra derate, since the computed E₁ = 0.93 already sits in the 0.75–0.95 range.
+
+**Problems hit:**
+- The cloud container's network policy blocked direct page fetches. Only package registries and web search worked, so all values came from search-result text. Sources marked `verify_direct` need a human click-through.
+- Couldn't get the full solubility curve between 25 and 100 °C, φ(m, T), a producer battery-grade datasheet, real crystallizer feed composition, or the GEA kWh/t figure. These are flagged estimates.
+- My first run without `iapws` installed overwrote the JSON without the steam-table check. I regenerated it with the venv.
+
+**Next step:** Phase 2 (MVP site). Open items for me: the CRC solubility table from the UC library, confirming the EIA Texas electricity price, and checking steam-table values in my thermo book.

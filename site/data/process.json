@@ -1,0 +1,13 @@
+{
+ "meta": {"description": "Process/industry facts and default operating case"},
+ "feed_LiOH_wt_frac": {"value": 0.06, "range": [0.02, 0.10], "source_id": "estimate", "is_estimate": true, "note": "No public value for Tesla/Veolia crystallizer feed found yet"},
+ "feed_Na_ppm": {"value": 100, "source_id": "estimate", "is_estimate": true},
+ "feed_K_ppm": {"value": 30, "source_id": "estimate", "is_estimate": true},
+ "tesla_robstown": {"text": "Robstown, TX refinery, operational in 2026; spodumene -> kiln/cooler -> alkaline leach -> purification -> crystallization -> battery-grade LiOH; aims to make enough LiOH for about 50 GWh/yr of batteries", "source_id": ["tesla_energyx", "tesla_spectrum"]},
+ "veolia_china": {"text": "Veolia MVR-driven crystallizers at a Chinese spodumene-to-LiOH plant; two-stage crystallization to battery grade", "source_id": "veolia_china"},
+ "mvr_market_share": {"text": "MVR about 55-60% of the industrial evaporator/crystallizer market (2026)", "source_id": "meticulous_market", "is_estimate": true, "note": "Market-research estimate; show with caveat"},
+ "problems": [
+  {"text": "Alkaline LiOH liquor foams, carrying LiOH into the condensate", "source_id": "cn108298569a"},
+  {"text": "Li2CO3 scales evaporator heat-transfer surfaces (retrograde solubility)", "source_id": "us10961126b2"}
+ ]
+}

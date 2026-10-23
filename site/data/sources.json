@@ -1,0 +1,261 @@
+{
+ "meta": {
+  "note": "Every source_id used in site/data/*.json resolves here. accessed = date the value was retrieved (via web search; direct page fetch was blocked in the build container, so values marked verify_direct should be confirmed by opening the source)."
+ },
+ "sources": {
+  "pccp2026": {
+   "title": "Solubility and antisolvent crystallization of lithium hydroxide monohydrate in various organic solvents",
+   "authors": "Lemmens, Vanwezer, Raiguel, Lommelen, Forsberg, Van Gerven, Binnemans",
+   "venue": "Phys. Chem. Chem. Phys. 28, 6743-6755",
+   "year": 2026,
+   "url": "https://doi.org/10.1039/d5cp04491j",
+   "accessed": "2026-10-23",
+   "verify_direct": true
+  },
+  "crc": {
+   "title": "CRC Handbook of Chemistry and Physics, Aqueous Solubility of Inorganic Compounds",
+   "authors": "Rumble (ed.)",
+   "venue": "CRC Press",
+   "year": null,
+   "url": null,
+   "accessed": "2026-10-23",
+   "note": "Value 12.5 g/100 g H2O at 25 C as quoted by pccp2026; not read directly",
+   "verify_direct": true
+  },
+  "chemicalbook_lioh": {
+   "title": "Lithium hydroxide (CAS 1310-65-2) properties",
+   "authors": "ChemicalBook",
+   "venue": "web database",
+   "year": null,
+   "url": "https://www.chemicalbook.com/ChemicalProductProperty_EN_CB5406836.htm",
+   "accessed": "2026-10-23",
+   "note": "Secondary compilation",
+   "verify_direct": true
+  },
+  "wikipedia_lioh": {
+   "title": "Lithium hydroxide",
+   "authors": "Wikipedia",
+   "venue": "web",
+   "year": null,
+   "url": "https://en.wikipedia.org/wiki/Lithium_hydroxide",
+   "accessed": "2026-10-23",
+   "note": "Lists the same numbers as chemicalbook_lioh but labelled g/100 mL",
+   "verify_direct": true
+  },
+  "battelle_bmi1329": {
+   "title": "Solubility of lithium hydroxide in water and vapor pressure of solutions of lithium hydroxide above 220 F",
+   "authors": "Battelle Memorial Institute (report BMI-1329)",
+   "venue": "OSTI 4255134",
+   "year": null,
+   "url": "https://www.osti.gov/biblio/4255134",
+   "accessed": "2026-10-23",
+   "note": "Draws on Seidell's compilation; values read from OCR text in search results",
+   "verify_direct": true
+  },
+  "parchem_lioh": {
+   "title": "Lithium hydroxide anhydrous / monohydrate product sheets",
+   "authors": "Parchem",
+   "venue": "supplier data sheet",
+   "year": null,
+   "url": "https://parchem.com/api/get-pdf/lithium-hydroxide-anhydrous-015315.pdf",
+   "accessed": "2026-10-23",
+   "note": "Supplier sheet; outlier vs. other sources at 100 C",
+   "verify_direct": true
+  },
+  "monnin2005": {
+   "title": "Thermodynamics of the LiOH + H2O System",
+   "authors": "Monnin, C.; Dubois, M.",
+   "venue": "J. Chem. Eng. Data 50, 1109-1113",
+   "year": 2005,
+   "url": "https://doi.org/10.1021/je0495482",
+   "accessed": "2026-10-23",
+   "note": "Critically evaluated solubility and Pitzer osmotic-coefficient model, 255-473 K. Full text not reachable from build container; numbers not yet extracted",
+   "verify_direct": true
+  },
+  "iapws97": {
+   "title": "IAPWS-IF97 industrial formulation for water and steam, via the iapws Python package 1.5.5",
+   "authors": "IAPWS; J.J. Gomez Romera (package)",
+   "venue": "https://pypi.org/project/iapws/",
+   "year": 2007,
+   "url": "https://pypi.org/project/iapws/",
+   "accessed": "2026-10-23"
+  },
+  "cengel_A4": {
+   "title": "Thermodynamics: An Engineering Approach, Table A-4 (saturated water)",
+   "authors": "Cengel & Boles",
+   "venue": "McGraw-Hill",
+   "year": null,
+   "url": null,
+   "accessed": "2026-10-23",
+   "note": "Spot-check values; confirm against the printed table",
+   "verify_direct": true
+  },
+  "cengel_A2": {
+   "title": "Thermodynamics: An Engineering Approach, Table A-2 (ideal-gas specific heats; steam k = 1.327 at 300 K)",
+   "authors": "Cengel & Boles",
+   "venue": "McGraw-Hill",
+   "year": null,
+   "url": null,
+   "accessed": "2026-10-23",
+   "verify_direct": true
+  },
+  "gea_evap": {
+   "title": "GEA evaporation plants: heating options (MVR, single-stage centrifugal fans 1:1.2 to 1:2 compression ratio)",
+   "authors": "GEA",
+   "venue": "vendor web page",
+   "year": null,
+   "url": "https://www.gea.com/en/products/tvr-heated-evaporation-plants.jsp",
+   "accessed": "2026-10-23"
+  },
+  "aiche2018": {
+   "title": "The Essentials of Continuous Evaporation",
+   "authors": "AIChE CEP",
+   "venue": "Chem. Eng. Prog., May 2018",
+   "year": 2018,
+   "url": "https://www.aiche.org/resources/publications/cep/2018/may/essentials-continuous-evaporation",
+   "accessed": "2026-10-23",
+   "note": "Steam economy SE = e N, e = 0.75-0.95"
+  },
+  "swenson_mee": {
+   "title": "Multiple effect evaporators",
+   "authors": "Swenson Technology",
+   "venue": "vendor web page",
+   "year": null,
+   "url": "https://swensontechnology.com/multiple-effect-evaporators/",
+   "accessed": "2026-10-23",
+   "note": "0.7-0.9 lb evaporated per lb steam per effect; high-BPE liquors use fewer effects"
+  },
+  "parchem_li2co3": {
+   "title": "Lithium carbonate product sheet (solubility 0-100 C)",
+   "authors": "Parchem",
+   "venue": "supplier data sheet",
+   "year": null,
+   "url": "https://parchem.com/api/get-pdf/lithium-carbonate-001561.pdf",
+   "accessed": "2026-10-23",
+   "verify_direct": true
+  },
+  "parchem_lioh_h2o_dhsol": {
+   "title": "Lithium hydroxide monohydrate product sheet (solution enthalpy 3.6 kJ/mol)",
+   "authors": "Parchem",
+   "venue": "supplier data sheet",
+   "year": null,
+   "url": "https://parchem.com/api/get-pdf/lithium-hydroxide-monohydrate-015312.pdf",
+   "accessed": "2026-10-23",
+   "note": "Sign not stated; used only for an order-of-magnitude argument",
+   "verify_direct": true
+  },
+  "aksci_bg": {
+   "title": "Lithium hydroxide monohydrate, battery grade (1899AP) specification",
+   "authors": "AK Scientific",
+   "venue": "supplier catalog",
+   "year": null,
+   "url": "https://aksci.com/item_detail.php?cat=1899AP",
+   "accessed": "2026-10-23",
+   "note": "LiOH 56.5-57.5%, Na < 50 ppm, K < 30 ppm. Reseller, not a producer datasheet",
+   "verify_direct": true
+  },
+  "eia_ng_tx_ind": {
+   "title": "Texas Natural Gas Industrial Price (annual)",
+   "authors": "U.S. EIA",
+   "venue": "Natural Gas Navigator series N3035TX3",
+   "year": 2026,
+   "url": "https://www.eia.gov/dnav/ng/hist/n3035tx3a.htm",
+   "accessed": "2026-10-23",
+   "note": "2025 annual average $3.72/Mcf (release 2026-03-31)"
+  },
+  "eia_elec_tx": {
+   "title": "Texas electricity profile / Table 5.6.A",
+   "authors": "U.S. EIA",
+   "venue": "Electricity data",
+   "year": 2025,
+   "url": "https://www.eia.gov/electricity/state/texas/",
+   "accessed": "2026-10-23",
+   "note": "TX industrial 6.12 c/kWh (2024) quoted by a secondary site citing EIA; US industrial 8.13 c/kWh (2024, EIA). Confirm TX row directly",
+   "verify_direct": true
+  },
+  "doe_steam15": {
+   "title": "Steam Tip Sheet #15: Benchmark the Fuel Cost of Steam Generation",
+   "authors": "U.S. DOE",
+   "venue": "DOE Advanced Manufacturing Office",
+   "year": 2006,
+   "url": "https://www1.eere.energy.gov/manufacturing/tech_assistance/pdfs/steam15_benchmark.pdf",
+   "accessed": "2026-10-23",
+   "note": "Natural-gas combustion efficiency 85.7% (with economizer)"
+  },
+  "fc_U_examples": {
+   "title": "Forced-circulation evaporator U values (textbook problem inputs 1,100-2,800 W/m2K; vendor overview > 1,000 W/m2K)",
+   "authors": "various",
+   "venue": "see note",
+   "year": null,
+   "url": "https://b2bwiki.baidu.com/en/encyclopedic/forced-circulation-crystallizer",
+   "accessed": "2026-10-23",
+   "note": "Weak sourcing; replace with Perry's or McCabe-Smith if available",
+   "verify_direct": true
+  },
+  "estimate": {
+   "title": "Engineering estimate (no source found yet)",
+   "authors": "project author",
+   "venue": null,
+   "year": null,
+   "url": null,
+   "accessed": "2026-10-23"
+  },
+  "tesla_energyx": {
+   "title": "Tesla's Lithium Refinery in Texas",
+   "authors": "EnergyX",
+   "venue": "blog",
+   "year": 2025,
+   "url": "https://energyx.com/blog/teslas-lithium-refinery/",
+   "accessed": "2026-10-23"
+  },
+  "tesla_spectrum": {
+   "title": "Tesla lithium refinery in Texas is now fully operational",
+   "authors": "Spectrum News",
+   "venue": "news",
+   "year": 2026,
+   "url": "https://mynews13.com/fl/orlando/news/2026/01/21/tesla-lithium-refinery-in-texas-is-now-fully-operational",
+   "accessed": "2026-10-23"
+  },
+  "veolia_china": {
+   "title": "Veolia Water Technologies crystallization processing plant, China",
+   "authors": "Water Online",
+   "venue": "news",
+   "year": null,
+   "url": "https://www.wateronline.com/doc/veolia-water-technologies-crystallization-processing-plant-china-0001",
+   "accessed": "2026-10-23"
+  },
+  "meticulous_market": {
+   "title": "Industrial Evaporator & Crystallizer Market",
+   "authors": "Meticulous Research",
+   "venue": "market report",
+   "year": 2026,
+   "url": "https://www.meticulousresearch.com/product/industrial-evaporator-and-crystallizer-market-6360",
+   "accessed": "2026-10-23",
+   "note": "Market-research estimate; caveat on site"
+  },
+  "cn108298569a": {
+   "title": "Patent CN108298569A (MVR LiOH hydrate production; foaming)",
+   "authors": null,
+   "venue": "patent",
+   "year": null,
+   "url": "https://eureka.patsnap.com/patent-CN108298569A",
+   "accessed": "2026-10-23"
+  },
+  "us10961126b2": {
+   "title": "Patent US10961126B2 (Li2CO3 fouling in LiOH evaporators)",
+   "authors": null,
+   "venue": "patent",
+   "year": null,
+   "url": "https://patents.google.com/patent/US10961126",
+   "accessed": "2026-10-23"
+  },
+  "iupac_aw": {
+   "title": "IUPAC standard atomic weights and CODATA gas constant (molar masses computed from them)",
+   "authors": "IUPAC / CODATA",
+   "venue": null,
+   "year": null,
+   "url": "https://iupac.qmul.ac.uk/AtWt/",
+   "accessed": "2026-10-23"
+  }
+ }
+}

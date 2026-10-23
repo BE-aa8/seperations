@@ -1,0 +1,10 @@
+{
+ "meta": {"description": "Utility prices. Steam price is derived from the gas price (fuel cost only)."},
+ "electricity_TX_industrial": {"value": 0.0612, "units": "$/kWh", "year": 2024, "source_id": "eia_elec_tx", "is_estimate": false, "note": "Quoted from EIA via secondary site; confirm on EIA"},
+ "electricity_US_industrial": {"value": 0.0813, "units": "$/kWh", "year": 2024, "source_id": "eia_elec_tx", "is_estimate": false},
+ "gas_TX_industrial": {"value": 3.72, "units": "$/Mcf", "year": 2025, "source_id": "eia_ng_tx_ind", "is_estimate": false},
+ "gas_heat_content": {"value": 1.038, "units": "MMBtu/Mcf", "source_id": "estimate", "is_estimate": true, "note": "Typical EIA US average heat content; confirm"},
+ "boiler_efficiency": {"value": 0.857, "range": [0.75, 0.90], "units": "-", "source_id": "doe_steam15", "is_estimate": false},
+ "steam_dh_kJkg": {"value": 2266, "units": "kJ/kg", "source_id": "iapws97", "is_estimate": false, "note": "h_g(120 C) - h_f(105 C feedwater) = 2705.9 - 440.2"},
+ "steam_price_formula": "p_steam [$/t] = p_gas [$/Mcf] / heat_content [MMBtu/Mcf] * (dh [kJ/kg] * 1000 kg / 1.055056e6 kJ/MMBtu) / boiler_efficiency"
+}

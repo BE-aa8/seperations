@@ -1,0 +1,146 @@
+{
+ "meta": {
+  "description": "Physical properties and constants. Each entry: value, units, source_id, is_estimate, note"
+ },
+ "MW_LiOH": {
+  "value": 23.95,
+  "units": "g/mol",
+  "source_id": "iupac_aw",
+  "is_estimate": false
+ },
+ "MW_LiOH_H2O": {
+  "value": 41.96,
+  "units": "g/mol",
+  "source_id": "iupac_aw",
+  "is_estimate": false
+ },
+ "MW_H2O": {
+  "value": 18.015,
+  "units": "g/mol",
+  "source_id": "iupac_aw",
+  "is_estimate": false
+ },
+ "R": {
+  "value": 8.314,
+  "units": "J/(mol K)",
+  "source_id": "iupac_aw",
+  "is_estimate": false
+ },
+ "nu_LiOH": {
+  "value": 2,
+  "units": "-",
+  "source_id": "iupac_aw",
+  "is_estimate": false,
+  "note": "Li+ and OH-"
+ },
+ "phi_osmotic": {
+  "value": 0.8,
+  "range": [
+   0.7,
+   0.95
+  ],
+  "units": "-",
+  "source_id": "estimate",
+  "is_estimate": true,
+  "note": "Osmotic coefficient of concentrated LiOH near 100 C. Monnin & Dubois (2005) Pitzer model would give phi(m,T); not yet extracted. BPE shown as a band over the range."
+ },
+ "k_steam": {
+  "value": 1.33,
+  "units": "-",
+  "source_id": "cengel_A2",
+  "is_estimate": false,
+  "note": "Ideal-gas assumption; checked against steam tables in the hand-calc"
+ },
+ "R_steam": {
+  "value": 0.4615,
+  "units": "kJ/(kg K)",
+  "source_id": "cengel_A2",
+  "is_estimate": false
+ },
+ "cp_feed": {
+  "value": 3.9,
+  "range": [
+   3.7,
+   4.1
+  ],
+  "units": "kJ/(kg K)",
+  "source_id": "estimate",
+  "is_estimate": true,
+  "note": "Dilute aqueous liquor; no LiOH-specific value found"
+ },
+ "dH_solution_LiOH_H2O": {
+  "value": 3.6,
+  "units": "kJ/mol",
+  "source_id": "parchem_lioh_h2o_dhsol",
+  "is_estimate": false,
+  "note": "Magnitude only; ~86 kJ/kg hydrate, about 0.4% of evaporator duty in the hand case, so neglected"
+ },
+ "U_forced_circulation": {
+  "value": 2000,
+  "range": [
+   1000,
+   2800
+  ],
+  "units": "W/(m2 K)",
+  "source_id": "fc_U_examples",
+  "is_estimate": true
+ },
+ "dT_min_effect": {
+  "value": 5,
+  "units": "K",
+  "source_id": "estimate",
+  "is_estimate": true,
+  "note": "Minimum useful driving force per effect"
+ },
+ "epsilon_retained_liquor": {
+  "value": 0.05,
+  "range": [
+   0.02,
+   0.15
+  ],
+  "units": "kg liquor/kg dry crystal",
+  "source_id": "estimate",
+  "is_estimate": true,
+  "note": "After centrifuge, unwashed"
+ },
+ "battery_spec": {
+  "LiOH_min_wt_pct": 56.5,
+  "Na_max_ppm": 50,
+  "K_max_ppm": 30,
+  "source_id": "aksci_bg",
+  "is_estimate": false,
+  "note": "Reseller spec; producer datasheets not found. Specs vary widely (Na+K 15-3000 ppm across sheets)"
+ },
+ "Li2CO3_solubility": {
+  "units": "g/100 g water",
+  "source_id": "parchem_li2co3",
+  "is_estimate": false,
+  "rows": [
+   [
+    0,
+    1.54
+   ],
+   [
+    20,
+    1.33
+   ],
+   [
+    40,
+    1.17
+   ],
+   [
+    60,
+    1.01
+   ],
+   [
+    80,
+    0.85
+   ],
+   [
+    100,
+    0.72
+   ]
+  ],
+  "note": "Retrograde: less soluble when hot, so it deposits on hot heater tubes"
+ }
+}

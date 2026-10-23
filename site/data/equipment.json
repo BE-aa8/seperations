@@ -1,0 +1,11 @@
+{
+ "meta": {"description": "Equipment performance ranges"},
+ "eta_isentropic": {"value": 0.75, "range": [0.60, 0.85], "units": "-", "source_id": "estimate", "is_estimate": true, "note": "Vendors often quote polytropic or total efficiency; treated here as isentropic. No vendor number found yet"},
+ "fan_CR_single_stage": {"min": 1.2, "max": 2.0, "units": "-", "source_id": "gea_evap", "is_estimate": false, "note": "Single-stage high-pressure centrifugal fans, 3,000-12,000 rpm; multiple fans for larger lifts"},
+ "heater_dT": {"value": 6, "range": [3, 15], "units": "K", "source_id": "estimate", "is_estimate": true},
+ "multi_effect_e": {"value_rule": "E_N = N * E_1", "range_e": [0.75, 0.95], "source_id": "aiche2018", "is_estimate": true, "note": "Swenson gives 0.7-0.9 per effect. E_1 from the heat balance (about 0.9) sits in this range, so no extra derate is applied"},
+ "multi_effect_T_steam_C": {"value": 120, "units": "C", "source_id": "estimate", "is_estimate": true},
+ "multi_effect_T_last_C": {"value": 50, "units": "C", "source_id": "estimate", "is_estimate": true, "note": "Last-effect saturation temperature, set by cooling water"},
+ "system_kWh_per_t": {"value": null, "source_id": "estimate", "is_estimate": true, "note": "Muse cited GEA 30-50 kWh/t; not found in GEA pages reachable by search. Not used until sourced"},
+ "capex": {"value": null, "note": "Phase 3: published equipment prices still to be found"}
+}

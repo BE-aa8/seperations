@@ -1,0 +1,162 @@
+{
+ "vacuum_0p2bar": {
+  "inputs_override": {
+   "P1_kPa": 20.0
+  },
+  "outputs": {
+   "T_boil_C": 64.012591,
+   "BPE_K": 3.953755,
+   "x_sat": 0.131305,
+   "C_kgh": 936.16819,
+   "V_kgh": 8563.83181,
+   "yield_Li": 0.890579,
+   "Q_kW": 5414.172169,
+   "E1": 0.967566,
+   "CR": 1.560877,
+   "ws_kJkg": 73.252606,
+   "w_kJkg": 97.670142,
+   "W_kW": 232.341852,
+   "e_kWh_per_t_water": 27.130595,
+   "Q_avail_kW": 5759.942419,
+   "makeup_steam_kgh": 0.0,
+   "COP": 24.790809,
+   "heater_area_m2": 451.181014,
+   "Na_product_ppm": 91.439706,
+   "cost_MVR_per_t_water": 1.660392
+  }
+ },
+ "dT_3K": {
+  "inputs_override": {
+   "dT_heater_K": 3
+  },
+  "outputs": {
+   "T_boil_C": 105.997618,
+   "BPE_K": 6.023246,
+   "x_sat": 0.149493,
+   "C_kgh": 920.235592,
+   "V_kgh": 8579.764408,
+   "yield_Li": 0.875423,
+   "Q_kW": 5628.774645,
+   "E1": 0.932408,
+   "CR": 1.368023,
+   "ws_kJkg": 57.019802,
+   "w_kJkg": 76.026403,
+   "W_kW": 181.191284,
+   "e_kWh_per_t_water": 21.118445,
+   "Q_avail_kW": 5498.081424,
+   "makeup_steam_kgh": 213.652836,
+   "COP": 30.344072,
+   "heater_area_m2": 938.129107,
+   "Na_product_ppm": 91.573116,
+   "cost_MVR_per_t_water": 1.516106
+  }
+ },
+ "dT_15K": {
+  "inputs_override": {
+   "dT_heater_K": 15
+  },
+  "outputs": {
+   "T_boil_C": 105.997618,
+   "BPE_K": 6.023246,
+   "x_sat": 0.149493,
+   "C_kgh": 920.235592,
+   "V_kgh": 8579.764408,
+   "yield_Li": 0.875423,
+   "Q_kW": 5628.774645,
+   "E1": 0.932408,
+   "CR": 2.023424,
+   "ws_kJkg": 134.761864,
+   "w_kJkg": 179.682486,
+   "W_kW": 428.231499,
+   "e_kWh_per_t_water": 49.911802,
+   "Q_avail_kW": 5623.799117,
+   "makeup_steam_kgh": 8.133823,
+   "COP": 13.132614,
+   "heater_area_m2": 187.625821,
+   "Na_product_ppm": 91.573116,
+   "cost_MVR_per_t_water": 3.063117
+  }
+ },
+ "purge_1pct": {
+  "inputs_override": {
+   "purge_frac": 0.01
+  },
+  "outputs": {
+   "T_boil_C": 105.997618,
+   "BPE_K": 6.023246,
+   "x_sat": 0.149493,
+   "C_kgh": 1024.999102,
+   "V_kgh": 8875.000898,
+   "yield_Li": 0.975085,
+   "Q_kW": 5812.773754,
+   "E1": 0.933962,
+   "CR": 1.512611,
+   "ws_kJkg": 76.260154,
+   "w_kJkg": 101.680205,
+   "W_kW": 250.669976,
+   "e_kWh_per_t_water": 28.244501,
+   "Q_avail_kW": 5719.199655,
+   "makeup_steam_kgh": 152.971759,
+   "COP": 22.815655,
+   "heater_area_m2": 484.397813,
+   "Na_product_ppm": 330.578611,
+   "cost_MVR_per_t_water": 1.883371
+  }
+ },
+ "dilute_feed_3pct": {
+  "inputs_override": {
+   "xF": 0.03
+  },
+  "outputs": {
+   "T_boil_C": 105.997618,
+   "BPE_K": 6.023246,
+   "x_sat": 0.149493,
+   "C_kgh": 394.640602,
+   "V_kgh": 9105.359398,
+   "yield_Li": 0.750845,
+   "Q_kW": 5956.339202,
+   "E1": 0.935109,
+   "CR": 1.512611,
+   "ws_kJkg": 76.260154,
+   "w_kJkg": 101.680205,
+   "W_kW": 257.176337,
+   "e_kWh_per_t_water": 28.244501,
+   "Q_avail_kW": 5867.646541,
+   "makeup_steam_kgh": 144.991748,
+   "COP": 22.815655,
+   "heater_area_m2": 496.3616,
+   "Na_product_ppm": 96.203422,
+   "cost_MVR_per_t_water": 1.871583
+  }
+ },
+ "low_eta_0p65": {
+  "inputs_override": {
+   "eta": 0.65
+  },
+  "outputs": {
+   "T_boil_C": 105.997618,
+   "BPE_K": 6.023246,
+   "x_sat": 0.149493,
+   "C_kgh": 920.235592,
+   "V_kgh": 8579.764408,
+   "yield_Li": 0.875423,
+   "Q_kW": 5628.774645,
+   "E1": 0.932408,
+   "CR": 1.512611,
+   "ws_kJkg": 76.260154,
+   "w_kJkg": 117.323314,
+   "W_kW": 279.612886,
+   "e_kWh_per_t_water": 32.589809,
+   "Q_avail_kW": 5566.22602,
+   "makeup_steam_kgh": 102.252367,
+   "COP": 19.906901,
+   "heater_area_m2": 469.064554,
+   "Na_product_ppm": 91.573116,
+   "cost_MVR_per_t_water": 2.101537
+  }
+ },
+ "meta": {
+  "tolerance_rel": 0.005,
+  "base": "handcalc.json inputs"
+ }
+}

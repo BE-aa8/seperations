@@ -4,7 +4,7 @@
 **Output:** `docs/plan-v2-final.md`, which both builds follow.
 **Who decided:** I made the final calls. Claude recomputed Muse's numbers and checked its claims against a quick web search before I decided.
 
-**Tally:** 37 suggestions. 33 accepted, 3 partially accepted, 1 rejected.
+**Tally:** 37 suggestions. 34 accepted, 2 partially accepted, 1 rejected. (Item 1a changed from partial to accepted after Phase 1. The original tally was 33/3/1.)
 
 ## Spot-checks run before deciding
 
@@ -30,7 +30,7 @@ Muse's own importance tag is shown as **C** (critical), **S** (should fix), or *
 
 | # | Tag | Muse suggestion | Decision | Reasoning |
 |---|---|---|---|---|
-| 1a | C | x_sat = 0.13 is wrong; use 0.149 | **Partial** | The basis-check idea is accepted. The 0.149 value is rejected until a primary source settles it, because the supplier data supports 0.130 |
+| 1a | C | x_sat = 0.13 is wrong; use 0.149 | **Accept (after Phase 1 check; initially disputed)** | Phase 1 found 17.5 g/100 g water at 100 °C stated per 100 g water (ChemicalBook), consistent with Battelle BMI-1329 / Seidell (17.7 at 115.6 °C, maximum near 99 °C). Parchem's 15.0, which I had relied on, is the outlier. **Muse was right and I was wrong.** See the Phase 1 update below |
 | 1b | C | K_b varies with T_sat | Accept | Verified (0.39 at 60 °C). Compute K_b(T_sat) from the same steam table that gives λ. Theory tab presents the formula as a water-activity approximation |
 | 1c | C | x_sat ↔ BPE circular dependency | Accept | Fixed-point iteration inside one function (converges in a few steps because the solubility curve is flat). Marimo also needs this |
 | 1d | C | Eq. 15 fails N=1; f_loss reads as compounding; "equal-area" is mislabeled | Accept | E_N = N·E₁·f̄_N with f̄₁ = 1 and a single total derate. Renamed "equal-ΔT". Each effect's BPE comes from its own concentration |
@@ -68,7 +68,13 @@ Muse's own importance tag is shown as **C** (critical), **S** (should fix), or *
 | 8d | S | Language-neutral function spec plus test vectors | Accept | Expected values come from Build A's tested code |
 | 8e | S | Marimo traps brief | Accept | Goes into `molab-muse/BRIEF.md` |
 
+## Phase 1 update (2026-10-23): solubility dispute resolved in Muse's favour
+- Sources found: ChemicalBook lists 12.8 g/100 g at 20 °C and 17.5 g/100 g at 100 °C on a per-100 g-water basis. The Battelle report BMI-1329, which draws on Seidell, gives 17.7 g/100 g water at 240 °F and reports a solubility maximum near 210 °F. PCCP 2026 measured 12.53 ± 0.09 g/100 g at 25 °C (CRC: 12.5). This confirms Muse's other "unverified" citation as well.
+- Parchem's 15.0 g/100 g at 100 °C was derived by the supplier from 29.6 g hydrate/100 g water. It disagrees with the others and is not used.
+- Frozen value: x_sat(100 °C) = 17.5/117.5 = **0.149**. The recomputed hand-calc (verification/handcalc.md) gives BPE 6.02 K, C 920 kg/h, yield 87.5 %, CR 1.51 and 28.2 kWh/t. These match Muse's knock-on numbers almost exactly.
+- **Lesson:** my "the critic made the error it warned about" claim was itself wrong. I checked Muse against a single supplier sheet. The process worked because the decision was left open for primary sources instead of being settled by whichever model sounded more confident.
+
 ## Takeaways for the presentation
 - The two models mostly agreed on structure. The real value of the critique was physics consistency (K_b(T), heat closure, Eq. 15) and scope control.
-- **Muse's top "critical" fix is itself probably a units-basis error.** This shows why the human still has to check the critic: the professor's "practically infallible when one model critiques another" claim needs a source check.
+- **Muse's top "critical" fix looked like a units-basis error at first, but Phase 1 sources showed Muse was right.** The lesson cuts both ways: neither model's number should be trusted until a source is checked. The professor's "practically infallible when one model critiques another" claim held up here, but only once the sources were checked.
 - I rejected one suggestion because I had context Muse didn't: what the professor said in lecture.
