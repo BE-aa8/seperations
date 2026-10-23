@@ -38,3 +38,26 @@ Entry template:
 - **Kept the full lecture transcripts and textbook out of this public repo.** Committed timestamped paraphrased notes (context/professor-guidance.md) instead.
 
 **Next step:** Open this repo in Claude Code, switch to plan mode, paste docs/PLAN_PROMPT.md, answer its clarifying questions, and save the plan as docs/plan-v1-claude.md.
+
+---
+
+## 2026-10-23 — Claude Code (Opus 5.5, plan mode) — implementation plan v1
+
+**Prompts (key ones, verbatim):**
+1. "Read docs/PLAN_PROMPT.md and follow it exactly." (PLAN_PROMPT.md is the full planning prompt, kept in the repo.)
+
+**Clarifying questions Claude asked, and my answers:**
+- Individual or group? → **Individual (50 pts).**
+- Second model for the critique and second build? → **Meta AI Muse.**
+- Second build on a different platform? → **Yes, molab/Marimo (Python).**
+- Polish vs. physics? → **Physics first.**
+- Deadline? → **Present in about 3 weeks.**
+- At first I said Claude would build the molab version too. Claude pointed out that requirement #5 needs at least 2 different models to *implement* the plan. → **Muse also writes the molab build** (Build B). Claude builds the Netlify HTML/JS site (Build A).
+
+**What the AI produced:** `docs/plan-v1-claude.md`. It has 5 phases (critique → data and hand-calc → MVP → enhancements → stretch → verification/video), a feature-to-phase map, 25 equations each with units and a "how does that make sense" line, a data-source table that flags estimates, a fully worked hand-calc case (10 t/h feed, 6 wt% LiOH, 1 atm: about 26 kWh/t water for MVR vs. single-effect steam economy of about 0.93), a plot for every calculation, the folder structure, the verification steps (node tests + Playwright screenshots), the Netlify setup, and a critique prompt for Muse.
+
+**What I accepted / changed / rejected, and why:** I accepted the plan. Changed: Muse does the second build so the project meets requirement #5. Property values in the plan are marked provisional until Phase 1 sources them, so nothing is invented.
+
+**Problems hit:** The LiOH boiling point elevation data look sparse. The plan handles this by using an osmotic-coefficient correction with an "estimate" badge.
+
+**Next step:** Paste `docs/plan-v1-claude.md` into Meta AI Muse with the critique prompt in §12. Save the reply as `docs/critique-muse.md`, then build the accept/reject table.
