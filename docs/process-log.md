@@ -61,3 +61,25 @@ Entry template:
 **Problems hit:** The LiOH boiling point elevation data look sparse. The plan handles this by using an osmotic-coefficient correction with an "estimate" badge.
 
 **Next step:** Paste `docs/plan-v1-claude.md` into Meta AI Muse with the critique prompt in §12. Save the reply as `docs/critique-muse.md`, then build the accept/reject table.
+
+---
+
+## 2026-10-23 — Meta AI Muse (critique) + Claude Code — critique round and plan v2
+
+**Prompts (key ones, verbatim):**
+1. The critique prompt sent to Muse with plan v1 is in `docs/critique-muse.md`, along with Muse's full reply.
+2. To Claude: I pasted Muse's reply and asked Claude to process it.
+
+**What the AI produced:**
+- Muse: 37 suggestions tagged critical, should fix, or nice to have. It found real physics problems: K_b depends on T, the x_sat↔BPE loop is circular, Eq. 15 fails at N=1, and the MVR heat balance doesn't close. It also suggested scope cuts, a requirement traceability table, and Marimo-specific advice.
+- Claude: recomputed Muse's numbers and did a quick source check, then wrote `docs/critique-response.md` (accept/reject table) and `docs/plan-v2-final.md`.
+
+**What I accepted / changed / rejected, and why:** 33 accepted, 3 partial, 1 rejected. Full reasoning is in `docs/critique-response.md`.
+- **Partial, solubility:** Muse's headline "critical" fix (x_sat = 0.149 at 100 °C) appears to come from a per-100 mL value. A supplier sheet gives 15.0 g/100 g water, which is x_sat = 0.130, the value v1 used. I accepted Muse's point about recording the basis but not its number. Phase 1 settles this with a primary source.
+- **Partial, CAPEX:** Muse said cut it. I kept one static order-of-magnitude bar because Prof Co asked for equipment pricing (Lecture 10).
+- **Partial, testing:** the browser test becomes a smoke test, but the full slider sweep moves into fast Node tests instead of being dropped.
+- **Rejected:** replacing binodal/spinodal. Prof Co named it for crystallization in Lecture 12, so I kept it and framed it correctly.
+
+**Problems hit:** I can't yet verify several of Muse's cited facts: the battery-grade spec numbers, a "2026 PCCP" solubility measurement, and the GEA kWh/t range. They are marked to-verify, not used.
+
+**Next step:** Phase 1. Source the data (solubility first), generate `steam.json`, recompute and freeze the hand-calc, and meet the Day 4 gate.
