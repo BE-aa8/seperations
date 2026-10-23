@@ -111,3 +111,5 @@ Entry template:
 - My first run without `iapws` installed overwrote the JSON without the steam-table check. I regenerated it with the venv.
 
 **Next step:** Phase 2 (MVP site). Open items for me: the CRC solubility table from the UC library, confirming the EIA Texas electricity price, and checking steam-table values in my thermo book.
+
+Session paused after Phase 1; resume note in docs/NEXT-SESSION.md.
