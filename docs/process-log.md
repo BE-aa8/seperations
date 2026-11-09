@@ -38,3 +38,30 @@ Entry template:
 - **Kept the full lecture transcripts and textbook out of this public repo.** Committed timestamped paraphrased notes (context/professor-guidance.md) instead.
 
 **Next step:** Open this repo in Claude Code, switch to plan mode, paste docs/PLAN_PROMPT.md, answer its clarifying questions, and save the plan as docs/plan-v1-claude.md.
+
+## 2026-11-09 — Claude Code (Opus 5.5, cloud session) — implementation plan v1
+
+**Prompts (key ones, verbatim):**
+1. "Read docs/PLAN_PROMPT.md and follow it exactly. My presentation date is Dec 7, so scope the phases to fit."
+
+**Clarifying questions asked by Claude, and my answers:**
+- Individual or group? → **Individual**
+- Second AI model for critique and second build? → **Gemini**
+- Second build on a different platform (molab/Marimo)? → **No, same HTML/JS stack** (cleaner model-to-model comparison)
+- Visual polish vs physics? → **Physics first**
+- Deadline → **Presentation Mon Dec 7, 2026**
+
+**What the AI produced:**
+- `docs/plan-v1-claude.md`: phased plan (0 plan/critique/data → 1 MVP built by both models → 2 enhancements → 3 stretch → 4 verification → 5 slides/video/deploy), scheduled Nov 9–Dec 7 with Thanksgiving as a buffer and a cut order if behind.
+- Feature-to-phase table, all equations (mass balance with purge, BPE, multi-effect, MVR compressor, economics, MSMPR stretch) with units and one-line interpretations, data table with sources and ESTIMATE flags, and a fully worked hand-calc case (10,000 kg/h feed, 6 wt% LiOH, 60 °C, 5 % purge → 947 kg/h LiOH·H2O, 90.1 % Li yield, BPE 4.5 K, r = 1.62, 30.8 kWh/t, crossover vs 3-effect at $0.174/kWh).
+- A shared `model.js` API contract so one Node test (`node --test`) grades both the Claude and Gemini builds; Playwright browser smoke test with screenshots; folder structure (`site/` = Netlify root, `site/gemini/` = Gemini build); Netlify deployment steps; Gemini critique prompt.
+
+**Decisions and reasoning:**
+- Same stack for both builds so differences come from the model, not the platform.
+- KaTeX over MathJax: renders synchronously, fast enough for live equation cards on every slider move.
+- Hand-calc numbers were computed in a Python script during the session. Property values (solubility, h_fg, Antoine) are working values to be verified in Phase 0; the hand calc gets recomputed if any change.
+- BPE has no confirmed measured data yet → ideal colligative estimate, flagged, with an activity-factor slider.
+
+**Problems hit:** None. Solubility and BPE data still need verification against primary sources (Phase 0).
+
+**Next step:** Paste plan + HANDOFF + CLAUDE.md into Gemini with the §13 critique prompt, save the reply as `docs/critique-v1-gemini.md`, and fill `docs/critique-decisions.md`.
