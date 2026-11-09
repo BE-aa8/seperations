@@ -1,0 +1,114 @@
+/* theme.css — design tokens, light and dark.
+ *
+ * Series colours come from a validated categorical palette. There are exactly
+ * TWO series in this whole site — TRAY and PACKED — and each keeps its hue in
+ * every plot (staircase, column drawing, NTU area, profile curve, summary
+ * swatch). Colour follows the entity, never its rank or position.
+ *
+ * Validated with the data-viz palette validator, all-pairs, both modes:
+ *   light  #2a78d6 / #eb6834 — CVD ΔE 24.7, normal-vision ΔE 33.6, both ≥3:1
+ *   dark   #3987e5 / #d95926 — CVD ΔE 26.8, normal-vision ΔE 31.8, both ≥3:1
+ * (floors: CVD ≥8, normal-vision ≥15.) Do not substitute hues without re-running it.
+ *
+ * The equilibrium and operating lines deliberately use CHROME ink rather than
+ * categorical hues: they are structural geometry, not series. That keeps blue
+ * and orange meaning strictly "tray" and "packed".
+ */
+
+:root {
+  color-scheme: light;
+
+  --surface:        #fcfcfb;
+  --plane:          #f9f9f7;
+  --raised:         #ffffff;
+
+  --ink:            #0b0b0b;
+  --ink-2:          #52514e;
+  --ink-muted:      #898781;
+
+  --grid:           #e1e0d9;
+  --axis:           #c3c2b7;
+  --hairline:       rgba(11, 11, 11, 0.10);
+
+  /* The two series. */
+  --tray:           #2a78d6;
+  --packed:         #eb6834;
+  --tray-wash:      rgba(42, 120, 214, 0.14);
+  --packed-wash:    rgba(235, 104, 52, 0.16);
+
+  /* Status — reserved, never reused for a series. Always with icon + label. */
+  --critical:       #d03b3b;
+  --warning:        #fab219;
+  --good:           #0ca30c;
+  --critical-wash:  rgba(208, 59, 59, 0.10);
+  --warning-wash:   rgba(250, 178, 25, 0.12);
+
+  --focus:          #2a78d6;
+
+  --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+
+    --surface:       #1a1a19;
+    --plane:         #0d0d0d;
+    --raised:        #232322;
+
+    --ink:           #ffffff;
+    --ink-2:         #c3c2b7;
+    --ink-muted:     #898781;
+
+    --grid:          #2c2c2a;
+    --axis:          #383835;
+    --hairline:      rgba(255, 255, 255, 0.10);
+
+    --tray:          #3987e5;
+    --packed:        #d95926;
+    --tray-wash:     rgba(57, 135, 229, 0.20);
+    --packed-wash:   rgba(217, 89, 38, 0.22);
+
+    --critical:      #d03b3b;
+    --warning:       #fab219;
+    --good:          #0ca30c;
+    --critical-wash: rgba(208, 59, 59, 0.18);
+    --warning-wash:  rgba(250, 178, 25, 0.16);
+
+    --focus:         #3987e5;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --surface:       #1a1a19;
+  --plane:         #0d0d0d;
+  --raised:        #232322;
+
+  --ink:           #ffffff;
+  --ink-2:         #c3c2b7;
+  --ink-muted:     #898781;
+
+  --grid:          #2c2c2a;
+  --axis:          #383835;
+  --hairline:      rgba(255, 255, 255, 0.10);
+
+  --tray:          #3987e5;
+  --packed:        #d95926;
+  --tray-wash:     rgba(57, 135, 229, 0.20);
+  --packed-wash:   rgba(217, 89, 38, 0.22);
+
+  --critical:      #d03b3b;
+  --warning:       #fab219;
+  --good:          #0ca30c;
+  --critical-wash: rgba(208, 59, 59, 0.18);
+  --warning-wash:  rgba(250, 178, 25, 0.16);
+
+  --focus:         #3987e5;
+}

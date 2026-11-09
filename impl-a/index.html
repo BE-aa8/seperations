@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tray vs. Packed Absorption Explorer</title>
+<meta name="description" content="Drag the operating line and watch a tray column and a packed column size themselves differently for the same dilute gas absorption duty.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='9' y='3' width='14' height='26' rx='3' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Cpath d='M12 11h8M12 16h8M12 21h8' stroke='%23eb6834' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand">Tray vs. Packed
+      <small>Separation Processes · University of Cincinnati</small>
+    </div>
+    <nav class="nav" aria-label="Main">
+      <a href="index.html">Demo</a>
+      <a href="video.html">Video</a>
+      <a href="transcript.html">Transcript</a>
+      <a href="docs.html">Documentation</a>
+      <a href="model-comparison.html">Model comparison</a>
+      <a href="references.html">References</a>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Switch colour theme">◐ Auto</button>
+  </div>
+</header>
+
+<main class="page">
+
+  <h1>One duty, two columns</h1>
+  <p style="max-width:70ch; color:var(--ink-2)">
+    A tray column and a packed column are asked to do the <strong>same dilute
+    absorption job</strong> — same solute, same entering gas and liquid, same
+    required outlet purity, same molar flow rates. Drag the two points on the
+    y–x diagram to set the separation specification and the liquid rate, and
+    watch the two designs size themselves differently.
+  </p>
+
+  <div id="controls"></div>
+
+  <div class="demo">
+
+    <!-- The shared y–x diagram, with both drag handles. -->
+    <section class="demo__diagram figure" aria-labelledby="yx-title">
+      <h2 class="figure__title" id="yx-title">Equilibrium &amp; operating lines</h2>
+      <p class="figure__sub">
+        Drag the <strong>upper-left</strong> point vertically to set how clean the
+        treated gas must be. Drag the <strong>lower-right</strong> point
+        horizontally to set the liquid rate.
+      </p>
+      <div id="yx-diagram"></div>
+      <div class="legend">
+        <span class="legend__item"><span class="legend__swatch legend__swatch--op"></span>Operating line (drag me)</span>
+        <span class="legend__item"><span class="legend__swatch legend__swatch--eq"></span>Equilibrium y* = m·x</span>
+        <span class="legend__item"><span class="legend__swatch legend__swatch--tray"></span>Tray staircase</span>
+      </div>
+      <p class="field__hint" style="margin-top:0.5rem">
+        Keyboard: Tab to a point, then use the arrow keys (Shift for larger steps).
+      </p>
+    </section>
+
+    <!-- Both physical columns, shared height scale, with the probe. -->
+    <section class="demo__columns figure" aria-labelledby="col-title">
+      <h2 class="figure__title" id="col-title">The two columns, same height scale</h2>
+      <p class="figure__sub">
+        Drag the dashed <strong>height probe</strong> up and down to read the local
+        gas composition in each column.
+      </p>
+      <div id="columns"></div>
+      <div class="legend">
+        <span class="legend__item"><span class="legend__swatch legend__swatch--tray"></span>Tray column</span>
+        <span class="legend__item"><span class="legend__swatch legend__swatch--packed"></span>Packed column</span>
+      </div>
+    </section>
+
+    <!-- Summary comparison. -->
+    <section class="demo__summary card" aria-labelledby="sum-title">
+      <h2 class="figure__title" id="sum-title">Comparison</h2>
+      <div id="summary"></div>
+    </section>
+
+    <!-- Secondary plots. -->
+    <div class="demo__aux">
+      <section class="figure" aria-labelledby="ntu-title">
+        <h2 class="figure__title" id="ntu-title">Transfer units — the shaded area</h2>
+        <p class="figure__sub">
+          The area under 1/(y − y*) between the inlet and outlet compositions
+          <em>is</em> N<sub>OG</sub>. At A = 1 the driving force is uniform and
+          this becomes a perfect rectangle.
+        </p>
+        <div id="ntu-plot"></div>
+      </section>
+
+      <section class="figure" aria-labelledby="prof-title">
+        <h2 class="figure__title" id="prof-title">Composition against height</h2>
+        <p class="figure__sub">
+          Staged versus continuous contacting, made visible: the tray column
+          jumps, the packed column glides.
+        </p>
+        <div id="profile-plot"></div>
+        <div class="legend">
+          <span class="legend__item"><span class="legend__swatch legend__swatch--tray"></span>Tray — discrete</span>
+          <span class="legend__item"><span class="legend__swatch legend__swatch--packed"></span>Packed — continuous</span>
+        </div>
+        <div id="probe-readout" style="margin-top:0.8rem"></div>
+      </section>
+    </div>
+
+  </div>
+
+  <section class="prose" style="margin-top:2.5rem">
+    <h2>What to try</h2>
+    <ul>
+      <li><strong>Drag the liquid rate down</strong> (the lower-right point, to the
+        right) until the minimum-L/V flag appears. Watch the stage count run away.
+        Note that the absorption factor A drops below 1 on the way — that is
+        normal, not an error.</li>
+      <li><strong>Click “Balanced (A = 1)”.</strong> The transfer-unit area becomes a
+        rectangle, the packed composition profile becomes a straight line, and
+        N = N<sub>OG</sub> = 4 exactly. Then click “Near-balanced” — the numbers
+        should barely move.</li>
+      <li><strong>Change the packing</strong> from Pall rings to structured. The
+        number of transfer units does not change; only the height does. That is
+        the difference between <em>how much separation is needed</em> and
+        <em>how efficiently the hardware delivers it</em>.</li>
+      <li><strong>Switch to the SO₂ preset</strong> and read the warning. It is in
+        the list precisely because the straight-line model strains there.</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    Static site · no framework, no build step.
+    <a href="../compare.html">Compare with implementation B</a> ·
+    <a href="../overview.html">Project overview</a>
+  </div>
+</footer>
+
+<script type="module" src="js/site.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

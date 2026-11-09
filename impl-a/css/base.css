@@ -1,0 +1,161 @@
+/* base.css — resets, typography, form controls. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--plane);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { line-height: 1.25; margin: 0 0 0.5em; font-weight: 650; }
+h1 { font-size: 1.7rem; letter-spacing: -0.015em; }
+h2 { font-size: 1.28rem; margin-top: 1.9em; }
+h3 { font-size: 1.05rem; margin-top: 1.5em; }
+p  { margin: 0 0 1em; }
+
+a { color: var(--tray); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { text-decoration-thickness: 2px; }
+
+code, kbd, samp { font-family: var(--mono); font-size: 0.9em; }
+code { background: var(--raised); padding: 0.1em 0.35em; border-radius: var(--r-sm); }
+pre {
+  background: var(--raised); border: 1px solid var(--hairline);
+  border-radius: var(--r-md); padding: 0.9rem 1rem; overflow-x: auto;
+}
+pre code { background: none; padding: 0; }
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+/* --- Site chrome ---------------------------------------------------------- */
+
+.site-header {
+  border-bottom: 1px solid var(--hairline);
+  background: var(--surface);
+  position: sticky; top: 0; z-index: 20;
+}
+.site-header__inner {
+  max-width: 1280px; margin: 0 auto; padding: 0.6rem 1rem;
+  display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; align-items: center;
+}
+.brand { font-weight: 700; letter-spacing: -0.01em; margin-right: auto; }
+.brand small { display: block; font-weight: 400; font-size: 0.75rem; color: var(--ink-muted); }
+
+.nav { display: flex; flex-wrap: wrap; gap: 0.15rem; }
+.nav a {
+  color: var(--ink-2); text-decoration: none; font-size: 0.9rem;
+  padding: 0.35rem 0.6rem; border-radius: var(--r-sm);
+}
+.nav a:hover { background: var(--plane); color: var(--ink); }
+.nav a[aria-current="page"] { color: var(--ink); font-weight: 600; background: var(--plane); }
+
+.theme-toggle {
+  background: var(--raised); color: var(--ink-2); cursor: pointer;
+  border: 1px solid var(--hairline); border-radius: var(--r-sm);
+  font: inherit; font-size: 0.85rem; padding: 0.3rem 0.6rem;
+}
+.theme-toggle:hover { color: var(--ink); }
+
+.page { max-width: 1280px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
+.prose { max-width: 68ch; }
+.prose ul, .prose ol { padding-left: 1.3em; }
+.prose li { margin-bottom: 0.35em; }
+
+.site-footer {
+  border-top: 1px solid var(--hairline); margin-top: 3rem;
+  padding: 1.5rem 1rem; color: var(--ink-muted); font-size: 0.85rem;
+}
+.site-footer__inner { max-width: 1280px; margin: 0 auto; }
+
+/* --- Cards, notes --------------------------------------------------------- */
+
+.card {
+  background: var(--surface); border: 1px solid var(--hairline);
+  border-radius: var(--r-lg); padding: 1rem;
+}
+.card > h2, .card > h3 { margin-top: 0; }
+
+.note {
+  border: 1px solid var(--hairline); border-left: 3px solid var(--ink-muted);
+  background: var(--surface); border-radius: var(--r-md);
+  padding: 0.7rem 0.9rem; font-size: 0.9rem; color: var(--ink-2);
+  display: flex; gap: 0.6rem; align-items: flex-start;
+}
+.note__icon { flex: none; font-weight: 700; line-height: 1.5; }
+.note--warning { border-left-color: var(--warning); background: var(--warning-wash); }
+.note--critical { border-left-color: var(--critical); background: var(--critical-wash); }
+.note--fillin {
+  border-left-color: var(--tray); border-style: dashed;
+  border-left-style: solid;
+}
+.note strong { color: var(--ink); }
+
+/* A clearly-marked region for the site owner to replace with their own text. */
+.fillin {
+  border: 1px dashed var(--axis); border-radius: var(--r-md);
+  padding: 0.85rem 1rem; margin: 0 0 1.1rem;
+  background: var(--surface); color: var(--ink-2);
+}
+.fillin::before {
+  content: "FILL IN";
+  display: inline-block; font-size: 0.68rem; letter-spacing: 0.09em;
+  font-weight: 700; color: var(--ink-muted);
+  border: 1px solid var(--axis); border-radius: 999px;
+  padding: 0.05rem 0.5rem; margin-bottom: 0.5rem;
+}
+.fillin > :last-child { margin-bottom: 0; }
+
+/* --- Forms ---------------------------------------------------------------- */
+
+label { font-size: 0.85rem; color: var(--ink-2); }
+
+input[type="number"], select {
+  font: inherit; font-size: 0.9rem;
+  background: var(--raised); color: var(--ink);
+  border: 1px solid var(--axis); border-radius: var(--r-sm);
+  padding: 0.3rem 0.45rem; width: 100%;
+}
+input[type="number"]:disabled { opacity: 0.55; }
+input[aria-invalid="true"] { border-color: var(--critical); }
+
+.field { display: grid; gap: 0.2rem; }
+.field__error { font-size: 0.78rem; color: var(--critical); min-height: 1em; }
+.field__hint  { font-size: 0.75rem; color: var(--ink-muted); }
+
+.btn {
+  font: inherit; font-size: 0.85rem; cursor: pointer;
+  background: var(--raised); color: var(--ink);
+  border: 1px solid var(--axis); border-radius: var(--r-sm);
+  padding: 0.4rem 0.7rem;
+}
+.btn:hover { border-color: var(--ink-muted); }
+.btn--active { background: var(--tray); border-color: var(--tray); color: #fff; }
+
+/* NOTE: there is deliberately no `input[type=range]` style in this file.
+ * Sliders are excluded from the primary interaction path by design (D-01). */
+
+/* --- Tables --------------------------------------------------------------- */
+
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+th, td { text-align: left; padding: 0.4rem 0.55rem; border-bottom: 1px solid var(--hairline); }
+th { color: var(--ink-2); font-weight: 600; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

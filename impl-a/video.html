@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presentation video — Tray vs. Packed</title>
+<meta name="description" content="Recorded presentation for the Separation Processes AI project.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='9' y='3' width='14' height='26' rx='3' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Cpath d='M12 11h8M12 16h8M12 21h8' stroke='%23eb6834' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand">Tray vs. Packed
+      <small>Separation Processes &middot; University of Cincinnati</small>
+    </div>
+    <nav class="nav" aria-label="Main">
+      <a href="index.html">Demo</a>
+      <a href="video.html">Video</a>
+      <a href="transcript.html">Transcript</a>
+      <a href="docs.html">Documentation</a>
+      <a href="model-comparison.html">Model comparison</a>
+      <a href="references.html">References</a>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Switch colour theme">&#9686; Auto</button>
+  </div>
+</header>
+
+<main class="page">
+  <h1>Presentation</h1>
+
+  <div class="prose">
+    <p>The recorded walkthrough of this project: the concept, the physics, the
+      process of building it with AI models, and what came out of the
+      comparison.</p>
+  </div>
+
+  <div class="video-wrap" id="video-wrap" style="max-width:900px">
+    <div class="video-placeholder" id="video-placeholder">
+      <strong>Video not yet published</strong>
+      <span>Set <code>YOUTUBE_ID</code> in the script at the foot of this page
+        and the player will appear here.</span>
+    </div>
+  </div>
+
+  <div class="prose" style="margin-top:1.5rem">
+    <div class="fillin">
+      <p><strong>Caption / summary of the talk.</strong> Replace this with a short
+        description of what the presentation covers and anything a viewer should
+        know before watching — recording date, length, which sections matter most.</p>
+    </div>
+
+    <h2>Chapters</h2>
+    <div class="fillin">
+      <p>Optional. Once the video is up, list timestamps here so a viewer can jump
+        straight to a section. For example:</p>
+      <ul>
+        <li>0:00 — What the tool does</li>
+        <li>0:00 — The physics behind it</li>
+        <li>0:00 — How it was built, and with which models</li>
+        <li>0:00 — What the model comparison showed</li>
+      </ul>
+    </div>
+
+    <p>The verbatim auto-generated transcript is on the
+      <a href="transcript.html">transcript page</a>.</p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    Static site &middot; no framework, no build step.
+    <a href="../compare.html">Compare with implementation B</a> &middot;
+    <a href="../overview.html">Project overview</a>
+  </div>
+</footer>
+
+<script type="module" src="js/site.js"></script>
+<script>
+  /* ------------------------------------------------------------------
+   * The ONLY thing to change when the video is published: paste the
+   * YouTube video id (the part after "v=") between the quotes.
+   * Example: const YOUTUBE_ID = 'dQw4w9WgXcQ';
+   * ------------------------------------------------------------------ */
+  const YOUTUBE_ID = '';
+
+  if (YOUTUBE_ID) {
+    const wrap = document.getElementById('video-wrap');
+    const frame = document.createElement('iframe');
+    frame.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(YOUTUBE_ID);
+    frame.title = 'Project presentation';
+    frame.loading = 'lazy';
+    frame.allow = 'accelerometer; clipboard-write; encrypted-media; picture-in-picture';
+    frame.referrerPolicy = 'strict-origin-when-cross-origin';
+    frame.allowFullscreen = true;
+    document.getElementById('video-placeholder').remove();
+    wrap.appendChild(frame);
+  }
+</script>
+</body>
+</html>

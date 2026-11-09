@@ -1,0 +1,171 @@
+/* layout.css — the demo grid, the SVG figures, responsive behaviour. */
+
+/* --- Demo grid ------------------------------------------------------------ */
+
+.demo {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.25fr) minmax(0, 0.8fr);
+  grid-template-areas:
+    "diagram columns summary"
+    "aux     columns summary";
+  align-items: start;
+}
+.demo__diagram { grid-area: diagram; }
+.demo__aux     { grid-area: aux; display: grid; gap: 1rem; }
+.demo__columns { grid-area: columns; }
+.demo__summary { grid-area: summary; }
+
+@media (max-width: 1100px) {
+  .demo {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "diagram columns"
+      "aux     columns"
+      "summary summary";
+  }
+}
+@media (max-width: 760px) {
+  .demo {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "diagram" "columns" "aux" "summary";
+  }
+  .page { padding-left: 1rem; padding-right: 1rem; }
+}
+
+.figure { background: var(--surface); border: 1px solid var(--hairline);
+          border-radius: var(--r-lg); padding: 0.85rem; }
+.figure__title { font-size: 0.95rem; font-weight: 650; margin: 0 0 0.15rem; }
+.figure__sub   { font-size: 0.8rem; color: var(--ink-muted); margin: 0 0 0.6rem; }
+.figure svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+/* --- Legend (always present for the two series) --------------------------- */
+
+.legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-size: 0.82rem;
+          color: var(--ink-2); margin-top: 0.5rem; }
+.legend__item { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend__swatch { width: 14px; height: 3px; border-radius: 2px; flex: none; }
+.legend__swatch--tray   { background: var(--tray); }
+.legend__swatch--packed { background: var(--packed); }
+.legend__swatch--eq     { background: var(--ink-muted);
+  background-image: linear-gradient(90deg, var(--ink-muted) 55%, transparent 55%);
+  background-size: 6px 3px; }
+.legend__swatch--op     { background: var(--ink); }
+
+/* --- SVG chart primitives ------------------------------------------------- */
+
+.grid-line   { stroke: var(--grid); stroke-width: 1; }
+.axis-line   { stroke: var(--axis); stroke-width: 1.5; }
+.axis-label  { fill: var(--ink-2); font-size: 11px; font-family: var(--font); }
+.tick-label  { fill: var(--ink-muted); font-size: 10px; font-family: var(--font);
+               font-variant-numeric: tabular-nums; }
+.mark-label  { font-size: 11px; font-family: var(--font); font-weight: 600; }
+
+/* Structural geometry: chrome ink, not series hues. */
+.eq-line { stroke: var(--ink-muted); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.op-line { stroke: var(--ink); stroke-width: 2.5; fill: none; stroke-linecap: round; }
+
+.staircase   { stroke: var(--tray); stroke-width: 2; fill: none;
+               stroke-linejoin: round; stroke-linecap: round; }
+.staircase--dense { stroke-width: 1.2; }
+
+.ntu-area  { fill: var(--packed-wash); }
+.ntu-curve { stroke: var(--packed); stroke-width: 2; fill: none; }
+
+.profile-tray   { stroke: var(--tray);   stroke-width: 2; fill: none;
+                  stroke-linejoin: round; }
+.profile-packed { stroke: var(--packed); stroke-width: 2; fill: none; }
+
+/* --- Draggable handles ---------------------------------------------------- */
+
+/* `touch-action: none` is MANDATORY: without it iOS scrolls the page instead
+ * of dragging the handle. (PLAN §5.4, RISK-10.) */
+.handle { touch-action: none; cursor: grab; }
+.handle:active,
+.handle.is-dragging { cursor: grabbing; }
+
+/* A generous transparent hit target over the small visible dot: ≥44px effective. */
+.handle__hit { fill: transparent; stroke: none; }
+.handle__dot { fill: var(--ink); stroke: var(--surface); stroke-width: 2.5; }
+.handle__ring { fill: none; stroke: var(--ink); stroke-width: 1.5; opacity: 0.35; }
+.handle:hover .handle__dot,
+.handle.is-dragging .handle__dot { stroke-width: 3.5; }
+.handle:focus-visible { outline: none; }
+.handle:focus-visible .handle__ring { opacity: 1; stroke-width: 2.5; stroke: var(--focus); }
+
+/* Pinched state. Colour is NEVER the only signal: the dot also becomes a
+ * square and a text label appears. */
+.handle--pinched .handle__dot { fill: var(--critical); }
+.handle--pinched .handle__ring { stroke: var(--critical); opacity: 1; }
+
+.pinch-flag { fill: var(--critical); font-size: 11px; font-weight: 650;
+              font-family: var(--font); }
+.pinch-line { stroke: var(--critical); stroke-width: 1.5; stroke-dasharray: 4 3; }
+
+/* --- Column drawings ------------------------------------------------------ */
+
+.col-shell { fill: var(--surface); stroke: var(--ink-2); stroke-width: 2; }
+.col-tray  { stroke: var(--tray); stroke-width: 2.5; stroke-linecap: round; }
+.col-pack  { fill: var(--packed-wash); stroke: var(--packed); stroke-width: 1.5; }
+.col-label { fill: var(--ink-2); font-size: 11px; font-family: var(--font); }
+.col-break { stroke: var(--ink-muted); stroke-width: 1.5; stroke-dasharray: 3 3; }
+
+.probe-line { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 5 3; }
+.probe-tab  { fill: var(--ink); }
+.probe-tab-text { fill: var(--surface); font-size: 10px; font-weight: 700;
+                  font-family: var(--font); }
+
+/* --- Readouts ------------------------------------------------------------- */
+
+.readout { display: grid; gap: 0.45rem; }
+.readout__row { display: flex; justify-content: space-between; gap: 1rem;
+                align-items: baseline; font-size: 0.87rem; }
+.readout__label { color: var(--ink-2); }
+.readout__value { font-variant-numeric: tabular-nums; font-weight: 600; }
+.readout__value small { font-weight: 400; color: var(--ink-muted); }
+
+.stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.8rem; }
+.stat {
+  border: 1px solid var(--hairline); border-radius: var(--r-md);
+  padding: 0.55rem 0.7rem; background: var(--surface);
+}
+.stat--tray   { border-top: 3px solid var(--tray); }
+.stat--packed { border-top: 3px solid var(--packed); }
+.stat__label { font-size: 0.72rem; color: var(--ink-muted); text-transform: uppercase;
+               letter-spacing: 0.05em; }
+.stat__value { font-size: 1.35rem; font-weight: 680; font-variant-numeric: tabular-nums;
+               line-height: 1.15; }
+.stat__unit  { font-size: 0.8rem; font-weight: 400; color: var(--ink-2); }
+
+/* --- Controls ------------------------------------------------------------- */
+
+.controls { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end;
+            margin-bottom: 1rem; }
+.controls .field { min-width: 190px; }
+.controls__group { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+.drawer { border: 1px solid var(--hairline); border-radius: var(--r-md);
+          background: var(--surface); margin-bottom: 1rem; }
+.drawer > summary { cursor: pointer; padding: 0.6rem 0.9rem; font-size: 0.9rem;
+                    font-weight: 600; list-style: none; }
+.drawer > summary::-webkit-details-marker { display: none; }
+.drawer > summary::before { content: "▸ "; color: var(--ink-muted); }
+.drawer[open] > summary::before { content: "▾ "; }
+.drawer__body { padding: 0 0.9rem 0.9rem; display: grid; gap: 0.8rem;
+                grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+
+/* --- Video / transcript --------------------------------------------------- */
+
+.video-wrap { position: relative; width: 100%; aspect-ratio: 16 / 9;
+              background: var(--raised); border: 1px solid var(--hairline);
+              border-radius: var(--r-lg); overflow: hidden; }
+.video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-placeholder { position: absolute; inset: 0; display: grid; place-content: center;
+                     text-align: center; color: var(--ink-muted); gap: 0.5rem; padding: 1rem; }
+
+.transcript {
+  max-height: 60vh; overflow-y: auto; background: var(--surface);
+  border: 1px solid var(--hairline); border-radius: var(--r-md);
+  padding: 1rem 1.1rem; font-size: 0.92rem; line-height: 1.7;
+  white-space: pre-wrap; user-select: text;
+}
