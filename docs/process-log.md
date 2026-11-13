@@ -118,3 +118,11 @@ Entry template:
 **Still needed from me:** see the open items in `docs/handcalc.md` and the Phase 0 summary in chat (book checks, steam-cost decision, battery spec, lithium intensity).
 
 **Next step:** Close the open data items, then start the Phase 1 builds with `docs/build-prompt.md`.
+
+## 2026-11-13 (cont.) — decision: steam price; Phase 1 kickoff
+
+**Prompt (verbatim):** "keep $7.33 fuel-only steam, start Phase 1"
+
+**Decision and reasoning:** Keep the sourced fuel-only steam cost ($7.33/t, from EIA Texas gas Aug 2026) as the default instead of an unsourced "all-in" number. On energy cost alone, 5 effects beat MVR at current cheap Texas gas. This is presented as a finding, and Phase 2's capital-cost comparison tells the rest of the story.
+
+**Phase 1 setup:** `docs/build-prompt.md` clarified before either build started (copy `data.js` unchanged into the output folder; commit and push). The Claude build runs in a **fresh** Claude Code cloud session (no access to this planning conversation) on branch `claude/phase1-build`, output `site/`. The Gemini build is run by me with Gemini CLI on branch `gemini/mvp`, output `site/gemini/`, with the identical prompt.
