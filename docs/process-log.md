@@ -84,3 +84,15 @@ Entry template:
 **What I accepted / changed / rejected, and why:** see `docs/critique-decisions.md` (draft, pending my review; open question 7b on turndown).
 
 **Next step:** Review and approve the decision table, then Claude writes `docs/plan-v2-final.md` and `docs/build-prompt.md`.
+
+## 2026-11-13 (cont.) — Claude Code — decisions approved, plan v2 and build prompt
+
+**Prompts (verbatim):** "approve all, keep 7b"
+
+**What the AI produced:**
+- `docs/critique-decisions.md` marked approved (all 14 rows; 7b kept as a simple fixed-area turndown).
+- `docs/plan-v2-final.md`: self-contained merged plan. Changes tagged [v2: #n]: Antoine-only P_sat; ε as a purity-only model; K_b at T_b specified; discharge temperature T2 (C7) and the compressor-work surplus note (C8); schematic metastable/spinodal bands moved to the MVP; rewritten B2/E4/C3 interpretations; Phase 3 removed (problem cards become static text, MSMPR dropped); Phase 2 = ΔT optimum + clickable PFD + fixed-area turndown; feasibility guards; exact `simulate()` input keys and defaults; 7 tabs; an independent Python reference script generating unrounded expected values; added comparison metrics including critique accuracy. Schedule re-baselined (Phase 0 ran 2 days late): data Nov 13–15, MVP Nov 16–21, Phase 2 Nov 22–25.
+- New hand-calc values: T2 = 116.7 °C, maxFeasibleN = 7, product impurity 583 ppm at ε = 0.03, heater area 469 m², turndown 26.34 / 21.88 kWh/t at 75 % / 50 % load.
+- `docs/build-prompt.md`: the identical Phase 1 prompt for Claude Code and Gemini.
+
+**Next step:** Phase 0: verify data against sources and write `site/js/data.js`, the reference script, the expected JSON, and the Node test. Then start both builds.
