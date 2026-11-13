@@ -65,3 +65,22 @@ Entry template:
 **Problems hit:** None. Solubility and BPE data still need verification against primary sources (Phase 0).
 
 **Next step:** Paste plan + HANDOFF + CLAUDE.md into Gemini with the §13 critique prompt, save the reply as `docs/critique-v1-gemini.md`, and fill `docs/critique-decisions.md`.
+
+## 2026-11-13 — Gemini (critique) + Claude Code (fact-check, decision draft) — plan v1 critique
+
+**Prompts (key ones, verbatim):**
+1. To Gemini: the §13 critique prompt from `plan-v1-claude.md`, followed by plan-v1-claude.md, HANDOFF.md, CLAUDE.md pasted as one message (`gemini-critique-all-in-one.txt`, built by Claude on request: "You have the capability to make them all one, do it").
+2. To Claude: pasted Gemini's full reply.
+
+**What the AI produced:**
+- Gemini: an independent recomputation of the §7.2 hand calc (all values within 0.5 %) and 10 prioritized suggestions. Saved verbatim in `docs/critique-v1-gemini.md`.
+- Claude: fact-checked Gemini's numeric claims with the IAPWS-IF97 saturation equation and steam-table enthalpies, then drafted `docs/critique-decisions.md` (accept/reject table with reasoning, awaiting my approval).
+
+**Key findings:**
+- Gemini's "critical" claim that Antoine vs NIST interpolation makes the test fail (r = 1.616, 0.95 % error) is **wrong**. Antoine is ~0.38 % low at both temperatures, so r is unchanged (1.6227 vs 1.6226). Gemini mis-evaluated Antoine at 66 °C (26.071 vs 26.085 kPa). Its fix (one P_sat method for both builds) is still accepted. Good example for the presentation that the critic model also needs checking.
+- Gemini's compressor discharge temperature point is correct: T2 ≈ 116.7 °C, so compression superheats steam, and wet vapor comes only from entrained mist or foam.
+- Gemini's unsourced numbers (LiOH osmotic coefficient 0.75–0.85, CRC solubility 12.4 g/100 g at 20 °C, crystal-size thresholds <100 µm / >800 µm) are treated as hypotheses to verify, not data.
+
+**What I accepted / changed / rejected, and why:** see `docs/critique-decisions.md` (draft, pending my review; open question 7b on turndown).
+
+**Next step:** Review and approve the decision table, then Claude writes `docs/plan-v2-final.md` and `docs/build-prompt.md`.
