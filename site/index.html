@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MVR Crystallizer Explorer</title>
+<meta name="description" content="Interactive explorer for mechanical vapor recompression (MVR) evaporative crystallization of battery-grade LiOH·H2O. CHE 4061 Separation Processes AI project.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="css/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js" crossorigin="anonymous"></script>
+<script type="module" src="js/ui.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <h1>MVR Crystallizer Explorer</h1>
+    <p class="subtitle">Evaporative crystallization of battery-grade LiOH·H<sub>2</sub>O with mechanical vapor recompression · CHE 4061 Separation Processes · AI project</p>
+  </div>
+  <nav class="tabs" aria-label="Site sections">
+    <a href="#overview" data-tab="overview">Overview</a>
+    <a href="#industry" data-tab="industry">Industry Context</a>
+    <a href="#theory" data-tab="theory">Theory</a>
+    <a href="#simulator" data-tab="simulator">Simulator</a>
+    <a href="#ai-workflow" data-tab="ai-workflow">AI Workflow</a>
+    <a href="#video" data-tab="video">Video &amp; Transcript</a>
+    <a href="#references" data-tab="references">References</a>
+  </nav>
+</header>
+
+<main class="wrap">
+
+<!-- ================= 1. OVERVIEW ================= -->
+<section id="tab-overview" class="tab" data-tab="overview">
+  <div class="banner ai-banner">
+    <strong>This is an AI project.</strong> The plan was written by one AI model, critiqued by another, and the site was built by two different models so they can be compared.
+    See <a href="#ai-workflow">AI Workflow</a> for the models, prompts, decisions, and the comparison.
+  </div>
+  <h2>Why crystallize lithium hydroxide with a compressor?</h2>
+  <p class="lead">High-nickel battery cathodes are made with <strong>lithium hydroxide monohydrate (LiOH·H<sub>2</sub>O)</strong>. Refineries such as Tesla's in Robstown, Texas, get it out of a purified brine by boiling off water until the hydrate crystallizes. Boiling off water is expensive. The usual way to do it cheaply is to <strong>re-use the vapor's own latent heat</strong>: either in a train of evaporator effects, or by squeezing the vapor in a compressor so it condenses hotter than the liquor it came from. That second option is <strong>mechanical vapor recompression (MVR)</strong>.</p>
+  <div class="grid-3">
+    <div class="card"><h3>1 · Significance</h3><p>Why battery makers need LiOH·H<sub>2</sub>O, and where Tesla's refinery fits. <a href="#industry">Industry Context →</a></p></div>
+    <div class="card"><h3>2 · Theory</h3><p>Boiling-point elevation, steam economy, MVR as a heat pump, solubility and supersaturation, the impurity purge. <a href="#theory">Theory →</a></p></div>
+    <div class="card"><h3>3 · Simulator</h3><p>Move the sliders and compare 1, 3, 5 effects and MVR on the same feed: energy, cost, yield and purity. <a href="#simulator">Simulator →</a></p></div>
+  </div>
+  <h3>What the simulator shows</h3>
+  <ul>
+    <li>Only the <em>lift</em> (BPE + heater ΔT) is paid for in MVR, so it moves ~20 units of heat per unit of work.</li>
+    <li>Boiling-point elevation (BPE) adds directly to that lift, so a concentrated electrolyte erodes MVR's advantage.</li>
+    <li>Where the electricity-vs-steam price crossover is, with the Texas EIA prices marked.</li>
+    <li>How the purge trades lithium yield against product purity.</li>
+  </ul>
+  <h3>What I learned / what I want to learn next</h3>
+  <div class="placeholder">PLACEHOLDER: Andrew writes this section after the build and presentation.</div>
+</section>
+
+<!-- ================= 2. INDUSTRY ================= -->
+<section id="tab-industry" class="tab" data-tab="industry" hidden>
+  <h2>Industry context</h2>
+  <h3>What LiOH·H<sub>2</sub>O is for</h3>
+  <p>Lithium hydroxide is the lithium source used for high-nickel cathodes (for example NMC and NCA). It is sold as the crystalline monohydrate, LiOH·H<sub>2</sub>O, and "battery grade" means tight limits on sodium and other metal impurities.</p>
+
+  <h3>Tesla's Robstown, TX refinery</h3>
+  <p>Tesla's lithium refinery near Corpus Christi converts spodumene concentrate into battery-grade LiOH·H<sub>2</sub>O. Reported target: about <strong><span data-value="industry.teslaCapacity"></span> GWh/yr</strong> of battery capacity <span class="cite" data-src="tesla-robstown"></span>.</p>
+  <ol class="steps">
+    <li><strong>Spodumene</strong> concentrate (a lithium aluminosilicate ore) arrives.</li>
+    <li><strong>Kiln</strong>: roasting converts it to a leachable form.</li>
+    <li><strong>Alkaline leach</strong>: lithium goes into solution.</li>
+    <li><strong>Purification</strong>: calcium, magnesium and other metals are removed.</li>
+    <li><strong>Crystallization</strong>: water is evaporated until LiOH·H<sub>2</sub>O crystallizes; the crystals are centrifuged, washed and dried. <em>This site models this step.</em></li>
+  </ol>
+
+  <h3>How much product? (arithmetic shown)</h3>
+  <div class="eq-card">
+    <div class="eq" data-tex="\dot m_{LiOH\cdot H_2O} = \underbrace{50\ \tfrac{\text{GWh}}{\text{yr}}}_{\text{Tesla target}} \times \underbrace{I_{LCE}\ \tfrac{\text{kg LCE}}{\text{kWh}}}_{\text{SOURCE NEEDED}} \times \underbrace{1.1358\ \tfrac{\text{t LiOH·H}_2\text{O}}{\text{t LCE}}}_{2\times 41.962/73.89}"></div>
+    <p class="units">Units: t LiOH·H<sub>2</sub>O/yr (GWh × kg/kWh = 10<sup>6</sup> kg = 1000 t)</p>
+    <p class="interp">The lithium intensity of a battery (kg lithium-carbonate-equivalent per kWh) sets how much hydrate the refinery must crystallize. <span class="flag">SOURCE NEEDED</span> for I<sub>LCE</sub> (IEA Global Critical Minerals Outlook), so no number is shown yet.</p>
+  </div>
+
+  <h3>Who builds the crystallizers</h3>
+  <p>Veolia is one of the vendors of evaporators and crystallizers for lithium hydroxide; its patent US 10,961,126 B2 describes MVR, thermal vapor recompression and multi-effect options for LiOH evaporators <span class="cite" data-src="us10961126"></span>. MVR is reported to hold a <strong>55–60 %</strong> share of the industrial evaporator/crystallizer market <span class="flag">ESTIMATE</span> (Meticulous Research market estimate; not a primary source).</p>
+  <p>Which countries and companies dominate lithium refining, and why the US wants domestic refining: <span class="flag">SOURCE NEEDED</span> (IEA, USGS Mineral Commodity Summaries). No shares are quoted until sourced.</p>
+
+  <h3>Operating problems</h3>
+  <div class="grid-2">
+    <div class="callout"><h4>Foaming</h4><p>Concentrated caustic liquor can foam. Foam and mist carried up with the vapor put LiOH into the condensate (product loss, corrosive condensate) and send liquid droplets into the compressor suction, which erodes the impeller. Remedies: vapor-space height, demisters, antifoam.</p></div>
+    <div class="callout"><h4>Li<sub>2</sub>CO<sub>3</sub> scaling</h4><p>LiOH absorbs CO<sub>2</sub>, and lithium carbonate is far less soluble than the hydroxide, so it deposits on heater tubes. Scale lowers the overall heat-transfer coefficient U, so the same duty needs a larger ΔT, which means more compressor lift and more power <span class="cite" data-src="us10961126"></span>.</p></div>
+  </div>
+</section>
+
+<!-- ================= 3. THEORY ================= -->
+<section id="tab-theory" class="tab" data-tab="theory" hidden>
+  <h2>Theory</h2>
+  <p class="lead">Level: Seader, Henley &amp; Roper, Ch. 17 (crystallization, evaporation) plus standard thermodynamics. Every equation shows its units and a one-line "how does that make sense?" interpretation. Live values for the current simulator state are on the <a href="#simulator">Simulator</a> tab.</p>
+
+  <h3>Evaporation is a single-stage VLE separation</h3>
+  <p>LiOH is non-volatile, so the vapor is pure water. The liquor boils at T<sub>b</sub>; the vapor leaves at pressure P and is superheated by BPE above its own condensation temperature T<sub>v</sub> = T<sub>sat</sub>(P). Removing water raises the LiOH concentration to saturation, and further evaporation produces crystals.</p>
+
+  <h3>Ideal vs real electrolyte BPE</h3>
+  <p>An ideal (colligative) estimate uses i = 2 ions per LiOH. Real concentrated LiOH(aq) is less "active" than ideal: Monnin &amp; Dubois (2005) give an osmotic coefficient φ ≈ <span data-live="phi60"></span> at saturation and 60 °C <span class="cite" data-src="monnin2005"></span>. With φ the hand-calc BPE is <strong><span data-live="bpeReal"></span> K</strong> instead of <strong><span data-live="bpeIdeal"></span> K</strong> (ideal). The simulator has a toggle for both.</p>
+
+  <div id="theory-equations"></div>
+
+  <h3>Steam economy and multiple effects</h3>
+  <p>In a single effect, 1 kg of steam boils roughly 1 kg of water (E2). Sending each effect's vapor to heat the next re-uses the latent heat N times (E3), but the total temperature difference between the steam and the last condenser is split among the effects, and each effect loses BPE from its driving force (E4). Concentrated brines with large BPE therefore support fewer effects.</p>
+
+  <h3>MVR as a heat pump; superheat, not wet vapor</h3>
+  <p>The compressor only has to raise the vapor's condensing temperature by the lift = BPE + ΔT<sub>heater</sub> (~10 K), not supply the latent heat (~2,360 kJ/kg). That is why COP ≈ 20+. Compression of steam <em>superheats</em> it (C7): the discharge is far above its condensing temperature. Liquid enters the compressor only as entrained mist or foam, or deliberately as a desuperheating condensate spray.</p>
+
+  <h3>Solubility, supersaturation, metastable zone, binodal vs spinodal</h3>
+  <p>The solubility curve c*(T) is the <strong>binodal</strong>: below it crystals dissolve. Above it the liquor is supersaturated (B4). Just above c* is the <strong>metastable zone</strong>, where existing crystals grow but new nuclei rarely form. Past the metastable limit, a nucleation shower makes many fines. The <strong>spinodal</strong> is the thermodynamic limit where the solution is unstable to any fluctuation (no nucleation barrier). The metastable width depends on kinetics (cooling or evaporation rate, agitation, seeds); the spinodal does not. The plot on the Simulator tab draws these bands <span class="flag">SCHEMATIC</span>; there are no LiOH data for their widths.</p>
+  <p><strong>Seeding:</strong> adding seed crystals and operating inside the metastable zone makes the dissolved LiOH deposit on existing crystals instead of forming new nuclei, which controls crystal size.</p>
+  <p><strong>Nucleation vs growth:</strong> nucleation creates new crystals; growth enlarges existing ones. High supersaturation favours nucleation (many small crystals); low supersaturation favours growth (fewer, larger crystals).</p>
+
+  <div class="callout">
+    <h4>Why crystal size matters</h4>
+    <p><strong>Too small:</strong> slow centrifuging and filtering, more mother liquor left on the crystals (larger ε) → more impurity in the product, and dust. <strong>Too large:</strong> liquid inclusions trapped inside crystals, breakage, longer residence time. Crystal size is a purity lever through ε (see M8 and the purge plot). <em>Qualitative only; no size data are used.</em></p>
+  </div>
+
+  <h3>Impurity purge</h3>
+  <p>Sodium (as NaOH) does not crystallize with LiOH·H<sub>2</sub>O, so it builds up in the mother liquor until the purge removes it as fast as the feed brings it in (M3). A smaller purge raises lithium yield but concentrates sodium in the liquor (M4), and the liquor film on the crystals then carries more sodium into the product (M8).</p>
+
+  <h3>Why not cooling crystallization?</h3>
+  <p>LiOH solubility is nearly flat with temperature (<span data-live="s20"></span> g/100 g water at 20 °C vs <span data-live="s100"></span> at 100 °C <span class="cite" data-src="monnin2005"></span>), so cooling recovers only a small fraction (M9). Water must be removed instead.</p>
+
+  <h3>Simplifications (stated)</h3>
+  <ul>
+    <li>Impurities do not change LiOH solubility. Heat of crystallization neglected. Feed enters at T<sub>b</sub>.</li>
+    <li>Steam vapor is an ideal gas with γ = 1.33 <span class="flag">ESTIMATE</span>. Antoine P<sub>sat</sub> is within 0.38 % of NIST over 30–110 °C, and the error largely cancels in r.</li>
+    <li>Multi-effect economy uses the ideal E<sub>N</sub> ≈ N·E<sub>1</sub> (upper bound). Operating cost only; capital cost is Phase 2.</li>
+  </ul>
+
+  <h3>Glossary</h3>
+  <dl class="glossary">
+    <dt>BPE</dt><dd>Boiling-point elevation: how much hotter a solution boils than pure water at the same pressure.</dd>
+    <dt>Lift</dt><dd>Temperature rise the compressor must provide: T<sub>c</sub> − T<sub>v</sub> = BPE + ΔT<sub>heater</sub>.</dd>
+    <dt>Steam economy E</dt><dd>kg water evaporated per kg of fresh steam.</dd>
+    <dt>MVR</dt><dd>Mechanical vapor recompression: an electrically driven compressor recycles the evaporator's own vapor as heating steam.</dd>
+    <dt>COP</dt><dd>Coefficient of performance: heat delivered per unit of work.</dd>
+    <dt>Mother liquor</dt><dd>The saturated solution the crystals grow in.</dd>
+    <dt>Purge ratio p</dt><dd>Purge flow / feed flow, P/F.</dd>
+    <dt>ε</dt><dd>Adhering liquor: kg of mother liquor left on each kg of crystals after the centrifuge.</dd>
+    <dt>LCE</dt><dd>Lithium carbonate equivalent, the industry's unit for lithium quantities.</dd>
+    <dt>Osmotic coefficient φ</dt><dd>Ratio of the real to the ideal colligative effect of the dissolved ions.</dd>
+  </dl>
+</section>
+
+<!-- ================= 4. SIMULATOR ================= -->
+<section id="tab-simulator" class="tab" data-tab="simulator" hidden>
+  <h2>Simulator</h2>
+  <div class="sim-layout">
+    <aside class="controls" aria-label="Inputs">
+      <div class="presets">
+        <span class="label">Presets</span>
+        <button type="button" data-preset="handcalc">Hand-calc case</button>
+        <button type="button" data-preset="highbpe">High BPE</button>
+        <button type="button" data-preset="cheap">Cheap electricity (Texas)</button>
+        <button type="button" data-preset="expensive">Expensive electricity</button>
+        <button type="button" data-preset="infeasible">Infeasible purge</button>
+      </div>
+      <div id="sliders"></div>
+    </aside>
+    <div class="results">
+      <div id="warnings" class="warnings" role="status" aria-live="polite"></div>
+      <div class="pfd-wrap"><h3>Process flow (live)</h3><div id="pfd"></div></div>
+      <div id="cards"></div>
+      <h3>Plots</h3>
+      <div class="plots">
+        <figure class="plot"><figcaption>P5 · Energy comparison: 1 / 3 / 5 effects vs MVR</figcaption><div id="p5" class="chart"></div><p class="whatif small" id="p5-note"></p><p class="whatif">What if? Which uses least fuel and least money per tonne of water?</p></figure>
+        <figure class="plot"><figcaption>P6 · Electricity vs steam price crossover</figcaption><div id="p6" class="chart"></div><p class="whatif">What if electricity prices change? Above a line (expensive steam), MVR is cheaper; below it, that multi-effect train is cheaper.</p></figure>
+        <figure class="plot"><figcaption>P3 · What the compressor lifts</figcaption><div id="p3" class="chart chart-short"></div><p class="whatif">How much of the compressor's job is BPE?</p></figure>
+        <figure class="plot"><figcaption>P4 · Compressor vs BPE</figcaption><div id="p4" class="chart"></div><p class="whatif">Why does BPE hurt MVR?</p></figure>
+        <figure class="plot"><figcaption>P2 · BPE vs molality</figcaption><div id="p2" class="chart"></div><p class="whatif">More concentrated liquor? Ideal vs real electrolyte?</p></figure>
+        <figure class="plot"><figcaption>P11 · Multi-effect feasibility</figcaption><div id="p11" class="chart"></div><p class="whatif">How many effects can this brine support?</p></figure>
+        <figure class="plot"><figcaption>P7 · Purge trade-off: yield vs purity</figcaption><div id="p7" class="chart"></div><p class="whatif">Purity vs yield? Try ε (washing) and the purge ratio.</p></figure>
+        <figure class="plot"><figcaption>P8 · Where the feed goes</figcaption><div id="p8" class="chart"></div><p class="whatif">Where does it go?</p></figure>
+        <figure class="plot"><figcaption>P1 · LiOH solubility and cooling yield</figcaption><div id="p1" class="chart"></div>
+          <label class="inline-slider">Cooling to T<sub>cold</sub> = <output id="tcold-out">20</output> °C <input id="tcold" type="range" min="0" max="95" step="1" value="20"></label>
+          <p class="whatif">Cool instead of evaporate? <span id="cool-yield"></span></p></figure>
+        <figure class="plot"><figcaption>P1b · Metastable zone (SCHEMATIC)</figcaption><div id="p1b" class="chart"></div><p class="whatif">Where should the liquor operate? Inside the metastable zone, with seeds.</p></figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. AI WORKFLOW ================= -->
+<section id="tab-ai-workflow" class="tab" data-tab="ai-workflow" hidden>
+  <h2>AI Workflow</h2>
+  <div class="subtabs" role="tablist">
+    <button type="button" class="subtab active" data-sub="comparison">Model Comparison</button>
+    <button type="button" class="subtab" data-sub="log">Process Log</button>
+  </div>
+  <div class="subpanel" data-sub="comparison">
+    <h3>Workflow</h3>
+    <ol>
+      <li>Plan v1 written by Claude.</li>
+      <li>Critiqued by Gemini; each point accepted or rejected with a reason, approved by Andrew.</li>
+      <li>Plan v2 (final) merged by Claude.</li>
+      <li>Phase 1 built twice from an identical prompt and identical files: Claude Code (this site) and Gemini (<a href="gemini/">/gemini/</a>).</li>
+    </ol>
+    <div class="placeholder">PLACEHOLDER: Model comparison (test results, first-run bugs, fix iterations, time, level discipline, data honesty, explanation quality, chart readability, mobile layout, code clarity), the critique decision table, and screenshots will be added in Phase 4.</div>
+  </div>
+  <div class="subpanel" data-sub="log" hidden>
+    <div class="placeholder">PLACEHOLDER: The process log (models, services, prompts, decisions, iterations) is kept in <a href="https://github.com/be-aa8/seperations/blob/main/docs/process-log.md">docs/process-log.md</a> and will be shown here.</div>
+  </div>
+</section>
+
+<!-- ================= 6. VIDEO ================= -->
+<section id="tab-video" class="tab" data-tab="video" hidden>
+  <h2>Video &amp; Transcript</h2>
+  <div class="placeholder">PLACEHOLDER: The YouTube presentation (youtube-nocookie.com embed) will appear here once it is uploaded (by Fri Dec 4, 2026).</div>
+  <h3>Transcript (verbatim YouTube auto-transcript)</h3>
+  <div class="placeholder transcript">PLACEHOLDER: The verbatim auto-generated transcript will be pasted here after upload.</div>
+</section>
+
+<!-- ================= 7. REFERENCES ================= -->
+<section id="tab-references" class="tab" data-tab="references" hidden>
+  <h2>References &amp; Contributions</h2>
+  <h3>Sources</h3>
+  <ol id="source-list" class="sources"></ol>
+  <h3>Every value used, with its source</h3>
+  <p>Generated automatically from <code>js/data.js</code>. <span class="flag">ESTIMATE</span> marks values that are engineering estimates, not primary data.</p>
+  <div class="table-scroll"><table id="value-table" class="data-table"><thead><tr><th>Value</th><th>Number</th><th>Units</th><th>Source</th><th>Note</th></tr></thead><tbody></tbody></table></div>
+  <h3>Contributions</h3>
+  <div class="table-scroll"><table class="data-table">
+    <thead><tr><th>Who</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td>Andrew (student)</td><td>Topic, guidance and decisions at every step, approval of critique decisions, data verification, presentation. <span class="flag">PLACEHOLDER</span> details to be added.</td></tr>
+      <tr><td>Claude (Anthropic), via Claude Code</td><td>Plan v1, plan v2 merge, Phase 0 data and test harness, this build (<code>site/</code>).</td></tr>
+      <tr><td>Gemini (Google)</td><td>Critique of plan v1; independent Phase 1 build (<code>site/gemini/</code>).</td></tr>
+      <tr><td>Other tools</td><td>Plotly 2.35.2 (charts), KaTeX 0.16.11 (equations), Netlify (hosting). <span class="flag">PLACEHOLDER</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+</main>
+<footer class="site-footer"><div class="wrap">CHE 4061 Separation Processes, University of Cincinnati, Fall 2026 · AI project · Data: see <a href="#references">References</a>.</div></footer>
+</body>
+</html>
