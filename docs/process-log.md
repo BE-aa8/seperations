@@ -96,3 +96,25 @@ Entry template:
 - `docs/build-prompt.md`: the identical Phase 1 prompt for Claude Code and Gemini.
 
 **Next step:** Phase 0: verify data against sources and write `site/js/data.js`, the reference script, the expected JSON, and the Node test. Then start both builds.
+
+## 2026-11-13 (cont.) — Claude Code — Phase 0: data verification and test harness
+
+**Prompts (verbatim):** "Yes start Phase 0 now, let me know what all you need."
+
+**Problems hit:** The Default cloud environment blocked NIST, EIA and journal hosts (search worked, fetching did not). Claude proposed a personal "seperations" environment allowing only the needed data hosts; I approved it.
+
+**What the AI produced:**
+- `tools/build_data.py` → `site/js/data.js`: every value with a sourceId and an estimate flag. NIST steam table (verbatim), Antoine constants checked against NIST, LiOH·H2O solubility and the osmotic coefficient at saturation computed from Monnin & Dubois (2005, J. Chem. Eng. Data 50:1109), EIA Texas industrial electricity (7.21 ¢/kWh, Aug 2026), Texas industrial gas ($2.98/Mcf), gas heat content (1,037 Btu/cf), gas-plant heat rate (7,781 Btu/kWh), and a fuel-only steam cost derived from them ($7.33/t, ESTIMATE).
+- `tests/reference/handcalc_reference.py` → `tests/handcalc-expected.json` (independent Python reference, unrounded values); `tests/handcalc.test.mjs` (Node test for both builds: API, defaults, hand calc ±0.5 %, infeasible cases, limiting cases, random mass closure, data-source audit); `package.json`, `netlify.toml`.
+- Self-test of the harness: a throwaway correct JS model passed 9/9; the same model with a planted 1 % error in compressor work failed exactly the 11 dependent values.
+- `docs/handcalc.md`: the hand calc redone with verified data, with unit checks and interpretations. Plan v2 amended ([P0] notes).
+
+**Key findings:**
+- **The v1 working data were wrong in places.** The "12.7/12.8 g" solubility values were per 100 mL (Wikipedia), not per 100 g. The verified solubility at 60 °C is 14.56 g/100 g (v1 had 13.8). Gemini's "CRC gives 12.4 at 20 °C" was also wrong (13.37).
+- **Gemini's osmotic-coefficient hypothesis was partly right:** φ ≈ 0.83 at saturation and 60 °C, so the real BPE (3.95 K) is 21 % below ideal (4.76 K). But φ ≈ 0.90–0.93 at 25 °C, not 0.75–0.85 as Gemini claimed.
+- **The economics changed:** with Aug 2026 Texas prices and fuel-only steam, MVR ($2.09/t) beats 3 effects ($2.63/t) but not 5 effects ($1.58/t). The fuel-only steam cost leaves out boiler capital and O&M, so this needs the Phase 2 capital comparison and a decision on the steam-cost default.
+- New hand-calc results: C = 942.2 kg/h, Li yield 89.6 %, BPE 3.95 K, r = 1.580, 29.0 kWh/t, T2 = 113.4 °C, max 7 effects.
+
+**Still needed from me:** see the open items in `docs/handcalc.md` and the Phase 0 summary in chat (book checks, steam-cost decision, battery spec, lithium intensity).
+
+**Next step:** Close the open data items, then start the Phase 1 builds with `docs/build-prompt.md`.

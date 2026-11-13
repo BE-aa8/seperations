@@ -3,6 +3,14 @@
 **History:** `plan-v1-claude.md` (Claude) → critiqued by Gemini (`critique-v1-gemini.md`) → decisions approved by Andrew (`critique-decisions.md`, 2026-11-13) → this plan, merged by Claude.
 **This file is self-contained.** Both build models get only this plan, `docs/build-prompt.md`, and `site/js/data.js`. Neither needs the earlier files.
 **Changes from v1** are tagged **[v2: #n]**, where n is the row in `critique-decisions.md`.
+**Phase 0 amendments (2026-11-13), after data verification**, are tagged **[P0]**. They override anything else in this file:
+- **[P0-1] BPE uses a sourced osmotic coefficient.** New input `useOsmotic` (default `true`): activityFactor = φ_sat(T), interpolated from `DATA.osmoticSat` (Monnin & Dubois 2005). With `useOsmotic: false`, the `activityFactor` slider applies (default 1.0 = ideal). The UI shows a toggle "ideal vs real (osmotic coefficient)". At 60 °C, φ = 0.829, so BPE = 3.95 K instead of 4.76 K ideal.
+- **[P0-2] Solubility** comes from Monnin & Dubois Eq 1, tabulated every 5 °C in `DATA.solubility`. The v1 working table was off: 14.56 g/100 g at 60 °C, not 13.8.
+- **[P0-3] Antoine:** a single constant set (A = 8.07131, B = 1730.63, C = 233.426) over 30–130 °C. Checked against NIST: within 0.38 % up to 110 °C and 0.56 % at 130 °C. No switch at 100 °C.
+- **[P0-4] Defaults come from `DATA`** wherever `DATA` has the value (xF, zF, epsilon, dT_heater, etaIs, etaMotor, gamma, Ts_C, Tlast_C, dTmin, ce, cs). New defaults: **ce = 0.0721 $/kWh** (EIA, Texas industrial, Aug 2026); **cs = 7.33 $/t** (fuel-only ESTIMATE from the EIA Texas gas price, formula in `data.js`).
+- **[P0-5] `simulate()` also returns** `s`, `m`, `Kb`, `phi`, `lambdaV` (= h_fg(T_v)). Keys in `effects` and `econ` are the effect counts (1, 3, 5, N). Flows are `null` when `mass.feasible` is false.
+- **[P0-6] Expected values** for §7 live only in `docs/handcalc.md` and `tests/handcalc-expected.json`. The table in §7.1 below is from v1 and is superseded.
+- **[P0-7] No spec line yet:** `DATA.spec.naMax_ppm` is null (source needed), so the purity plot hides the spec line while it is null. `DATA.industry.lceIntensity` is also null, so the Industry tab shows the formula without a number.
 
 ---
 
@@ -135,7 +143,8 @@ Defaults are the hand-calc case (§7).
 | `purgeRatio` | 0.05 | P/F | 0.005–0.20 |
 | `epsilon` | 0.03 | kg liquor/kg crystals | 0–0.10 |
 | `i` | 2 | – | fixed |
-| `activityFactor` | 1.0 | – | 0.75–1.20 **[v2: 3]** |
+| `useOsmotic` | true | – | toggle **[P0-1]** |
+| `activityFactor` | 1.0 | – (used only if `useOsmotic` is false) | 0.75–1.20 **[v2: 3]** |
 | `dT_heater` | 6 | K | 1–15 |
 | `etaIs` | 0.75 | – | 0.60–0.85 |
 | `etaMotor` | 0.95 | – | 0.90–0.97 |
@@ -144,8 +153,8 @@ Defaults are the hand-calc case (§7).
 | `Tlast_C` | 50 | °C (last-effect condenser) | 40–60 |
 | `dTmin` | 5 | K | 3–10 |
 | `N` | 3 | effects | 1–7 (results for 1, 3, 5 always computed too) |
-| `ce` | 0.07 | $/kWh | 0.03–0.25 |
-| `cs` | 15 | $/t steam | 5–40 |
+| `ce` | 0.0721 (DATA) | $/kWh | 0.03–0.25 |
+| `cs` | 7.33 (DATA) | $/t steam | 5–40 |
 | `hours` | 8000 | h/yr | 4000–8760 |
 | `U` (Phase 2) | 2000 | W/(m²·K) | 1000–3500 |
 | `loadFraction` (Phase 2) | 1.0 | – | 0.5–1.1 |
@@ -199,7 +208,7 @@ Tesla ~50 GWh/yr (EnergyX, Spectrum News, Electrek). kg LCE/kWh (IEA Global Crit
 
 Inputs are the `DEFAULT_INPUTS` in §5.4. All P_sat values use Antoine. Numbers below use the working data in §6. **After Phase 0, the authoritative expected values are whatever `tests/handcalc-expected.json` contains.**
 
-### 7.1 Expected results
+### 7.1 Expected results (v1 numbers, SUPERSEDED by `docs/handcalc.md` [P0-6])
 | Step | Result | Interpretation |
 |---|---|---|
 | m = (13.8/100)/0.02395 | 5.762 mol/kg | Concentrated: ~5.8 mol LiOH per kg water |

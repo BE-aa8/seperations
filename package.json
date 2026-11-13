@@ -1,0 +1,11 @@
+{
+  "name": "mvr-crystallizer-explorer",
+  "private": true,
+  "type": "module",
+  "description": "MVR evaporative crystallization of LiOH.H2O: static teaching site (CHE 4061 AI project)",
+  "scripts": {
+    "data": "python3 tools/build_data.py",
+    "reference": "python3 -I tests/reference/handcalc_reference.py",
+    "test": "node --test tests/*.test.mjs"
+  }
+}
