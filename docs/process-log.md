@@ -126,3 +126,19 @@ Entry template:
 **Decision and reasoning:** Keep the sourced fuel-only steam cost ($7.33/t, from EIA Texas gas Aug 2026) as the default instead of an unsourced "all-in" number. On energy cost alone, 5 effects beat MVR at current cheap Texas gas. This is presented as a finding, and Phase 2's capital-cost comparison tells the rest of the story.
 
 **Phase 1 setup:** `docs/build-prompt.md` clarified before either build started (copy `data.js` unchanged into the output folder; commit and push). The Claude build runs in a **fresh** Claude Code cloud session (no access to this planning conversation) on branch `claude/phase1-build`, output `site/`. The Gemini build is run by me with Gemini CLI on branch `gemini/mvp`, output `site/gemini/`, with the identical prompt.
+
+## 2026-11-13 (cont.) — Claude Code — everything moved onto GitHub; Claude Phase 1 build verified
+
+**Prompts (verbatim):** "Can you sent up everything and run the code through Github? I will give you perms if needed." Then, on where to put the work: "Merge it to main yourself".
+
+**What the AI produced:**
+- `.github/workflows/ci.yml`: on every push and PR, (1) `data.js` and `handcalc-expected.json` must regenerate exactly from their scripts, (2) `npm test`, (3) the browser smoke test, with screenshots uploaded as an artifact. First run on GitHub: green.
+- `tests/browser-smoke.mjs`: generic browser checks applied identically to both builds (≥7 tabs, KaTeX errors, Plotly rendered, every slider changes output, no NaN/undefined, no horizontal scroll at 375 px, screenshots). Self-tested on a fake site with planted bugs (all caught).
+- `.github/workflows/gemini-build.yml` + `.github/scripts/run-gemini.sh`: Gemini CLI 0.68.0 headless on GitHub Actions, in stages plan (read-only `--approval-mode plan`) → build → followup, on branch `gemini/mvp`. Each run logs time, model, tokens, tool calls, the npm test result, and any files touched outside `site/gemini/` (reverted). Self-tested with a fake Gemini that tampered with CLAUDE.md (caught and reverted).
+- Main fast-forwarded to the planning branch (no history rewrite), so the Gemini workflow can be started from the Actions tab.
+
+**Claude Phase 1 build (fresh session, branch `claude/phase1-build`):** finished in about 13 minutes in one turn, with no follow-up prompts. Self-reported npm test 9/9 and its own browser check 97/97. Verified independently here: npm test 9/9 reproduced; `data.js` unchanged; changes confined to `site/`; my smoke test (which the build never saw) passed with 7 tabs, 18/18 sliders live, 0 failures. Session cost reported: about $3.70.
+
+**Problems hit:** The first smoke-test run against a real build crashed: my `[data-tab]` selector also matched hidden tab panels. Fixed generically (only visible buttons/links count as tabs). The same fixed test grades the Gemini build. Recorded here because the fix came after seeing a build.
+
+**Next step:** I add the GEMINI_API_KEY repository secret, then run the Gemini workflow (plan → approve → build).

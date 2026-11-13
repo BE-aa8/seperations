@@ -20,7 +20,8 @@ const PATHS = (args.paths || '/').split(',');
 const OUT = args.out || 'docs/screenshots/verification/latest';
 mkdirSync(OUT, { recursive: true });
 
-const TAB_SELECTOR = '[role="tab"], nav a[href^="#"], [data-tab]';
+// Tab controls only (not panels): ARIA tabs, in-page nav links, or buttons/links carrying data-tab.
+const TAB_SELECTOR = '[role="tab"], nav a[href^="#"], button[data-tab], a[data-tab]';
 
 async function listTabs(page) {
   return page.$$eval(TAB_SELECTOR, (els) => {
@@ -33,7 +34,7 @@ async function listTabs(page) {
 }
 
 async function clickTab(page, label) {
-  const loc = page.locator(TAB_SELECTOR).filter({ hasText: label }).first();
+  const loc = page.locator(TAB_SELECTOR).filter({ hasText: label }).locator('visible=true').first();
   await loc.click();
   await page.waitForTimeout(700);
 }
