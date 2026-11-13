@@ -1,0 +1,75 @@
+name: Gemini build (Phase 1)
+
+# Runs Gemini CLI headless on GitHub's servers so the second build doesn't need a local install.
+# Mirrors the Claude build session:
+#   stage=plan      -> Gemini reads the repo in read-only plan mode and proposes a plan
+#                      (saved to docs/gemini-build/plan.md on branch gemini/mvp). Nothing is built.
+#   stage=build     -> Gemini implements its plan in site/gemini/. Put your approval and any
+#                      answers to its questions in "message" (answer them the same way you answered Claude).
+#   stage=followup  -> one follow-up prompt (e.g. "npm test fails on mvr.T2_C, fix it").
+#                      Each run is a fresh Gemini context; every run is logged for the comparison.
+# Requires the repository secret GEMINI_API_KEY.
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: "plan / build / followup"
+        type: choice
+        options: [plan, build, followup]
+        default: plan
+      message:
+        description: "Your approval / answers (build) or instruction (followup)"
+        type: string
+        required: false
+      model:
+        description: "Gemini model ID (leave blank for the Gemini CLI default)"
+        type: string
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gemini-build
+  cancel-in-progress: false
+
+jobs:
+  gemini:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check out (or create) branch gemini/mvp
+        run: |
+          git config user.name "gemini-build[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin gemini/mvp >/dev/null; then
+            git checkout -B gemini/mvp origin/gemini/mvp
+          else
+            git checkout -B gemini/mvp origin/claude/presentation-planning-dec7-jqubaj
+          fi
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Give Gemini the same tools the Claude build had (Node, Python, Playwright + Chromium)
+        run: |
+          npm install --no-save playwright@1.65.0
+          npx playwright install --with-deps chromium
+      - name: Run Gemini CLI
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          STAGE: ${{ inputs.stage }}
+          MESSAGE: ${{ inputs.message }}
+          MODEL: ${{ inputs.model }}
+        run: bash .github/scripts/run-gemini.sh
+      - name: Commit and push the run to gemini/mvp
+        if: always()
+        run: |
+          git add -A site/gemini docs/gemini-build
+          git commit -m "Gemini build: ${{ inputs.stage }} run (${{ github.run_id }})" || echo "nothing to commit"
+          git push origin gemini/mvp
+      - name: Job summary
+        if: always()
+        run: '[ -f docs/gemini-build/last-run.md ] && cat docs/gemini-build/last-run.md >> "$GITHUB_STEP_SUMMARY" || true'

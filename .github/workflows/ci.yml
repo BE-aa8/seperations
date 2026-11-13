@@ -1,0 +1,63 @@
+name: CI
+
+# Runs on every push and pull request:
+#   1. data.js and the expected hand-calc values must be reproducible from their scripts
+#   2. hand-calc tests for every build (npm test)
+#   3. browser smoke test (tabs, KaTeX, Plotly, sliders, 375 px layout) with screenshots
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Data + hand-calc tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: data.js is generated from tools/build_data.py (no hand edits)
+        run: python3 tools/build_data.py && git diff --exit-code site/js/data.js
+      - name: Expected values match the independent reference
+        run: python3 -I tests/reference/handcalc_reference.py && git diff --exit-code tests/handcalc-expected.json
+      - name: Hand-calc tests (npm test)
+        run: npm test
+
+  browser:
+    name: Browser smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Skip if no site has been built yet
+        id: has_site
+        run: |
+          if [ -f site/index.html ] || [ -f site/gemini/index.html ]; then echo "run=true" >> "$GITHUB_OUTPUT"; else echo "No site/index.html yet, skipping."; fi
+      - name: Install Playwright + Chromium
+        if: steps.has_site.outputs.run == 'true'
+        run: |
+          npm install --no-save playwright@1.65.0
+          npx playwright install --with-deps chromium
+      - name: Serve site/ and run the smoke test
+        if: steps.has_site.outputs.run == 'true'
+        run: |
+          python3 -m http.server 8000 -d site >/dev/null 2>&1 &
+          sleep 2
+          node tests/browser-smoke.mjs --base http://localhost:8000 --paths /,/gemini/ --out smoke-results
+      - name: Job summary
+        if: always() && steps.has_site.outputs.run == 'true'
+        run: '[ -f smoke-results/report.md ] && cat smoke-results/report.md >> "$GITHUB_STEP_SUMMARY" || true'
+      - name: Upload screenshots and report
+        if: always() && steps.has_site.outputs.run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-screenshots
+          path: smoke-results/
+          retention-days: 30
